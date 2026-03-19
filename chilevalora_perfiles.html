@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfiles ChileValora — Gastronomía, Hotelería y Turismo</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0C2340;--navy-light:#e8eff7;
+  --accent:#C8963E;--accent-light:#fdf3e3;
+  --green:#1a6b3a;--green-light:#e6f4ec;
+  --amber:#8a5c00;--amber-light:#fef6e0;
+  --red:#8b2020;--red-light:#fdeaea;
+  --purple:#5a2d8a;--purple-light:#f0eaf8;
+  --gray:#6b7280;--gray-light:#f4f5f6;
+  --border:#dde3ea;--text:#1a2533;--text-muted:#6b7280;
+  --bg:#f7f9fc;--white:#ffffff;
+  --font-display:'Crimson Pro',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+
+/* HEADER */
+.page-header{background:var(--navy);padding:2rem 2.5rem 1.75rem;border-bottom:3px solid var(--accent)}
+.page-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.page-header h1{font-family:var(--font-display);font-size:26px;font-weight:600;color:#fff;line-height:1.2}
+.page-header p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;font-weight:300}
+.hbadge{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);margin-left:6px}
+
+/* STATS */
+.stats-bar{background:var(--white);border-bottom:1px solid var(--border)}
+.stats-bar-inner{max-width:1100px;margin:0 auto;padding:1rem 2.5rem;display:flex}
+.stat-item{flex:1;padding:.5rem 1rem;border-right:1px solid var(--border);text-align:center}
+.stat-item:first-child{padding-left:0}.stat-item:last-child{border-right:none}
+.stat-n{font-family:var(--font-display);font-size:28px;font-weight:600;color:var(--navy);line-height:1}
+.stat-n.red{color:var(--red)}.stat-n.amb{color:var(--amber)}
+.stat-l{font-size:11px;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
+/* LEGEND */
+.legend-bar{background:var(--white);border-bottom:1px solid var(--border)}
+.legend-inner{max-width:1100px;margin:0 auto;padding:.65rem 2.5rem;display:flex;gap:1rem;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text-muted)}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* FILTERS */
+.filters-bar{max-width:1100px;margin:0 auto;padding:1.25rem 2.5rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filters-bar label{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+.filters-bar input[type=text]{flex:1;min-width:180px;max-width:300px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--white);outline:none}
+.filters-bar input:focus{border-color:#1a3a5c}
+.filters-bar select{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:13px;color:var(--text);background:var(--white);cursor:pointer;outline:none}
+.res-count{font-size:12px;color:var(--text-muted);margin-left:auto;white-space:nowrap}
+
+/* CONTENT */
+.content{max-width:1100px;margin:0 auto;padding:0 2.5rem 3rem}
+
+/* SECTOR BLOCK */
+.sector-block{margin-bottom:2.5rem}
+.sector-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:10px 10px 0 0}
+.sector-header.alim{background:var(--green-light);border:1.5px solid #b3d9c2;border-bottom:none}
+.sector-header.aloj{background:var(--navy-light);border:1.5px solid #b8cfe0;border-bottom:none}
+.sector-header.sin{background:var(--gray-light);border:1.5px solid #c8d0da;border-bottom:none}
+.sector-icon{font-size:22px;line-height:1}
+.sector-title{font-family:var(--font-display);font-size:21px;font-weight:600;color:var(--navy)}
+.sector-sub{font-size:12px;color:var(--text-muted);margin-top:1px}
+.sector-count{margin-left:auto;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.alim .sector-count{background:#d1eddb;color:var(--green);border:1px solid #b3d9c2}
+.aloj .sector-count{background:#ccdce8;color:var(--navy);border:1px solid #b8cfe0}
+.sin  .sector-count{background:#e2e6ea;color:var(--gray);border:1px solid #c8d0da}
+
+/* sector-body: contenedor de tarjetas CIUO */
+.sector-body{border:1.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--bg);padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px}
+
+/* TARJETA CIUO — cada nombre SENCE es una tarjeta */
+.ocup-group{border-radius:8px;overflow:hidden;border:1.5px solid transparent}
+
+/* Paleta de colores por posición */
+.c0{border-color:#b3d9c2 !important;background:#f2faf6}
+.c1{border-color:#b8cfe0 !important;background:#f0f5fb}
+.c2{border-color:#e8cda0 !important;background:#fdf6ec}
+.c3{border-color:#d4bfe8 !important;background:#f7f2fd}
+.c4{border-color:#f0bfbf !important;background:#fdf3f3}
+.c5{border-color:#a8d4c8 !important;background:#eef8f5}
+.c6{border-color:#c8d8b0 !important;background:#f3f9ec}
+.c7{border-color:#e0c8a0 !important;background:#fdf4e3}
+.c8{border-color:#b0c8d8 !important;background:#edf4f8}
+.c9{border-color:#d8bfd8 !important;background:#f8f0f8}
+.c10{border-color:#d8c0b0 !important;background:#faf4f0}
+.c11{border-color:#b8d0b8 !important;background:#f0f7f0}
+
+.ocup-header{display:flex;align-items:center;gap:8px;padding:11px 14px;cursor:pointer;user-select:none;border-bottom:1px solid rgba(0,0,0,.07)}
+.c0 .ocup-header{background:#e0f5ea}
+.c1 .ocup-header{background:#daeaf5}
+.c2 .ocup-header{background:#faead8}
+.c3 .ocup-header{background:#ece3f8}
+.c4 .ocup-header{background:#fae0e0}
+.c5 .ocup-header{background:#dbf0ea}
+.c6 .ocup-header{background:#e8f5d8}
+.c7 .ocup-header{background:#faebd5}
+.c8 .ocup-header{background:#daeaf3}
+.c9 .ocup-header{background:#f0e0f0}
+.c10 .ocup-header{background:#f5ece5}
+.c11 .ocup-header{background:#daf0da}
+.ocup-header:hover{filter:brightness(.97)}
+
+.ocup-group.open .ocup-arrow{transform:rotate(90deg)}
+.ocup-body{display:none;padding:10px 12px 12px}
+.ocup-group.open .ocup-body{display:block}
+
+/* Badge nombre SENCE — protagonista */
+.ocup-sence-nom{font-size:12px;font-weight:500;padding:3px 10px;border-radius:5px;background:var(--navy);color:#fff;flex-shrink:0;letter-spacing:.03em}
+.ocup-ciuo{font-family:'Courier New',monospace;font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(12,35,64,.1);color:var(--navy);flex-shrink:0}
+.ocup-ciuo-desc{font-size:12px;color:var(--text-muted);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ocup-pcount{font-size:11px;color:var(--text-muted);white-space:nowrap;padding-right:4px}
+.ocup-arrow{font-size:10px;color:var(--text-muted);transition:transform .2s;flex-shrink:0}
+
+/* Sin perfil ChileValora */
+.sinperfil-card{padding:12px 14px;background:rgba(255,255,255,.7);border-radius:6px;display:flex;align-items:flex-start;gap:10px}
+.sp-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;background:var(--purple-light);color:var(--purple);white-space:nowrap;flex-shrink:0;margin-top:2px}
+.sp-name{font-size:13px;font-weight:500;color:var(--text)}
+.sp-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+
+/* PERFILES lista */
+.profiles-list{display:flex;flex-direction:column;gap:8px}
+.profile-card{border:1px solid rgba(0,0,0,.09);border-radius:7px;padding:13px 15px;cursor:pointer;transition:background .12s,border-color .15s,box-shadow .15s;background:rgba(255,255,255,.9)}
+.profile-card:hover{background:#fff;box-shadow:0 2px 6px rgba(12,35,64,.08);border-color:rgba(0,0,0,.16)}
+.profile-card.open{background:#fff;border-color:#1a3a5c;box-shadow:0 2px 8px rgba(12,35,64,.1)}
+.pc-top{display:flex;align-items:flex-start;gap:10px}
+.pc-main{flex:1;min-width:0}
+.pc-name{font-size:14px;font-weight:500;color:var(--text);line-height:1.3}
+.pc-code{font-family:'Courier New',monospace;font-size:11px;color:var(--text-muted);margin-top:2px}
+.pc-chips{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+.chip{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.chip-area{background:var(--accent-light);color:var(--accent)}
+.chip-ciuo{background:var(--navy-light);color:var(--navy);font-family:'Courier New',monospace}
+.chip-sub{background:var(--gray-light);color:var(--gray)}
+.pc-right{flex-shrink:0}
+.vbadge{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.vb-red{background:var(--red-light);color:var(--red)}
+.vb-amb{background:var(--amber-light);color:var(--amber)}
+.vb-grn{background:var(--green-light);color:var(--green)}
+
+/* DETALLE */
+.pc-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.profile-card.open .pc-detail{display:block}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.di-l{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:1px}
+.di-v{font-size:12px;color:var(--text)}
+.di-v.mono{font-family:'Courier New',monospace;font-size:11px;color:var(--navy)}
+.di-v.na{color:var(--text-muted);font-style:italic}
+
+.empty{text-align:center;color:var(--text-muted);padding:3rem;font-size:14px}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div>
+      <h1>Perfiles ChileValora — Gastronomía, Hotelería y Turismo</h1>
+      <p>Cobertura Proyecto SENCE Turismo Sostenible · Clasificación CIUO-08.CL</p>
+    </div>
+    <div><span class="hbadge">CIUO-08.CL</span><span class="hbadge">2026</span></div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-bar-inner" id="statsBar"></div>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-inner">
+    <strong style="color:var(--text);font-weight:500">Vigencia perfil:</strong>
+    <span class="leg-item"><span class="leg-dot" style="background:var(--red-light);border:1px solid var(--red)"></span>Crítica ≤ 2026</span>
+    <span class="leg-item"><span class="leg-dot" style="background:var(--amber-light);border:1px solid var(--amber)"></span>Próxima 2027–2028</span>
+    <span class="leg-item"><span class="leg-dot" style="background:var(--green-light);border:1px solid var(--green)"></span>Vigente ≥ 2029</span>
+    <span style="margin-left:auto">Clic en ocupación para desplegar · clic en perfil para ver detalle completo</span>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <label>Buscar</label>
+  <input type="text" id="search" placeholder="Nombre, código, CIUO..." oninput="applyFilters()">
+  <select id="fVig" onchange="applyFilters()">
+    <option value="">Vigencia: todas</option>
+    <option value="critica">Crítica (≤ 2026)</option>
+    <option value="proxima">Próxima (2027–2028)</option>
+    <option value="ok">Vigente (≥ 2029)</option>
+  </select>
+  <span class="res-count" id="resCount"></span>
+</div>
+
+<div class="content" id="mainContent"></div>
+
+<script>
+// ─── DATA COMPLETA ────────────────────────────────────────────────────────────
+// sNom = columna "SENCE TURISMO SOSTENIBLE"
+// sSec = columna "SECTOR PROYECTO SENCE"
+const PERFILES = [
+  // ALIMENTACION
+  {cod:"P-5600-1412-001-V03",nom:"Maître",vig:"2029-12-31",ciuo:"1412",ciuoDesc:"Directores, gerentes y administradores de restaurantes",sNom:"GERENTE RESTAURANT",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-1412-003-V02",nom:"Supervisor(a) de línea de servicios de casino",vig:"2028-12-31",ciuo:"1412",ciuoDesc:"Directores, gerentes y administradores de restaurantes",sNom:"GERENTE RESTAURANT",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-3434-001-V02",nom:"Chef ejecutivo",vig:"2029-12-31",ciuo:"3434",ciuoDesc:"Chefs",sNom:"CHEF EJECUTIVO",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-3434-002-V02",nom:"Jefe(a) de partida",vig:"2027-12-31",ciuo:"3434",ciuoDesc:"Chefs",sNom:"CHEF EJECUTIVO",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-3434-003-V01",nom:"Banquetero(a)",vig:"2027-12-31",ciuo:"3434",ciuoDesc:"Chefs",sNom:"CHEF EJECUTIVO",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-9412-002-V05",nom:"Ayudante de cocina",vig:"2030-12-31",ciuo:"9412",ciuoDesc:"Ayudantes de cocina",sNom:"AYUDANTE COCINA",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-9412-001-V04",nom:"Ayudante de cocina institucional",vig:"2030-12-31",ciuo:"9412",ciuoDesc:"Ayudantes de cocina",sNom:"AYUDANTE COCINA",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5629-9412-001-V02",nom:"Manipulador(a) PAE y PAP",vig:"2030-12-31",ciuo:"9412",ciuoDesc:"Ayudantes de cocina",sNom:"AYUDANTE COCINA",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:"Alimentación escolar"},
+  {cod:"P-5629-9412-001-V01",nom:"Manipulador(a) PAE (versión anterior — vencida)",vig:"2026-03-15",ciuo:"9412",ciuoDesc:"Ayudantes de cocina",sNom:"AYUDANTE COCINA",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:"Alimentación escolar"},
+  {cod:"P-5600-5131-001-V03",nom:"Garzón(a)",vig:"2030-12-31",ciuo:"5131",ciuoDesc:"Garzones de mesa",sNom:"GARZON",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5132-001-V03",nom:"Bartender",vig:"2029-12-31",ciuo:"5132",ciuoDesc:"Bármanes",sNom:"BARMAN",sSec:"ALIMENTACION",sub:"GASTRONOMIA",area:""},
+  // ALOJAMIENTO
+  {cod:"P-5510-4224-001-V03",nom:"Recepcionista",vig:"2029-12-31",ciuo:"4224",ciuoDesc:"Recepcionistas de hoteles",sNom:"RECEPCIONISTA",sSec:"ALOJAMIENTO",sub:"HOTELERÍA",area:""},
+  {cod:"P-5510-4224-002-V03",nom:"Gobernanta(e)",vig:"2029-12-31",ciuo:"4224",ciuoDesc:"Recepcionistas de hoteles",sNom:"RECEPCIONISTA",sSec:"ALOJAMIENTO",sub:"HOTELERÍA",area:""},
+  {cod:"P-5510-4224-003-V01",nom:"Encargado(a) de recepción",vig:"2027-12-31",ciuo:"4224",ciuoDesc:"Recepcionistas de hoteles",sNom:"RECEPCIONISTA",sSec:"ALOJAMIENTO",sub:"HOTELERÍA",area:""},
+  {cod:"P-7912-4224-001-V03",nom:"Anfitrión(a)",vig:"2028-12-31",ciuo:"4224",ciuoDesc:"Recepcionistas de hoteles",sNom:"RECEPCIONISTA",sSec:"ALOJAMIENTO",sub:"GASTRONOMIA",area:""},
+  {cod:"P-5510-9112-001-V03",nom:"Mucama(o)",vig:"2029-12-31",ciuo:"9112",ciuoDesc:"Auxiliares de aseo de oficinas, hoteles y otros establecimientos",sNom:"CAMARERA",sSec:"ALOJAMIENTO",sub:"HOTELERÍA",area:""},
+  // SIN SENCE — subsector GASTRONOMIA
+  {cod:"P-5600-1439-001-V02",nom:"Administrador(a) de establecimientos gastronómicos",vig:"2029-12-31",ciuo:"1439",ciuoDesc:"Directores, gerentes y administradores de otros servicios no clasificados previamente",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5120-001-V04",nom:"Cocinero(a)",vig:"2030-12-31",ciuo:"5120",ciuoDesc:"Cocineros",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5120-005-V02",nom:"Monitor(a) de comida rápida",vig:"2027-12-31",ciuo:"5120",ciuoDesc:"Cocineros",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5629-5120-001-V02",nom:"Supervisor(a) PAE y PAP",vig:"2030-12-31",ciuo:"5120",ciuoDesc:"Cocineros",sNom:null,sSec:null,sub:"GASTRONOMIA",area:"Alimentación escolar"},
+  {cod:"P-5600-9411-001-V03",nom:"Despachador(a) de comida rápida",vig:"2027-12-31",ciuo:"9411",ciuoDesc:"Cocineros de comida rápida",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5246-001-V02",nom:"Auxiliar de línea de servicios de casino",vig:"2029-12-31",ciuo:"5246",ciuoDesc:"Vendedores de comida al mostrador",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5246-002-V01",nom:"Operador(a) de servicios de alimentación",vig:"2027-12-31",ciuo:"5246",ciuoDesc:"Vendedores de comida al mostrador",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5230-001-V02",nom:"Cajero(a) de local de comida rápida",vig:"2027-12-31",ciuo:"5230",ciuoDesc:"Vendedores de entrada y cajeros de comercio",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-5111-001-V03",nom:"Copero(a) / Steward",vig:"2029-12-31",ciuo:"5111",ciuoDesc:"Auxiliares de servicio a bordo de aeronaves y barcos",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  {cod:"P-5600-7512-001-V03",nom:"Pastelero(a)",vig:"2029-12-31",ciuo:"7512",ciuoDesc:"Panaderos, pasteleros y confíteros",sNom:null,sSec:null,sub:"GASTRONOMIA",area:""},
+  // SIN SENCE — subsector HOTELERÍA
+  {cod:"P-5510-5111-001-V03",nom:"Botones",vig:"2028-12-31",ciuo:"5111",ciuoDesc:"Auxiliares de servicio a bordo de aeronaves y barcos",sNom:null,sSec:null,sub:"HOTELERÍA",area:""},
+  // SIN SENCE — subsector TURISMO
+  {cod:"P-7912-4221-001-V04",nom:"Agente de viajes",vig:"2027-12-31",ciuo:"4221",ciuoDesc:"Empleados de agencias de viajes",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7912-4221-002-V03",nom:"Informador(a) turístico",vig:"2030-12-31",ciuo:"4221",ciuoDesc:"Empleados de agencias de viajes",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7912-4221-003-V02",nom:"Jefe(a) de productos turísticos",vig:"2027-12-31",ciuo:"4221",ciuoDesc:"Empleados de agencias de viajes",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7912-5113-001-V04",nom:"Guía de turismo general",vig:"2030-12-31",ciuo:"5113",ciuoDesc:"Guías de turismo",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7990-5113-001-V01",nom:"Guía naturalista",vig:"2030-12-31",ciuo:"5113",ciuoDesc:"Guías de turismo",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7990-5113-002-V01",nom:"Guía de astroturismo",vig:"2030-12-31",ciuo:"5113",ciuoDesc:"Guías de turismo",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7912-5249-004-V02",nom:"Ejecutivo(a) de ventas tour operador",vig:"2027-12-31",ciuo:"5249",ciuoDesc:"Otros vendedores no clasificados previamente",sNom:null,sSec:null,sub:"TURISMO",area:""},
+  {cod:"P-7912-8322-001-V03",nom:"Conductor(a) de transporte turístico",vig:"2028-12-31",ciuo:"8322",ciuoDesc:"Conductores de automóviles, taxis y camionetas",sNom:null,sSec:null,sub:"TURISMO",area:"Asistencia a turistas"},
+  {cod:"P-9200-4212-001-V01",nom:"Croupier",vig:"2026-12-31",ciuo:"4212",ciuoDesc:"Receptores de apuestas",sNom:null,sSec:null,sub:"TURISMO",area:"Casinos y juegos de azar"},
+  {cod:"P-9200-4212-002-V01",nom:"Asistente de máquinas de azar",vig:"2026-12-31",ciuo:"4212",ciuoDesc:"Receptores de apuestas",sNom:null,sSec:null,sub:"TURISMO",area:"Casinos y juegos de azar"},
+  {cod:"P-9200-7421-001-V01",nom:"Mantenedor(a) electrónico de máquinas de azar",vig:"2026-12-31",ciuo:"7421",ciuoDesc:"Mecánicos y reparadores en electrónica",sNom:null,sSec:null,sub:"TURISMO",area:"Casinos y juegos de azar"},
+  {cod:"P-9200-5414-001-V01",nom:"Operador(a) CCTV en casinos",vig:"2026-12-31",ciuo:"5414",ciuoDesc:"Guardias de seguridad",sNom:null,sSec:null,sub:"TURISMO",area:"Casinos y juegos de azar"}
+];
+
+// Ocupaciones en SENCE sin perfil ChileValora
+const SIN_PERFIL = [
+  {ciuo:"1411",ciuoDesc:"Directores, gerentes y administradores de hoteles",sNom:"GERENTE ALOJAMIENTO",sSec:"ALOJAMIENTO"},
+  {ciuo:"5153",ciuoDesc:"Conserjes",sNom:"CONSERJE",sSec:"ALOJAMIENTO"}
+];
+
+// ─── ESTRUCTURA: agrupación por Nombre SENCE dentro de cada Sector SENCE ─────
+// Orden fijo dentro de cada sector según jerarquía ocupacional
+const SECTORES = [
+  {
+    id:"alim", label:"Alimentación", cls:"alim", icon:"🍽",
+    desc:"Sector Proyecto SENCE: ALIMENTACION",
+    // grupos ordenados por nombre SENCE (columna sNom)
+    grupos:[
+      {sNom:"GERENTE RESTAURANT",   label:"Gerente Restaurant"},
+      {sNom:"CHEF EJECUTIVO",        label:"Chef Ejecutivo"},
+      {sNom:"AYUDANTE COCINA",       label:"Ayudante Cocina"},
+      {sNom:"GARZON",                label:"Garzón"},
+      {sNom:"BARMAN",                label:"Barman"},
+    ]
+  },
+  {
+    id:"aloj", label:"Alojamiento", cls:"aloj", icon:"🏨",
+    desc:"Sector Proyecto SENCE: ALOJAMIENTO",
+    grupos:[
+      {sNom:"GERENTE ALOJAMIENTO",   label:"Gerente Alojamiento", sinPerfil:true},
+      {sNom:"RECEPCIONISTA",         label:"Recepcionista"},
+      {sNom:"CAMARERA",              label:"Camarera"},
+      {sNom:"CONSERJE",              label:"Conserje", sinPerfil:true},
+    ]
+  },
+  {
+    id:"sin", label:"No incluidos en Proyecto SENCE Turismo Sostenible", cls:"sin", icon:"📋",
+    desc:"Perfiles ChileValora sin cobertura en el Proyecto SENCE anterior · agrupados por subsector",
+    sinSENCE: true
+  }
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function vigClass(v){
+  if(!v) return '';
+  const y=new Date(v).getFullYear();
+  return y<=2026?'vb-red':y<=2028?'vb-amb':'vb-grn';
+}
+function vigLabel(v){
+  if(!v) return '—';
+  return new Date(v).toLocaleDateString('es-CL',{year:'numeric',month:'short',day:'numeric'});
+}
+function vigCat(v){
+  if(!v) return 'sinp';
+  const y=new Date(v).getFullYear();
+  return y<=2026?'critica':y<=2028?'proxima':'ok';
+}
+
+let AF={q:'',vig:''};
+function matchFilter(p){
+  if(AF.vig && vigCat(p.vig)!==AF.vig) return false;
+  if(AF.q){
+    const s=(p.nom+p.cod+p.ciuo+p.ciuoDesc+(p.sNom||'')+(p.sSec||'')+(p.area||'')).toLowerCase();
+    if(!s.includes(AF.q)) return false;
+  }
+  return true;
+}
+
+function profileCard(p){
+  const uid='pc_'+(p.cod).replace(/[^a-z0-9]/gi,'_');
+  const vc=vigClass(p.vig);
+  const chips=[];
+  if(p.area) chips.push(`<span class="chip chip-area">${p.area}</span>`);
+  if(p.sub)  chips.push(`<span class="chip chip-sub">${p.sub}</span>`);
+  return `<div class="profile-card" id="${uid}" onclick="tp('${uid}')">
+    <div class="pc-top">
+      <div class="pc-main">
+        <div class="pc-name">${p.nom}</div>
+        <div class="pc-code">${p.cod}</div>
+        ${chips.length?`<div class="pc-chips">${chips.join('')}</div>`:''}
+      </div>
+      <div class="pc-right">${vc?`<span class="vbadge ${vc}">Vig. ${vigLabel(p.vig)}</span>`:''}</div>
+    </div>
+    <div class="pc-detail">
+      <div class="dg">
+        <div><div class="di-l">Código perfil ChileValora</div><div class="di-v mono">${p.cod}</div></div>
+        <div><div class="di-l">Vigencia perfil</div><div class="di-v">${vigLabel(p.vig)}</div></div>
+        <div><div class="di-l">CIUO-08.CL</div><div class="di-v mono">${p.ciuo}</div></div>
+        <div><div class="di-l">Clasificación CIUO</div><div class="di-v">${p.ciuoDesc}</div></div>
+        <div><div class="di-l">Nombre SENCE</div><div class="di-v">${p.sNom||'<span class="na">No incluido</span>'}</div></div>
+        <div><div class="di-l">Sector Proyecto SENCE</div><div class="di-v">${p.sSec||'<span class="na">No incluido</span>'}</div></div>
+        <div><div class="di-l">Subsector ChileValora</div><div class="di-v">${p.sub||'—'}</div></div>
+        <div><div class="di-l">Área productiva</div><div class="di-v">${p.area||'<span class="na">No definida</span>'}</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function ocupGroupHtml(label, ciuo, ciuoDesc, bodyHtml, colorIdx, pcount){
+  const cc='c'+(colorIdx%12);
+  return `<div class="ocup-group open ${cc}">
+    <div class="ocup-header" onclick="to(this)">
+      <span class="ocup-sence-nom">${label}</span>
+      <span class="ocup-ciuo">CIUO ${ciuo}</span>
+      <span class="ocup-ciuo-desc">${ciuoDesc}</span>
+      <span class="ocup-pcount">${pcount}</span>
+      <span class="ocup-arrow">▶</span>
+    </div>
+    <div class="ocup-body">${bodyHtml}</div>
+  </div>`;
+}
+
+function render(){
+  let totalVis=0;
+  let html='';
+
+  SECTORES.forEach(sector=>{
+    let sbody='';
+    let sCount=0;
+    let ci=0;
+
+    if(sector.sinSENCE){
+      // Tercer bloque: perfiles sin sNom y sin sSec, agrupados por CIUO
+      const sinSence=PERFILES.filter(p=>!p.sNom&&!p.sSec);
+      // agrupar por CIUO manteniendo orden de aparición
+      const ciuosVistos=[];
+      const grupos={};
+      sinSence.forEach(p=>{
+        if(!grupos[p.ciuo]){grupos[p.ciuo]=[];ciuosVistos.push(p.ciuo);}
+        grupos[p.ciuo].push(p);
+      });
+      ciuosVistos.forEach(ciuo=>{
+        const ps=grupos[ciuo].filter(matchFilter);
+        if(ps.length===0) return;
+        const desc=grupos[ciuo][0].ciuoDesc;
+        // usar subsector como etiqueta de nombre (ya que no tienen sNom)
+        const sub=grupos[ciuo][0].sub;
+        const bodyHtml=`<div class="profiles-list">${ps.map(profileCard).join('')}</div>`;
+        sbody+=ocupGroupHtml(sub, ciuo, desc, bodyHtml, ci, `${ps.length} perfil${ps.length!==1?'es':''}`);
+        sCount+=ps.length; totalVis+=ps.length; ci++;
+      });
+    } else {
+      sector.grupos.forEach(grupo=>{
+        // Sin perfil ChileValora
+        if(grupo.sinPerfil){
+          const sp=SIN_PERFIL.find(s=>s.sNom===grupo.sNom);
+          if(!sp) return;
+          if(AF.vig) return;
+          if(AF.q && !(grupo.label.toLowerCase().includes(AF.q)||sp.ciuoDesc.toLowerCase().includes(AF.q)||sp.ciuo.includes(AF.q))) return;
+          const bodyHtml=`<div class="sinperfil-card">
+            <span class="sp-badge">Sin perfil ChileValora</span>
+            <div><div class="sp-name">${sp.ciuoDesc}</div>
+            <div class="sp-meta">CIUO ${sp.ciuo} · Sector SENCE: ${sp.sSec}</div></div>
+          </div>`;
+          sbody+=ocupGroupHtml(grupo.label, sp.ciuo, sp.ciuoDesc, bodyHtml, ci, 'Sin perfil ChileValora');
+          sCount++; ci++;
+          return;
+        }
+        // Con perfiles ChileValora
+        const perfs=PERFILES.filter(p=>p.sNom===grupo.sNom);
+        const visibles=perfs.filter(matchFilter);
+        if(visibles.length===0) return;
+        const ciuo=perfs[0].ciuo;
+        const desc=perfs[0].ciuoDesc;
+        const bodyHtml=`<div class="profiles-list">${visibles.map(profileCard).join('')}</div>`;
+        sbody+=ocupGroupHtml(grupo.label, ciuo, desc, bodyHtml, ci, `${visibles.length} perfil${visibles.length!==1?'es':''}`);
+        sCount+=visibles.length; totalVis+=visibles.length; ci++;
+      });
+    }
+
+    if(!sbody) return;
+    html+=`<div class="sector-block">
+      <div class="sector-header ${sector.cls}">
+        <span class="sector-icon">${sector.icon}</span>
+        <div>
+          <div class="sector-title">${sector.label}</div>
+          <div class="sector-sub">${sector.desc}</div>
+        </div>
+        <span class="sector-count">${sCount} perfil${sCount!==1?'es':''}</span>
+      </div>
+      <div class="sector-body">${sbody}</div>
+    </div>`;
+  });
+
+  document.getElementById('resCount').textContent=`${totalVis} perfil${totalVis!==1?'es':''} mostrado${totalVis!==1?'s':''}`;
+  document.getElementById('mainContent').innerHTML=html||'<div class="empty">No hay perfiles que coincidan.</div>';
+
+  const cs=PERFILES.filter(p=>p.sNom&&p.sSec).length;
+  const crit=PERFILES.filter(p=>vigCat(p.vig)==='critica').length;
+  const prox=PERFILES.filter(p=>vigCat(p.vig)==='proxima').length;
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat-item"><div class="stat-n">${PERFILES.length}</div><div class="stat-l">Perfiles ChileValora</div></div>
+    <div class="stat-item"><div class="stat-n">${SIN_PERFIL.length}</div><div class="stat-l">Ocup. sin perfil</div></div>
+    <div class="stat-item"><div class="stat-n">${cs}</div><div class="stat-l">Con cobertura SENCE</div></div>
+    <div class="stat-item"><div class="stat-n red">${crit}</div><div class="stat-l">Vigencia crítica ≤2026</div></div>
+    <div class="stat-item"><div class="stat-n amb">${prox}</div><div class="stat-l">Próxima vigencia 2027–28</div></div>
+  `;
+}
+
+function to(header){header.closest('.ocup-group').classList.toggle('open')}
+function tp(id){document.getElementById(id)?.classList.toggle('open')}
+function applyFilters(){
+  AF.q=(document.getElementById('search').value||'').toLowerCase().trim();
+  AF.vig=document.getElementById('fVig').value;
+  render();
+}
+render();
+</script>
+</body>
+</html>

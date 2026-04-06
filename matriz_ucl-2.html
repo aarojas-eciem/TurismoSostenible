@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matriz UCL — Perfiles ChileValora GHT</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0C2340;--navy-light:#e8eff7;
+  --green:#1a6b3a;--green-light:#e6f4ec;--green-mid:#3b8a5a;
+  --amber:#C8963E;--amber-light:#fdf3e3;
+  --teal:#0f6e56;--teal-light:#e1f5ee;
+  --purple:#5a2d8a;--purple-light:#f0eaf8;
+  --gray:#6b7280;--gray-light:#f4f5f6;
+  --border:#dde3ea;--text:#1a2533;--muted:#6b7280;
+  --bg:#f7f9fc;--white:#fff;
+  --font:'DM Sans',system-ui,sans-serif;
+  /* sector colors */
+  --gastro:#1a6b3a;--gastro-l:#e6f4ec;--gastro-cell:#c8e8d4;
+  --hotel:#0C2340;--hotel-l:#e8eff7;--hotel-cell:#b8d0e4;
+  --tur:#8a5c00;--tur-l:#fdf3e3;--tur-cell:#f5ddb0;
+  /* shared UCL highlight */
+  --shared:#C8963E;--shared-cell:#f5c878;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px}
+
+.page-header{background:var(--navy);padding:1.25rem 2rem;border-bottom:3px solid var(--amber)}
+.page-header h1{font-size:20px;font-weight:500;color:#fff;letter-spacing:.01em}
+.page-header p{font-size:12px;color:rgba(255,255,255,.55);margin-top:3px}
+
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:1rem 2rem;background:var(--white);border-bottom:1px solid var(--border)}
+.controls label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.controls select,.controls input{font-family:var(--font);font-size:12px;padding:5px 9px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text);cursor:pointer}
+.controls input{min-width:180px}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:.6rem 2rem;background:var(--white);border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)}
+.leg{display:flex;align-items:center;gap:5px}
+.leg-sq{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+
+.table-wrap{overflow:auto;padding:1.5rem 2rem 3rem}
+table{border-collapse:separate;border-spacing:0}
+
+/* Headers columnas — texto de abajo hacia arriba, sin rotate inverso */
+.col-header{
+  writing-mode:vertical-rl;
+  transform:none;
+  font-size:10px;font-weight:400;color:var(--muted);
+  padding:8px 5px 12px;
+  vertical-align:bottom;
+  white-space:nowrap;
+  height:150px;
+  cursor:default;
+  position:sticky;top:0;
+  background:var(--bg);
+  z-index:2;
+  border-bottom:2px solid var(--border);
+}
+.col-header.shared{color:var(--amber);font-weight:600}
+.col-header:hover{color:var(--text)}
+.col-sep{border-right:3px solid var(--amber)}
+
+.row-header{
+  position:sticky;left:0;z-index:1;
+  background:var(--white);
+  padding:5px 12px 5px 8px;
+  white-space:nowrap;
+  font-size:11px;font-weight:400;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  min-width:200px;max-width:240px;
+  overflow:hidden;text-overflow:ellipsis;
+  vertical-align:middle;
+}
+.row-header .sub-tag{display:inline-block;font-size:9px;font-weight:500;padding:1px 5px;border-radius:3px;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.sub-gastro{background:var(--gastro-l);color:var(--gastro)}
+.sub-hotel{background:var(--hotel-l);color:var(--hotel)}
+.sub-tur{background:var(--tur-l);color:var(--tur)}
+
+/* Celdas */
+.cell{width:18px;height:26px;padding:0;cursor:pointer;transition:opacity .12s;border-bottom:1px solid rgba(255,255,255,.6)}
+.cell:hover{opacity:.65;outline:2px solid rgba(0,0,0,.25)}
+.cell-on-gastro{background:var(--gastro-cell)}
+.cell-on-hotel{background:var(--hotel-cell)}
+.cell-on-tur{background:var(--tur-cell)}
+.cell-off{background:#ebebeb}
+.cell-shared-on{background:var(--shared-cell) !important;outline:1px solid var(--amber)}
+.cell-shared-off{background:#f9edd4}
+
+/* Separador de subsector */
+.sep-row td{background:var(--bg);padding:5px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-top:2px solid var(--border);border-bottom:1px solid var(--border)}
+
+tr:hover .row-header{background:#eef3f9}
+tr:hover .cell{filter:brightness(.9)}
+
+/* Tooltip */
+.tip{position:fixed;display:none;background:var(--navy);color:#fff;font-size:11px;padding:8px 12px;border-radius:6px;max-width:320px;line-height:1.5;pointer-events:none;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.tip strong{font-weight:500;color:#fff;display:block;margin-bottom:3px}
+.tip span{color:rgba(255,255,255,.7)}
+
+.stat-bar{display:flex;gap:0;background:var(--white);border-bottom:1px solid var(--border)}
+.stat{flex:1;padding:.6rem 1rem;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-size:22px;font-weight:500;color:var(--navy);line-height:1}
+.stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Matriz de competencias — Perfiles ChileValora · Sector GHT</h1>
+  <p>38 perfiles × 100 Unidades de Competencia Laboral · Las 3 primeras columnas son UCL compartidas entre múltiples perfiles</p>
+</div>
+
+<div class="stat-bar" id="statBar"></div>
+
+<div class="controls">
+  <label>Subsector</label>
+  <select id="fSub" onchange="render()">
+    <option value="">Todos</option>
+    <option value="GASTRONOMÍA">Gastronomía</option>
+    <option value="HOTELERÍA">Hotelería</option>
+    <option value="TURISMO">Turismo</option>
+  </select>
+  <label>Buscar perfil</label>
+  <input type="text" id="fPerfil" placeholder="Nombre o código..." oninput="render()">
+  <label>Buscar UCL</label>
+  <input type="text" id="fUCL" placeholder="Nombre o código UCL..." oninput="render()">
+</div>
+
+<div class="legend">
+  <span style="font-weight:500;color:var(--text)">Celdas:</span>
+  <span class="leg"><span class="leg-sq" style="background:var(--gastro-cell);border:1px solid var(--gastro)"></span>UCL presente · Gastronomía</span>
+  <span class="leg"><span class="leg-sq" style="background:var(--hotel-cell);border:1px solid var(--hotel)"></span>UCL presente · Hotelería</span>
+  <span class="leg"><span class="leg-sq" style="background:var(--tur-cell);border:1px solid var(--tur)"></span>UCL presente · Turismo</span>
+  <span class="leg"><span class="leg-sq" style="background:var(--shared-cell);border:1px solid var(--amber)"></span>UCL compartida (aparece en 2+ perfiles)</span>
+  <span class="leg"><span class="leg-sq" style="background:var(--gray-light);border:1px solid #ccc"></span>No asignada</span>
+  <span style="margin-left:auto;font-size:11px">Hover sobre cualquier celda para ver nombre completo de la UCL</span>
+</div>
+
+<div class="table-wrap" id="tableWrap"></div>
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = {"perfiles":[{"id":"P-5600-1439-001-V02","nom":"ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRONÓMICOS","sub":"GASTRONOMÍA"},{"id":"P-7912-4224-001-V03","nom":"ANFITRIÓN(A)","sub":"GASTRONOMÍA"},{"id":"P-5600-5246-001-V02","nom":"AUXILIAR DE LÍNEA DE SERVICIOS DE CASINO","sub":"GASTRONOMÍA"},{"id":"P-5600-9412-002-V05","nom":"AYUDANTE DE COCINA","sub":"GASTRONOMÍA"},{"id":"P-5600-9412-001-V04","nom":"AYUDANTE DE COCINA INSTITUCIONAL","sub":"GASTRONOMÍA"},{"id":"P-5600-3434-003-V01","nom":"BANQUETERO(A)","sub":"GASTRONOMÍA"},{"id":"P-5600-5132-001-V03","nom":"BARTENDER","sub":"GASTRONOMÍA"},{"id":"P-5600-5230-001-V02","nom":"CAJERO(A) DE LOCAL DE COMIDA RÁPIDA","sub":"GASTRONOMÍA"},{"id":"P-5600-3434-001-V02","nom":"CHEF EJECUTIVO","sub":"GASTRONOMÍA"},{"id":"P-5600-5120-001-V04","nom":"COCINERO(A)","sub":"GASTRONOMÍA"},{"id":"P-5600-5111-001-V03","nom":"COPERO(A) (STEWARD)","sub":"GASTRONOMÍA"},{"id":"P-5600-9411-001-V03","nom":"DESPACHADOR(A) DE COMIDA RÁPIDA","sub":"GASTRONOMÍA"},{"id":"P-5600-5131-001-V03","nom":"GARZÓN(A)","sub":"GASTRONOMÍA"},{"id":"P-5600-3434-002-V02","nom":"JEFE(A) DE PARTIDA","sub":"GASTRONOMÍA"},{"id":"P-5629-9412-001-V02","nom":"MANIPULADOR(A) PAE Y PAP","sub":"GASTRONOMÍA"},{"id":"P-5600-1412-001-V03","nom":"MAÎTRE","sub":"GASTRONOMÍA"},{"id":"P-5600-5120-005-V02","nom":"MONITOR(A) DE COMIDA RÁPIDA","sub":"GASTRONOMÍA"},{"id":"P-5600-5246-002-V01","nom":"OPERADOR(A) DE SERVICIOS DE ALIMENTACIÓN","sub":"GASTRONOMÍA"},{"id":"P-5600-7512-001-V03","nom":"PASTELERO(A)","sub":"GASTRONOMÍA"},{"id":"P-5629-5120-001-V02","nom":"SUPERVISOR(A) PAE Y PAP","sub":"GASTRONOMÍA"},{"id":"P-5600-1412-003-V02","nom":"SUPERVISOR(A) LÍN. SERVICIOS DE CASINO","sub":"GASTRONOMÍA"},{"id":"P-5510-5111-001-V03","nom":"BOTONES","sub":"HOTELERÍA"},{"id":"P-5510-4224-003-V01","nom":"ENCARGADO(A) DE RECEPCIÓN","sub":"HOTELERÍA"},{"id":"P-5510-4224-002-V03","nom":"GOBERNANTA(E)","sub":"HOTELERÍA"},{"id":"P-5510-9112-001-V03","nom":"MUCAMA(O)","sub":"HOTELERÍA"},{"id":"P-5510-4224-001-V03","nom":"RECEPCIONISTA","sub":"HOTELERÍA"},{"id":"P-7912-4221-001-V04","nom":"AGENTE DE VIAJES","sub":"TURISMO"},{"id":"P-9200-4212-002-V01","nom":"ASISTENTE MÁQUINAS DE AZAR","sub":"TURISMO"},{"id":"P-7912-8322-001-V03","nom":"CONDUCTOR(A) TRANSPORTE TURÍSTICO","sub":"TURISMO"},{"id":"P-9200-4212-001-V01","nom":"CROUPIER","sub":"TURISMO"},{"id":"P-7912-5249-004-V02","nom":"EJECUTIVO(A) VENTAS TOUR OPERADOR","sub":"TURISMO"},{"id":"P-7990-5113-002-V01","nom":"GUÍA DE ASTROTURISMO","sub":"TURISMO"},{"id":"P-7912-5113-001-V04","nom":"GUÍA DE TURISMO GENERAL","sub":"TURISMO"},{"id":"P-7990-5113-001-V01","nom":"GUÍA NATURALISTA","sub":"TURISMO"},{"id":"P-7912-4221-002-V03","nom":"INFORMADOR(A) TURÍSTICO","sub":"TURISMO"},{"id":"P-7912-4221-003-V02","nom":"JEFE(A) PRODUCTOS TURÍSTICOS","sub":"TURISMO"},{"id":"P-9200-7421-001-V01","nom":"MANTENEDOR(A) ELECTRÓNICO MÁQS. AZAR","sub":"TURISMO"},{"id":"P-9200-5414-001-V01","nom":"OPERADOR(A) CCTV CASINOS","sub":"TURISMO"}],"ucl":[{"id":"U-5510-4224-009-V01","nom":"Gestionar al personal a cargo, de acuerdo a normativa aplicable vigente y procedimientos establecidos","short":"Gestionar personal a cargo","n":5},{"id":"U-5510-4224-005-V02","nom":"Asistir al huésped en sus requerimientos y necesidades, según protocolos de atención y procedimientos establecidos","short":"Asistir al huésped","n":2},{"id":"U-5510-4224-007-V01","nom":"Auto gestionar el servicio al cliente, según los protocolos y procedimientos de la empresa","short":"Auto gestionar servicio cliente","n":2},{"id":"U-5510-4224-002-V03","nom":"Administrar las tareas asociadas a la limpieza y orden del establecimiento de alojamiento turístico","short":"Administrar limpieza alojamiento","n":1},{"id":"U-5510-4224-004-V02","nom":"Gestionar el ingreso y salida del huésped del establecimiento de alojamiento turístico","short":"Gestionar ingreso/salida huésped","n":1},{"id":"U-5510-4224-008-V01","nom":"Gestionar adquisición y control de materiales del área","short":"Gestionar adquisición materiales","n":1},{"id":"U-5510-4224-010-V01","nom":"Administrar las tareas del área a cargo, según protocolos y procedimientos establecidos","short":"Administrar tareas del área","n":1},{"id":"U-5510-5111-002-V02","nom":"Asistir al huésped en el traslado de equipaje y la entrega de información durante su estadía","short":"Asistir traslado equipaje","n":1},{"id":"U-5510-5111-003-V01","nom":"Apoyar en las labores del área de recepción y conserjería","short":"Apoyar recepción y conserjería","n":1},{"id":"U-5510-9112-001-V03","nom":"Efectuar orden y limpieza de las unidades de alojamiento turístico del recinto","short":"Efectuar limpieza alojamiento","n":1},{"id":"U-5510-9112-003-V01","nom":"Asistir al huésped en sus requerimientos y necesidades, según protocolo de servicio","short":"Asistir huésped (mucama)","n":1},{"id":"U-5600-1412-001-V03","nom":"Supervisar la preparación del área de comedor y la entrega de servicios gastronómicos","short":"Supervisar comedor/servicios","n":1},{"id":"U-5600-1412-005-V02","nom":"Gestionar actividades y/o funciones realizadas por el personal a cargo","short":"Gestionar funciones del personal","n":1},{"id":"U-5600-1412-006-V02","nom":"Dirigir las tareas del casino de alimentación, según protocolos y normativas vigentes","short":"Dirigir casino alimentación","n":1},{"id":"U-5600-1412-009-V01","nom":"Supervisar la preparación del área de comedor y la entrega del servicio de alimentación del casino","short":"Supervisar comedor casino","n":1},{"id":"U-5600-1439-003-V02","nom":"Administrar el establecimiento gastronómico, de acuerdo a protocolos y normativa vigente","short":"Administrar establecimiento gastronómico","n":1},{"id":"U-5600-1439-006-V01","nom":"Administrar el presupuesto del establecimiento gastronómico","short":"Administrar presupuesto","n":1},{"id":"U-5600-1439-007-V01","nom":"Asegurar satisfacción de clientes, de acuerdo a lineamientos establecidos","short":"Asegurar satisfacción clientes","n":1},{"id":"U-5600-3434-002-V01","nom":"Gestionar la aplicación de sistemas de trazabilidad interna del servicio y de las materias primas","short":"Gestionar trazabilidad","n":1},{"id":"U-5600-3434-003-V02","nom":"Dirigir las tareas del área de cocina, según protocolos y procedimientos establecidos","short":"Dirigir tareas cocina","n":1},{"id":"U-5600-3434-008-V01","nom":"Vender un servicio de banquetería","short":"Vender servicio banquetería","n":1},{"id":"U-5600-3434-009-V01","nom":"Planificar un evento de banquetería","short":"Planificar evento banquetería","n":1},{"id":"U-5600-3434-010-V01","nom":"Organizar la preparación de un evento de banquetería","short":"Organizar preparación evento","n":1},{"id":"U-5600-3434-011-V01","nom":"Supervisar y controlar la atención del evento","short":"Supervisar atención evento","n":1},{"id":"U-5600-3434-012-V01","nom":"Programar la limpieza del lugar","short":"Programar limpieza","n":1},{"id":"U-5600-3434-014-V01","nom":"Supervisar la planificación gastronómica, según protocolos y normativa vigente","short":"Supervisar planificación gastronómica","n":1},{"id":"U-5600-3434-015-V01","nom":"Supervisar inventario de materias primas y equipamiento de cocina","short":"Supervisar inventario cocina","n":1},{"id":"U-5600-3434-016-V01","nom":"Confeccionar menús y cartas de preparaciones culinarias","short":"Confeccionar menús/cartas","n":1},{"id":"U-5600-3434-017-V01","nom":"Administrar inventario asociado a la producción gastronómica","short":"Administrar inventario gastronómico","n":1},{"id":"U-5600-5111-001-V03","nom":"Limpiar e higienizar espacios e implementos de cocina","short":"Limpiar espacios cocina","n":1},{"id":"U-5600-5111-002-V03","nom":"Organizar el menaje e implementos de cocina","short":"Organizar menaje cocina","n":1},{"id":"U-5600-5120-007-V03","nom":"Organizar la producción culinaria, de acuerdo a planes y requerimientos del servicio","short":"Organizar producción culinaria","n":1},{"id":"U-5600-5120-014-V05","nom":"Preparar insumos culinarios, de acuerdo con técnicas básicas de cocina","short":"Preparar insumos culinarios","n":1},{"id":"U-5600-5120-015-V04","nom":"Ejecutar preparaciones culinarias complejas, de acuerdo con técnicas gastronómicas avanzadas","short":"Ejecutar preparaciones complejas","n":1},{"id":"U-5600-5120-017-V02","nom":"Mantener uniforme y presentación personal, de acuerdo a los estándares del sector productivo","short":"Mantener presentación personal","n":1},{"id":"U-5600-5120-018-V02","nom":"Aplicar normas de higiene, seguridad alimentaria y prevención de riesgos en cocina","short":"Aplicar normas higiene/seguridad","n":1},{"id":"U-5600-5120-019-V02","nom":"Gestionar la planificación de funciones y capacitaciones del equipo a cargo","short":"Gestionar planificación del equipo","n":1},{"id":"U-5600-5120-021-V01","nom":"Asistir al cliente en sus requerimientos y necesidades, según protocolo de servicio","short":"Asistir cliente (monitor)","n":1},{"id":"U-5600-5120-022-V01","nom":"Supervisar la higiene y la seguridad en la cocina","short":"Supervisar higiene/seguridad cocina","n":1},{"id":"U-5600-5131-001-V02","nom":"Atender al comensal durante su estadía, conforme protocolos de atención y hospitalidad","short":"Atender comensal","n":1},{"id":"U-5600-5131-003-V01","nom":"Preparar el servicio, de acuerdo con protocolos del establecimiento y mise en place","short":"Preparar servicio (garzón)","n":1},{"id":"U-5600-5132-001-V02","nom":"Organizar la plaza de trabajo y requerimientos de materias primas para bebestibles","short":"Organizar plaza trabajo bartender","n":1},{"id":"U-5600-5132-002-V02","nom":"Preparar bebestibles, de acuerdo a fichas técnicas y normativas aplicables vigentes","short":"Preparar bebestibles","n":1},{"id":"U-5600-5230-001-V02","nom":"Realizar proceso de caja, según los protocolos y procedimientos de la empresa","short":"Realizar proceso de caja","n":1},{"id":"U-5600-5230-002-V01","nom":"Ofrecer, vender y registrar productos solicitados por el cliente","short":"Ofrecer/vender/registrar productos","n":1},{"id":"U-5600-5246-001-V02","nom":"Atender al cliente, según protocolos y normativas de la autoridad sanitaria","short":"Atender cliente (auxiliar casino)","n":1},{"id":"U-5600-5246-005-V01","nom":"Realizar la entrega de alimentos según pautas de higiene y seguridad del casino","short":"Entregar alimentos casino","n":1},{"id":"U-5600-5246-006-V01","nom":"Recepcionar, almacenar y rotular las materias primas según normas de higiene","short":"Recepcionar/almacenar materias primas","n":1},{"id":"U-5600-5246-007-V01","nom":"Transformar las materias primas para el turno según la pauta de alimentación","short":"Transformar materias primas","n":1},{"id":"U-5600-5246-008-V01","nom":"Ejecutar el servicio de línea de casino, conforme protocolos y normativas sanitarias","short":"Ejecutar servicio línea casino","n":1},{"id":"U-5600-7512-001-V03","nom":"Realizar elaboración, decoración y montaje de productos de pastelería","short":"Elaborar/decorar pastelería","n":1},{"id":"U-5600-7512-002-V02","nom":"Dirigir las tareas vinculadas a la producción pastelera","short":"Dirigir producción pastelera","n":1},{"id":"U-5600-9411-001-V03","nom":"Gestionar entrega de pedidos a clientes, de acuerdo a protocolos establecidos","short":"Gestionar entrega pedidos","n":1},{"id":"U-5600-9411-002-V01","nom":"Preparar la plaza de trabajo y requerimientos de pedidos para atención a clientes","short":"Preparar plaza trabajo despacho","n":1},{"id":"U-5600-9412-001-V05","nom":"Elaborar preparaciones culinarias básicas, de acuerdo con recetas estandarizadas","short":"Elaborar preparaciones básicas","n":1},{"id":"U-5600-9412-003-V02","nom":"Preelaborar alimentos e insumos en cocina institucional","short":"Preelaborar alimentos institucional","n":1},{"id":"U-5600-9412-007-V01","nom":"Ejecutar procesos térmicos básicos en cocina institucional (HACCP)","short":"Ejecutar procesos térmicos","n":1},{"id":"U-5629-5120-001-V02","nom":"Ejecutar procesos administrativos de gestión vinculados a la operación PAE/PAP","short":"Gestión administrativa PAE/PAP","n":1},{"id":"U-5629-5120-002-V02","nom":"Desarrollar proceso de supervisión en terreno, conforme criterios del PAE","short":"Supervisión terreno PAE","n":1},{"id":"U-5629-5120-004-V01","nom":"Realizar supervisiones específicas en establecimientos del PAE o PAP","short":"Supervisiones específicas PAE","n":1},{"id":"U-5629-9412-001-V02","nom":"Controlar el abastecimiento de productos alimentarios y no alimentarios PAE","short":"Controlar abastecimiento PAE","n":1},{"id":"U-5629-9412-002-V02","nom":"Chequear stock, equipamiento y cocina según manual de operaciones PAE/PAP","short":"Chequear stock/equipamiento PAE","n":1},{"id":"U-5629-9412-003-V02","nom":"Ejecutar operaciones de preparación, cocción, montaje y entrega del servicio PAE/PAP","short":"Ejecutar preparación servicio PAE","n":1},{"id":"U-5629-9412-004-V02","nom":"Desarrollar acciones de inocuidad, calidad y seguridad del programa PAE/PAP","short":"Inocuidad y seguridad PAE","n":1},{"id":"U-7912-4221-001-V04","nom":"Asesorar a pasajeros en la adquisición de productos, servicios y/o paquetes turísticos","short":"Asesorar adquisición paquetes","n":1},{"id":"U-7912-4221-002-V04","nom":"Gestionar comercialización de productos, servicios o paquetes turísticos","short":"Gestionar comercialización turística","n":1},{"id":"U-7912-4221-003-V03","nom":"Entregar asesoría e información turística a las personas usuarias","short":"Entregar asesoría turística","n":1},{"id":"U-7912-4221-004-V03","nom":"Ejecutar labores administrativas según procedimientos institucionales","short":"Ejecutar labores administrativas","n":1},{"id":"U-7912-4221-007-V02","nom":"Realizar seguimiento del servicio entregado al pasajero","short":"Seguimiento servicio pasajero","n":1},{"id":"U-7912-4221-008-V02","nom":"Identificar proveedores de productos, paquetes o servicios turísticos","short":"Identificar proveedores turísticos","n":1},{"id":"U-7912-4221-009-V02","nom":"Elaborar productos, paquetes o servicios turísticos","short":"Elaborar paquetes turísticos","n":1},{"id":"U-7912-4221-010-V02","nom":"Promover internamente productos, paquetes o servicios turísticos","short":"Promover paquetes turísticos","n":1},{"id":"U-7912-4224-001-V03","nom":"Atender al cliente durante su estadía en el establecimiento gastronómico","short":"Atender cliente (anfitrión)","n":1},{"id":"U-7912-4224-002-V02","nom":"Gestionar reservas y requerimientos de los clientes","short":"Gestionar reservas clientes","n":1},{"id":"U-7912-5113-001-V03","nom":"Ejecutar servicios de guiado turístico general","short":"Ejecutar guiado turístico","n":1},{"id":"U-7912-5113-005-V02","nom":"Planificar servicios de guiado turístico general","short":"Planificar guiado turístico","n":1},{"id":"U-7912-5249-001-V01","nom":"Gestionar solicitud de programas turísticos según tarifarios y servicios disponibles","short":"Gestionar solicitud programas","n":1},{"id":"U-7912-5249-002-V01","nom":"Tramitar proceso de cobranza al cliente según procedimientos y normativa vigente","short":"Tramitar cobranza cliente","n":1},{"id":"U-7912-8322-001-V03","nom":"Realizar el servicio de transporte turístico, según protocolos establecidos","short":"Realizar transporte turístico","n":1},{"id":"U-7912-8322-004-V01","nom":"Preparar el servicio de transporte turístico, de acuerdo con protocolos y normativa","short":"Preparar servicio transporte","n":1},{"id":"U-7990-5113-001-V01","nom":"Planificar la experiencia turística naturalista","short":"Planificar turismo naturalista","n":1},{"id":"U-7990-5113-002-V01","nom":"Conducir el recorrido turístico naturalista","short":"Conducir recorrido naturalista","n":1},{"id":"U-7990-5113-003-V01","nom":"Interpretar el patrimonio natural y cultural del territorio","short":"Interpretar patrimonio natural","n":1},{"id":"U-7990-5113-004-V01","nom":"Planificar la experiencia turística astronómica","short":"Planificar turismo astronómico","n":1},{"id":"U-7990-5113-005-V01","nom":"Conducir la actividad en terreno nocturno de astroturismo","short":"Conducir actividad nocturna","n":1},{"id":"U-7990-5113-006-V01","nom":"Interpretar el cielo y el patrimonio astronómico-cultural","short":"Interpretar patrimonio astronómico","n":1},{"id":"U-9200-4212-001-V01","nom":"Administrar mesas de juego en casinos, conforme reglamento de la SCJ","short":"Administrar mesas juego","n":1},{"id":"U-9200-4212-002-V01","nom":"Conducir juegos de azar en casinos, conforme reglamento SCJ","short":"Conducir juegos de azar","n":1},{"id":"U-9200-4212-003-V01","nom":"Orientar a clientes en sala de máquinas de azar","short":"Orientar clientes máquinas azar","n":1},{"id":"U-9200-4212-004-V01","nom":"Resolver requerimientos de clientes y estado operativo de máquinas de azar","short":"Resolver requerimientos máquinas","n":1},{"id":"U-9200-5414-001-V01","nom":"Supervisar mesas de juegos de azar conforme reglamento SCJ","short":"Supervisar mesas de azar","n":1},{"id":"U-9200-5414-002-V01","nom":"Supervisar condiciones de seguridad en casinos de juegos de azar","short":"Supervisar seguridad casinos","n":1},{"id":"U-9200-7421-001-V01","nom":"Realizar mantenimiento preventivo de máquinas de azar en casinos","short":"Mantenimiento preventivo máquinas","n":1},{"id":"U-9200-7421-002-V01","nom":"Realizar mantenimiento correctivo de máquinas de azar en casinos","short":"Mantenimiento correctivo máquinas","n":1}],"matrix":{"P-5629-5120-001-V02":["U-5629-5120-002-V02","U-5629-5120-001-V02","U-5629-5120-004-V01"],"P-5629-9412-001-V02":["U-5629-9412-002-V02","U-5629-9412-004-V02","U-5629-9412-003-V02","U-5629-9412-001-V02"],"P-5600-1412-001-V03":["U-5600-1412-001-V03","U-5600-1412-005-V02"],"P-5600-1412-003-V02":["U-5600-1412-009-V01","U-5600-1412-006-V02"],"P-5600-1439-001-V02":["U-5510-4224-009-V01","U-5600-1439-003-V02","U-5600-1439-006-V01","U-5600-1439-007-V01"],"P-5600-3434-001-V02":["U-5510-4224-009-V01","U-5600-3434-014-V01","U-5600-3434-016-V01","U-5600-3434-015-V01"],"P-5600-3434-002-V02":["U-5510-4224-009-V01","U-5600-3434-017-V01","U-5600-3434-003-V02"],"P-5600-3434-003-V01":["U-5600-5120-018-V02","U-5600-3434-008-V01","U-5600-3434-011-V01","U-5600-5120-017-V02","U-5600-3434-010-V01","U-5600-3434-012-V01","U-5600-3434-009-V01","U-5600-3434-002-V01"],"P-5600-5111-001-V03":["U-5600-5111-002-V03","U-5600-5111-001-V03"],"P-5600-5120-001-V04":["U-5600-5120-022-V01","U-5600-5120-015-V04","U-5600-5120-007-V03"],"P-5600-5120-005-V02":["U-5600-5120-019-V02","U-5600-5120-021-V01"],"P-5600-5131-001-V03":["U-5600-5131-003-V01","U-5600-5131-001-V02"],"P-5600-5132-001-V03":["U-5600-5132-001-V02","U-5600-5132-002-V02"],"P-5600-5230-001-V02":["U-5600-5230-001-V02","U-5510-4224-007-V01","U-5600-5230-002-V01"],"P-5600-5246-001-V02":["U-5600-5246-008-V01","U-5600-5246-001-V02"],"P-5600-5246-002-V01":["U-5600-5246-005-V01","U-5510-4224-007-V01","U-5600-5246-007-V01","U-5600-5246-006-V01"],"P-5600-7512-001-V03":["U-5600-7512-001-V03","U-5600-7512-002-V02"],"P-5600-9411-001-V03":["U-5600-9411-002-V01","U-5600-9411-001-V03"],"P-5600-9412-001-V04":["U-5600-9412-007-V01","U-5600-9412-003-V02"],"P-5600-9412-002-V05":["U-5600-9412-001-V05","U-5600-5120-014-V05"],"P-7912-4224-001-V03":["U-7912-4224-002-V02","U-7912-4224-001-V03"],"P-5510-4224-001-V03":["U-5510-4224-004-V02","U-5510-4224-005-V02"],"P-5510-4224-002-V03":["U-5510-4224-008-V01","U-5510-4224-009-V01","U-5510-4224-002-V03"],"P-5510-4224-003-V01":["U-5510-4224-009-V01","U-5510-4224-010-V01","U-5510-4224-005-V02"],"P-5510-5111-001-V03":["U-5510-5111-003-V01","U-5510-5111-002-V02"],"P-5510-9112-001-V03":["U-5510-9112-003-V01","U-5510-9112-001-V03"],"P-7912-8322-001-V03":["U-7912-8322-001-V03","U-7912-8322-004-V01"],"P-9200-4212-001-V01":["U-9200-4212-001-V01","U-9200-4212-002-V01"],"P-9200-4212-002-V01":["U-9200-4212-004-V01","U-9200-4212-003-V01"],"P-9200-5414-001-V01":["U-9200-5414-002-V01","U-9200-5414-001-V01"],"P-9200-7421-001-V01":["U-9200-7421-001-V01","U-9200-7421-002-V01"],"P-7912-4221-001-V04":["U-7912-4221-007-V02","U-7912-4221-002-V04","U-7912-4221-001-V04"],"P-7912-4221-002-V03":["U-7912-4221-004-V03","U-7912-4221-003-V03"],"P-7912-4221-003-V02":["U-7912-4221-008-V02","U-7912-4221-010-V02","U-7912-4221-009-V02"],"P-7912-5113-001-V04":["U-7912-5113-005-V02","U-7912-5113-001-V03"],"P-7912-5249-004-V02":["U-7912-5249-001-V01","U-7912-5249-002-V01"],"P-7990-5113-001-V01":["U-7990-5113-003-V01","U-7990-5113-002-V01","U-7990-5113-001-V01"],"P-7990-5113-002-V01":["U-7990-5113-006-V01","U-7990-5113-005-V01","U-7990-5113-004-V01"]}};
+
+const SHARED_IDS = new Set(["U-5510-4224-009-V01","U-5510-4224-005-V02","U-5510-4224-007-V01"]);
+const SUB_CLS = {"GASTRONOMÍA":"sub-gastro","HOTELERÍA":"sub-hotel","TURISMO":"sub-tur"};
+const CELL_ON = {"GASTRONOMÍA":"cell-on-gastro","HOTELERÍA":"cell-on-hotel","TURISMO":"cell-on-tur"};
+
+function capFirst(s){return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();}
+
+function render(){
+  const fSub = document.getElementById('fSub').value;
+  const fP = document.getElementById('fPerfil').value.toLowerCase();
+  const fU = document.getElementById('fUCL').value.toLowerCase();
+
+  const perfiles = DATA.perfiles.filter(p=>{
+    if(fSub && p.sub!==fSub) return false;
+    if(fP && !p.nom.toLowerCase().includes(fP) && !p.id.toLowerCase().includes(fP)) return false;
+    return true;
+  });
+  const ucl = DATA.ucl.filter(u=>{
+    if(fU && !u.nom.toLowerCase().includes(fU) && !u.id.toLowerCase().includes(fU) && !u.short.toLowerCase().includes(fU)) return false;
+    return true;
+  });
+
+  // Stats
+  let totalOn=0;
+  perfiles.forEach(p=>{
+    const set=new Set(DATA.matrix[p.id]||[]);
+    ucl.forEach(u=>{ if(set.has(u.id)) totalOn++; });
+  });
+  document.getElementById('statBar').innerHTML = `
+    <div class="stat"><div class="stat-n">${perfiles.length}</div><div class="stat-l">Perfiles</div></div>
+    <div class="stat"><div class="stat-n">${ucl.length}</div><div class="stat-l">UCL</div></div>
+    <div class="stat"><div class="stat-n">${totalOn}</div><div class="stat-l">Asignaciones</div></div>
+    <div class="stat"><div class="stat-n">${Math.round(totalOn/Math.max(perfiles.length,1)*10)/10}</div><div class="stat-l">UCL prom / perfil</div></div>
+    <div class="stat"><div class="stat-n">3</div><div class="stat-l">UCL compartidas</div></div>
+  `;
+
+  // Build table
+  let html = '<table><thead><tr><th style="position:sticky;left:0;top:0;z-index:3;background:var(--bg);min-width:160px;padding:4px 10px;font-size:10px;color:var(--muted);border-right:1px solid var(--border)">Perfil / UCL →</th>';
+
+  ucl.forEach((u,ci)=>{
+    const isShared = SHARED_IDS.has(u.id);
+    const sepCls = isShared && ci===2 ? ' col-sep' : '';
+    html += `<th class="col-header${isShared?' shared':''}${sepCls}" title="${u.nom}">${u.short}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  let lastSub = '';
+  perfiles.forEach(p=>{
+    const set = new Set(DATA.matrix[p.id]||[]);
+    const subCls = SUB_CLS[p.sub]||'';
+    const cellOn = CELL_ON[p.sub]||'cell-on-gastro';
+
+    if(p.sub !== lastSub){
+      lastSub = p.sub;
+      html += `<tr class="sep-row"><td colspan="${ucl.length+1}">${p.sub}</td></tr>`;
+    }
+
+    html += `<tr><td class="row-header" title="${p.id}"><span class="sub-tag ${subCls}">${p.sub.slice(0,3)}</span>${capFirst(p.nom)}</td>`;
+    ucl.forEach((u,ci)=>{
+      const on = set.has(u.id);
+      const isShared = SHARED_IDS.has(u.id);
+      let cls = on ? (isShared ? 'cell-shared-on' : cellOn) : (isShared ? 'cell-shared-off' : 'cell-off');
+      const sepStyle = isShared && ci===2 ? 'border-right:2px solid var(--amber);' : '';
+      html += `<td class="cell ${cls}" style="${sepStyle}" data-ucl="${u.id}" data-nom="${u.nom.replace(/"/g,'&quot;')}" data-p="${p.nom}" data-on="${on?1:0}" onmouseenter="showTip(event,this)" onmouseleave="hideTip()"></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('tableWrap').innerHTML = html;
+}
+
+const tip = document.getElementById('tip');
+function showTip(e, el){
+  const on = el.dataset.on==='1';
+  const uclNom = el.dataset.nom;
+  const pNom = el.dataset.p;
+  const uid = el.dataset.ucl;
+  tip.innerHTML = `<strong>${capFirst(uclNom)}</strong><span>${uid}</span><br><span style="margin-top:4px;display:block;color:${on?'#7ee8b0':'#f08080'}">${on?'✓ Asignada a este perfil':'✗ No asignada'}</span>`;
+  tip.style.display='block';
+  moveTip(e);
+}
+function moveTip(e){
+  const x=e.clientX+14, y=e.clientY-10;
+  tip.style.left=Math.min(x,window.innerWidth-340)+'px';
+  tip.style.top=Math.max(y,8)+'px';
+}
+function hideTip(){tip.style.display='none';}
+document.getElementById('tableWrap').addEventListener('mousemove', e=>{
+  if(tip.style.display==='block') moveTip(e);
+});
+
+render();
+</script>
+</body>
+</html>

@@ -39,6 +39,43 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .sec-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .sec-label::after{content:"";flex:1;height:0.5px;background:var(--border)}
 
+/* TABS */
+.tabs{display:flex;gap:0;background:var(--white);border:0.5px solid var(--border);border-radius:10px;padding:4px;margin-bottom:1.5rem;width:fit-content}
+.tab{font-size:13px;font-weight:500;padding:7px 18px;border-radius:7px;cursor:pointer;color:var(--muted);transition:all .15s;user-select:none;border:none;background:none;font-family:var(--font)}
+.tab.active{background:var(--navy);color:#fff}
+.tab:hover:not(.active){background:var(--bg);color:var(--text)}
+.view-panel{display:none}
+.view-panel.active{display:block}
+
+/* MATRIX */
+.matrix-outer{background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.matrix-toolbar{padding:10px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.matrix-toolbar input{font-family:var(--font);font-size:12px;padding:5px 9px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;width:200px}
+.matrix-toolbar input:focus{border-color:var(--navy2)}
+.matrix-toolbar select{font-family:var(--font);font-size:12px;padding:5px 9px;border:0.5px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+.matrix-leg{display:flex;gap:12px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.mleg{display:flex;align-items:center;gap:4px;font-size:10px}
+.mleg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.matrix-scroll{overflow:auto;max-height:520px}
+.mtable{border-collapse:separate;border-spacing:2px;padding:10px 12px}
+.mth{writing-mode:vertical-rl;transform:none;font-size:9px;color:var(--muted);padding:4px 3px 8px;vertical-align:bottom;white-space:nowrap;height:130px;position:sticky;top:0;background:var(--white);z-index:2;cursor:default;font-family:var(--font)}
+.mth.shared{color:var(--amber-d);font-weight:500}
+.mth-sep{width:8px;background:transparent}
+.mrh{position:sticky;left:0;z-index:1;background:var(--white);padding:3px 10px 3px 4px;white-space:nowrap;font-size:10px;border-right:1px solid var(--border);min-width:170px;cursor:pointer;vertical-align:middle;font-family:var(--font)}
+.mrh:hover{background:var(--navy-l);color:var(--navy)}
+.mrh .mdot{display:inline-block;width:6px;height:6px;border-radius:2px;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.mrh .mciuo{font-family:var(--font-m);font-size:8px;color:var(--muted);margin-right:4px}
+.mcell{width:16px;height:20px;border-radius:2px;cursor:pointer;transition:transform .1s}
+.mcell:hover{transform:scale(1.5);z-index:10;position:relative}
+.mc0{background:#ebebeb}
+.mc-diag{background:var(--navy-l)}
+.mc-gastro{background:#c8e8d4}
+.mc-hotel{background:#b8d0e4}
+.mc-tur{background:#f5ddb0}
+.mc-shared{background:#f5c878;outline:1px solid var(--amber)}
+.msep-row td{height:5px;background:transparent}
+.msub-row td{background:var(--bg);padding:4px 8px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-top:1px solid var(--border)}
+
 .group-card{background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;transition:box-shadow .2s}
 .group-card:hover{box-shadow:0 2px 14px rgba(12,35,64,.07)}
 
@@ -142,13 +179,41 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
     <div class="stat"><div class="stat-n">30</div><div class="stat-l">Perfiles únicos</div></div>
   </div>
 
-  <div class="sec-label">UCL compartidas entre múltiples perfiles</div>
-  <div style="font-size:11px;color:var(--muted);margin-bottom:12px;padding:7px 12px;background:var(--white);border:0.5px solid var(--border);border-radius:7px">
-    Nota: Encargado(a) de recepción aparece en 2 grupos porque comparte UCL con perfiles de ambos clusters. Son 8 perfiles únicos con conexiones, más 30 sin UCL compartidas.
+  <div class="tabs">
+    <button class="tab active" id="tab-cards" onclick="switchTab('cards')">Tarjetas</button>
+    <button class="tab" id="tab-matrix" onclick="switchTab('matrix')">Matriz</button>
   </div>
-  <div id="groups"></div>
 
-  <div id="isolated"></div>
+  <div class="view-panel active" id="panel-cards">
+    <div class="sec-label">UCL compartidas entre múltiples perfiles</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px;padding:7px 12px;background:var(--white);border:0.5px solid var(--border);border-radius:7px">
+      Nota: Encargado(a) de recepción aparece en 2 grupos porque comparte UCL con perfiles de ambos clusters. Son 8 perfiles únicos con conexiones, más 30 sin UCL compartidas.
+    </div>
+    <div id="groups"></div>
+    <div id="isolated"></div>
+  </div>
+
+  <div class="view-panel" id="panel-matrix">
+    <div class="matrix-outer">
+      <div class="matrix-toolbar">
+        <input type="text" id="m-search" placeholder="Buscar perfil o UCL..." oninput="renderMatrix()">
+        <select id="m-sub" onchange="renderMatrix()">
+          <option value="">Todos los subsectores</option>
+          <option value="GASTRONOMÍA">Gastronomía</option>
+          <option value="HOTELERÍA">Hotelería</option>
+          <option value="TURISMO">Turismo</option>
+        </select>
+        <div class="matrix-leg">
+          <span class="mleg"><span class="mleg-sq" style="background:#f5c878;outline:1px solid #C8963E"></span>UCL compartida</span>
+          <span class="mleg"><span class="mleg-sq" style="background:#c8e8d4"></span>Gastronomía</span>
+          <span class="mleg"><span class="mleg-sq" style="background:#b8d0e4"></span>Hotelería</span>
+          <span class="mleg"><span class="mleg-sq" style="background:#f5ddb0"></span>Turismo</span>
+          <span class="mleg"><span class="mleg-sq" style="background:#ebebeb"></span>Sin UCL</span>
+        </div>
+      </div>
+      <div class="matrix-scroll"><div id="matrix-content"></div></div>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
@@ -351,6 +416,94 @@ function closeDrawer(){
   document.querySelectorAll('.p-chip,.iso-pill').forEach(e=>e.classList.remove('active'));
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+function switchTab(t){
+  document.getElementById('tab-cards').classList.toggle('active',t==='cards');
+  document.getElementById('tab-matrix').classList.toggle('active',t==='matrix');
+  document.getElementById('panel-cards').classList.toggle('active',t==='cards');
+  document.getElementById('panel-matrix').classList.toggle('active',t==='matrix');
+  if(t==='matrix') renderMatrix();
+}
+
+// Build ordered UCL list: shared first, then rest sorted by id
+const ALL_UCL_IDS_ORDERED = (()=>{
+  const shared=["U-5510-4224-009-V01","U-5510-4224-005-V02","U-5510-4224-007-V01"];
+  const allIds=new Set();
+  PERFILES.forEach(p=>(p.ucl||[]).forEach(u=>allIds.add(u.id)));
+  const rest=[...allIds].filter(u=>!shared.includes(u)).sort();
+  return [...shared,...rest];
+})();
+
+const UCL_NOM_MAP=(()=>{
+  const m={};
+  PERFILES.forEach(p=>(p.ucl||[]).forEach(u=>{m[u.id]=u.nom;}));
+  return m;
+})();
+
+function shortUCL(nom){
+  const w=nom.split(' ');
+  return w.slice(0,4).join(' ');
+}
+
+let matrixTooltipEl=null;
+function renderMatrix(){
+  const q=(document.getElementById('m-search').value||'').toLowerCase().trim();
+  const sub=document.getElementById('m-sub').value;
+
+  const perfiles=PERFILES.filter(p=>{
+    if(sub&&p.sub!==sub) return false;
+    if(q&&!p.nom.toLowerCase().includes(q)&&!p.ciuo.includes(q)) return false;
+    return true;
+  });
+
+  // Filter UCL by search
+  const uclIds=ALL_UCL_IDS_ORDERED.filter(uid=>{
+    if(!q) return true;
+    const nom=(UCL_NOM_MAP[uid]||'').toLowerCase();
+    return nom.includes(q)||uid.toLowerCase().includes(q);
+  });
+
+  const CELL_CLS={'GASTRONOMÍA':'mc-gastro','HOTELERÍA':'mc-hotel','TURISMO':'mc-tur'};
+
+  let html='<table class="mtable"><thead><tr>';
+  html+=`<th style="position:sticky;left:0;top:0;z-index:3;background:var(--white);min-width:170px;padding:3px 8px;font-size:9px;color:var(--muted);border-right:1px solid var(--border);font-family:var(--font)">Perfil · UCL →</th>`;
+
+  // First 3 are shared — add separator after
+  uclIds.forEach((uid,ci)=>{
+    const isShared=SHARED.has(uid);
+    const nom=shortUCL(UCL_NOM_MAP[uid]||uid);
+    const sepStyle=isShared&&ci===2?'border-right:2px solid var(--amber);':'';
+    html+=`<th class="mth${isShared?' shared':''}" title="${UCL_NOM_MAP[uid]||uid}" style="${sepStyle}">${nom}</th>`;
+  });
+  html+='</tr></thead><tbody>';
+
+  let lastSub='';
+  perfiles.forEach(p=>{
+    if(p.sub!==lastSub){
+      lastSub=p.sub;
+      html+=`<tr class="msub-row"><td colspan="${uclIds.length+1}">${p.sub}</td></tr>`;
+    }
+    const pUcls=new Set((p.ucl||[]).map(u=>u.id));
+    const cellCls=CELL_CLS[p.sub]||'mc-gastro';
+    const pid_safe=p.id.replace(/[^a-z0-9]/gi,'_');
+    html+=`<tr>`;
+    html+=`<td class="mrh" onclick="openDrawer('${p.id}')">
+      <span class="mdot" style="background:${SC[p.sub]?.f};outline:1px solid ${SC[p.sub]?.s}"></span>
+      <span class="mciuo">${p.ciuo}</span>${titleCase(p.nom.length>26?p.nom.slice(0,25)+'…':p.nom)}
+    </td>`;
+    uclIds.forEach((uid,ci)=>{
+      const on=pUcls.has(uid);
+      const isShared=SHARED.has(uid);
+      const cls=on?(isShared?'mc-shared':cellCls):'mc0';
+      const sepStyle=isShared&&ci===2?'border-right:2px solid var(--amber);':'';
+      const tt=`${titleCase(p.nom.length>28?p.nom.slice(0,27)+'…':p.nom)} · ${shortUCL(UCL_NOM_MAP[uid]||uid)} · ${on?'✓ Asignada':'✗ No asignada'}`;
+      html+=`<td class="mcell ${cls}" style="${sepStyle}" title="${tt.replace(/"/g,'&quot;')}" onclick="openDrawer('${p.id}')"></td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  document.getElementById('matrix-content').innerHTML=html;
+}
 
 renderGroups();
 renderIsolated();

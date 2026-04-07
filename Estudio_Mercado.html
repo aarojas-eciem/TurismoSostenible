@@ -75,8 +75,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
 .ipa-tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
 .ipa-tab{padding:5px 11px;border-radius:18px;border:1.5px solid var(--border);font-size:10.5px;cursor:pointer;transition:all .16s;background:var(--white);color:var(--mid);font-weight:500}
 .ipa-tab.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
-.ipa-tab.nv{border-color:var(--navy);color:var(--navy)}
-.ipa-tab.nv.active{background:var(--navy);color:var(--white)}
+.ipa-tab.nv{border-color:var(--teal);color:var(--teal)}
+.ipa-tab.nv.active{background:var(--teal);color:var(--white)}
 .rank-item{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .rank-lbl{font-size:11px;color:var(--dark);width:188px;flex-shrink:0;line-height:1.3}
 .rank-bar-wrap{flex:1;background:var(--sand);border-radius:3px;height:20px;overflow:hidden}
@@ -198,7 +198,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
   <div id="topbar">
     <div class="tb-title">Prototipo estudio mercado simulado (ZOIT Región Coquimbo 2026)</div>
     <div class="tb-meta">
-      
+      <span class="badge">N = <span id="top-n">525</span></span>
       <span class="badge coral" id="top-zoit">Ambas ZOIT</span>
       <span class="badge teal">v07 · 29 atr. IPA</span>
     </div>
@@ -212,7 +212,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
     <div class="sec-title">Instrumento de encuesta</div>
     <div class="sec-sub">Encuesta al turista v07 · 8 secciones + perfil básico · 32 preguntas + P31b nueva · datos simulados</div>
   </div></div>
-  <div class="method-note">Instrumento de encuesta versión 07. Cada sección es desplegable.</div>
+  <div class="method-note">Instrumento completo. Cada sección es desplegable. Los ítems marcados con ★ son nuevos o modificados en v07 respecto a v05/v06b.</div>
   <div id="survey-acc">
 
     <div class="survey-block">
@@ -224,58 +224,58 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
     </div>
 
     <div class="survey-block">
-      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Perfil básico del visitante</span><span class="sbh-qs">P1 · P2 · P31b · P3</span></div>
+      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Perfil básico del visitante</span><span class="sbh-qs">P1 · P2 · P31b ★ · P3</span></div>
       <div class="sbb" style="display:none">
         <div class="sq-item"><span class="sq-code">P1</span><span class="sq-text">¿Cuál es su edad? <em>18–24 / 25–34 / 35–44 / 45–54 / 55–64 / 65+</em></span></div>
         <div class="sq-item"><span class="sq-code">P2</span><span class="sq-text">¿Cuál es su género? <em>Femenino / Masculino / Otro / Prefiere no indicar</em></span></div>
-        <div class="sq-item"><span class="sq-code nv">P31b</span><span class="sq-text">¿Cuántas personas aportan ingresos en su hogar? <em>1 persona / 2 personas / 3 o más personas</em> </span></div>
+        <div class="sq-item"><span class="sq-code nv">P31b ★</span><span class="sq-text">¿Cuántas personas aportan ingresos en su hogar? <em>1 persona / 2 personas / 3 o más personas</em> <span style="font-size:9px;color:var(--teal)">→ nueva v07: proxy ingreso per cápita</span></span></div>
         <div class="sq-item"><span class="sq-code">P3</span><span class="sq-text">¿Cuál es su nivel de estudios completado? <em>Sin estudios / Básica-Media / Media completa / Técnica superior / Universitaria / Postgrado</em></span></div>
       </div>
     </div>
 
     <div class="survey-block">
-      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 1 — Caracterización del viaje</span><span class="sbh-qs">P4 · P5 · P6 · P7 · P8 · P8b</span></div>
+      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 1 — Caracterización del viaje</span><span class="sbh-qs">P4 · P5 · P6 · P7 · P8 ★ · P8b</span></div>
       <div class="sbb" style="display:none">
         <div class="sq-item"><span class="sq-code">P4</span><span class="sq-text">¿Desde qué región de Chile viene? (si extranjero, indicar país y región/dpto.) <em>16 regiones + Fuera de Chile · Comuna de residencia</em></span></div>
         <div class="sq-item"><span class="sq-code">P5</span><span class="sq-text">¿Con quién está realizando este viaje? <em>Solo/a / En pareja / Familia hijos &lt;12 / Familia hijos 12–18 / Con amigos / Grupo organizado / Otro</em></span></div>
         <div class="sq-item"><span class="sq-code">P6</span><span class="sq-text">¿Cómo llegó a esta zona? <em>Automóvil propio / Bus / Avión / Automóvil arrendado / Motocicleta / Otro</em></span></div>
         <div class="sq-item"><span class="sq-code">P7</span><span class="sq-text">¿Cuántas noches pernocta? <em>0 visita día → P9 / 1 / 2 / 3 / 4 / 5+ noches</em></span></div>
-        <div class="sq-item"><span class="sq-code nv">P8</span><span class="sq-text">¿En qué tipo de alojamiento se hospeda? <em>Hotel / Hostal / Cabaña turística / Casa-Depto privado / Camping / Glamping-domo / <strong>Lodge o turismo naturaleza</strong> / <strong>Bed &amp; Breakfast</strong> / Casa familiar / Otro</em> </span></div>
+        <div class="sq-item"><span class="sq-code nv">P8 ★</span><span class="sq-text">¿En qué tipo de alojamiento se hospeda? <em>Hotel / Hostal / Cabaña turística / Casa-Depto privado / Camping / Glamping-domo / <strong>Lodge o turismo naturaleza</strong> / <strong>Bed &amp; Breakfast</strong> / Casa familiar / Otro</em> <span style="font-size:9px;color:var(--teal)">→ v07: 10 categorías (+Lodge y B&amp;B)</span></span></div>
         <div class="sq-item"><span class="sq-code">P8b</span><span class="sq-text">¿Cómo realizó la reserva de su alojamiento? <em>Sin reserva / Teléfono-WhatsApp / Plataforma digital / Agencia / No aplica</em></span></div>
       </div>
     </div>
 
     <div class="survey-block">
-      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 2 — Gasto turístico por persona</span><span class="sbh-qs">P9 · P10 · P11 · P12</span></div>
+      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 2 — Gasto turístico por persona</span><span class="sbh-qs">P9 · P10 · P11 ★ · P12 ★</span></div>
       <div class="sbb" style="display:none">
         <div class="sq-note">Gasto ÚNICAMENTE del encuestado. Rangos calibrados con precios reales verificados.</div>
         <div class="sq-item"><span class="sq-code">P9</span><span class="sq-text">Gasto por noche en alojamiento (parte proporcional). <em>&lt;$15k / $15k–$30k / $30k–$45k / $45k–$70k / $70k–$100k / &gt;$100k / NS</em></span></div>
         <div class="sq-item"><span class="sq-code">P10</span><span class="sq-text">Gasto diario en alimentación. <em>&lt;$10k / $10k–$20k / $20k–$35k / $35k–$55k / $55k–$80k / &gt;$80k / NS</em></span></div>
-        <div class="sq-item"><span class="sq-code nv">P11</span><span class="sq-text">Gasto total en actividades del viaje. <em>No paga / &lt;$12k / $12k–$30k / $30k–$60k / $60k–$120k / <strong>$120k–$200k</strong> / <strong>&gt;$200k</strong> / NS</em> </span></div>
-        <div class="sq-item"><span class="sq-code nv">P12</span><span class="sq-text">Gasto total en productos locales, artesanía o souvenirs. <em>No compra / &lt;$12k / $12k–$30k / $30k–$60k / $60k–$120k / <strong>$120k–$200k</strong> / <strong>&gt;$200k</strong> / NS</em> </span></div>
+        <div class="sq-item"><span class="sq-code nv">P11 ★</span><span class="sq-text">Gasto total en actividades del viaje. <em>No paga / &lt;$12k / $12k–$30k / $30k–$60k / $60k–$120k / <strong>$120k–$200k</strong> / <strong>&gt;$200k</strong> / NS</em> <span style="font-size:9px;color:var(--teal)">→ v07: 8 tramos, captura turismo premium</span></span></div>
+        <div class="sq-item"><span class="sq-code nv">P12 ★</span><span class="sq-text">Gasto total en productos locales, artesanía o souvenirs. <em>No compra / &lt;$12k / $12k–$30k / $30k–$60k / $60k–$120k / <strong>$120k–$200k</strong> / <strong>&gt;$200k</strong> / NS</em> <span style="font-size:9px;color:var(--teal)">→ v07: iguala tramos con P11</span></span></div>
       </div>
     </div>
 
     <div class="survey-block">
-      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 3 — Planificación y decisión de visita</span><span class="sbh-qs">P13 · P14 · P15 · P16 · P17</span></div>
+      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 3 — Planificación y decisión de visita</span><span class="sbh-qs">P13 ★ · P14 · P15 · P16 ★ · P17</span></div>
       <div class="sbb" style="display:none">
-        <div class="sq-item"><span class="sq-code nv">P13</span><span class="sq-text">¿Es esta su primera visita? <em>Primera vez / <strong>2–3 visitas previas</strong> / 4+ visitas previas</em> </span></div>
+        <div class="sq-item"><span class="sq-code nv">P13 ★</span><span class="sq-text">¿Es esta su primera visita? <em>Primera vez / <strong>2–3 visitas previas</strong> / 4+ visitas previas</em> <span style="font-size:9px;color:var(--teal)">→ v07: 2ª cat cambia de 1-3 a 2-3 visitas</span></span></div>
         <div class="sq-item"><span class="sq-code">P14</span><span class="sq-text">¿Con cuánta anticipación planificó? <em>Mismo día-días antes / 1 semana–1 mes / 1–3 meses / &gt;3 meses</em></span></div>
         <div class="sq-item"><span class="sq-code">P15</span><span class="sq-text">Fuentes de información utilizadas. <em>Multirespuesta: familiar-amigo / redes sociales / Google / TripAdvisor / Booking-Airbnb / web destino / agencia / experiencia propia / otro</em></span></div>
-        <div class="sq-item"><span class="sq-code nv">P16</span><span class="sq-text">Motivo PRINCIPAL de visita (una opción). Comunes: Descanso / Naturaleza-aventura / Gastronomía / Cultura / Visita familiar / Otro.<br>
-          Elqui: Astroturismo / Pisco / <strong>Bienestar (tinajas/spa)</strong> / <strong>Ruta Gabriela Mistral</strong><br>
-          Pichi: <strong>Turismo de playa</strong> / <strong>Deportes náuticos</strong> / Ruta del Cuarzo / <strong>Bienestar valle interior</strong> / <strong>Pesca artesanal-caleta</strong></span></div>
+        <div class="sq-item"><span class="sq-code nv">P16 ★</span><span class="sq-text">Motivo PRINCIPAL de visita (una opción). Comunes: Descanso / Naturaleza-aventura / Gastronomía / Cultura / Visita familiar / Otro.<br>
+          ★ Elqui: Astroturismo / Pisco / <strong>Bienestar (tinajas/spa)</strong> / <strong>Ruta Gabriela Mistral</strong><br>
+          ★ Pichi: <strong>Turismo de playa</strong> / <strong>Deportes náuticos</strong> / Ruta del Cuarzo / <strong>Bienestar valle interior</strong> / <strong>Pesca artesanal-caleta</strong></span></div>
         <div class="sq-item"><span class="sq-code">P17</span><span class="sq-text">¿Consideró visitar otro destino? <em>No / Sí → La Serena-Coquimbo / Valle del Limarí / Punta de Choros / Fuera región / Otro</em></span></div>
       </div>
     </div>
 
     <div class="survey-block">
-      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 4 — Experiencia en el destino</span><span class="sbh-qs">P18 · P19 · P20</span></div>
+      <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 4 — Experiencia en el destino</span><span class="sbh-qs">P18 ★ · P19 · P20</span></div>
       <div class="sbb" style="display:none">
-        <div class="sq-item"><span class="sq-code nv">P18</span><span class="sq-text">Actividades realizadas o planificadas (multirespuesta).<br>
+        <div class="sq-item"><span class="sq-code nv">P18 ★</span><span class="sq-text">Actividades realizadas o planificadas (multirespuesta).<br>
           Base ambas ZOIT: Gastronomía / Compras / Senderismo / Fotografía / Patrimonio / Otro<br>
-          Elqui: Observatorio astro. / Pisquera / Tour valle / Bienestar / Terapias / <strong>Cabalgatas</strong> / <strong>Ruta legado Gabriela Mistral</strong><br>
-          Pichi: Playa / Pesca-caleta / Camping / Náutica-buceo / Ruta Cuarzo / <strong>Bienestar valle interior</strong></span></div>
+          ★ Elqui: Observatorio astro. / Pisquera / Tour valle / Bienestar / Terapias / <strong>Cabalgatas</strong> / <strong>Ruta legado Gabriela Mistral</strong><br>
+          ★ Pichi: Playa / Pesca-caleta / Camping / Náutica-buceo / Ruta Cuarzo / <strong>Bienestar valle interior</strong></span></div>
         <div class="sq-item"><span class="sq-code">P19</span><span class="sq-text">¿Ha comido o planea comer en locales de la zona? <em>Sí → P20 / No-cocina → S5 / No-día → S5</em></span></div>
         <div class="sq-item"><span class="sq-code">P20</span><span class="sq-text">Tipo de establecimiento donde come (multirespuesta 6 cats): <em>Restaurante carta / Picada-cocinería / Café-pastelería / Food truck-puesto-feria / Rest. alojamiento / Otro</em></span></div>
       </div>
@@ -285,15 +285,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
       <div class="sbh" onclick="tog(this)"><span class="sbh-icon">▶</span><span class="sbh-label">Sección 5 — Calidad percibida (IPA) <span class="new-pill">29 atributos · 5 dim.</span></span><span class="sbh-qs">Escala 1–5 imp+des+NU/NE</span></div>
       <div class="sbb" style="display:none">
         <div class="sq-note">Escala 1–5 (muy bajo–muy alto). Importancia + Desempeño + No usó/No evalúa. Q2 = PRIORIZAR (alta importancia + bajo desempeño).</div>
-        <div class="sq-dim">D1 — Calidad del servicio en alojamiento (7 atributos)</div>
+        <div class="sq-dim">D1 — Calidad del servicio en alojamiento (7 atributos · 3 nuevos v07)</div>
         <div class="sq-item ind"><span class="sq-code">D1A1</span><span class="sq-text">Limpieza e higiene del alojamiento</span></div>
         <div class="sq-item ind"><span class="sq-code">D1A2</span><span class="sq-text">Amabilidad y trato del personal del alojamiento</span></div>
         <div class="sq-item ind"><span class="sq-code">D1A3</span><span class="sq-text">Relación entre precio pagado y calidad recibida en el alojamiento</span></div>
         <div class="sq-item ind"><span class="sq-code">D1A4</span><span class="sq-text">Variedad de tipos de alojamiento disponibles en la zona</span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D1A5</span><span class="sq-text">Estado de las instalaciones del alojamiento </span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D1A6</span><span class="sq-text">Capacidad del personal del alojamiento para atender en más de un idioma </span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D1A7</span><span class="sq-text">Conocimiento del personal sobre el destino, sus atractivos y actividades </span></div>
-        <div class="sq-dim">D2 — Calidad del servicio en gastronomía (7 atributos)</div>
+        <div class="sq-item ind"><span class="sq-code nv">D1A5 ★</span><span class="sq-text">Estado de las instalaciones del alojamiento [nuevo v07]</span></div>
+        <div class="sq-item ind"><span class="sq-code nv">D1A6 ★</span><span class="sq-text">Capacidad del personal del alojamiento para atender en más de un idioma [nuevo v07]</span></div>
+        <div class="sq-item ind"><span class="sq-code nv">D1A7 ★</span><span class="sq-text">Conocimiento del personal sobre el destino, sus atractivos y actividades [nuevo v07]</span></div>
+        <div class="sq-dim">D2 — Calidad del servicio en gastronomía (7 atributos · sin cambio v07)</div>
         <div class="sq-item ind"><span class="sq-code">D2A1</span><span class="sq-text">Uso de ingredientes y productos propios de la zona</span></div>
         <div class="sq-item ind"><span class="sq-code">D2A2</span><span class="sq-text">Calidad en la elaboración y presentación de los alimentos</span></div>
         <div class="sq-item ind"><span class="sq-code">D2A3</span><span class="sq-text">Amabilidad y trato del personal de atención en locales</span></div>
@@ -301,19 +301,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
         <div class="sq-item ind"><span class="sq-code">D2A5</span><span class="sq-text">Capacidad del personal para atender en más de un idioma</span></div>
         <div class="sq-item ind"><span class="sq-code">D2A6</span><span class="sq-text">Relación entre precio pagado y calidad de la experiencia gastronómica</span></div>
         <div class="sq-item ind"><span class="sq-code">D2A7</span><span class="sq-text">Variedad de la oferta gastronómica disponible en el destino</span></div>
-        <div class="sq-dim">D3 — Oferta de experiencias y actividades (5 atributos)</div>
+        <div class="sq-dim">D3 — Oferta de experiencias y actividades (5 atributos · +actitud servicio v07)</div>
         <div class="sq-item ind"><span class="sq-code">D3A1</span><span class="sq-text">Disponibilidad de actividades y tours más allá del atractivo principal</span></div>
         <div class="sq-item ind"><span class="sq-code">D3A2</span><span class="sq-text">Claridad de la información sobre qué actividades realizar y cómo contratarlas</span></div>
         <div class="sq-item ind"><span class="sq-code">D3A3</span><span class="sq-text">Calidad de guías y personal que conduce tours y actividades</span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D3A4</span><span class="sq-text">Actitud de servicio del personal que conduce tours y actividades </span></div>
+        <div class="sq-item ind"><span class="sq-code nv">D3A4 ★</span><span class="sq-text">Actitud de servicio del personal que conduce tours y actividades [nuevo v07]</span></div>
         <div class="sq-item ind"><span class="sq-code">D3A5</span><span class="sq-text">Posibilidad de conocer la cultura, tradiciones y patrimonio local</span></div>
-        <div class="sq-dim">D4 — Entorno, autenticidad y sostenibilidad (5 atributos)</div>
+        <div class="sq-dim">D4 — Entorno, autenticidad y sostenibilidad (5 atributos · +atmósfera tranquilidad v07)</div>
         <div class="sq-item ind"><span class="sq-code">D4A1</span><span class="sq-text">Conservación del entorno natural del destino</span></div>
         <div class="sq-item ind"><span class="sq-code">D4A2</span><span class="sq-text">Autenticidad e identidad propia del destino respecto a lugares similares</span></div>
         <div class="sq-item ind"><span class="sq-code">D4A3</span><span class="sq-text">Condición de la infraestructura básica: baños, accesos y señalética</span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D4A4</span><span class="sq-text">Belleza del paisaje durante la visita </span></div>
-        <div class="sq-item ind"><span class="sq-code nv">D4A5</span><span class="sq-text">Atmósfera de tranquilidad en el destino </span></div>
-        <div class="sq-dim">D5 — Información y atención al visitante (5 atributos)</div>
+        <div class="sq-item ind"><span class="sq-code nv">D4A4 ★</span><span class="sq-text">Belleza del paisaje durante la visita [v07: separado de tranquilidad]</span></div>
+        <div class="sq-item ind"><span class="sq-code nv">D4A5 ★</span><span class="sq-text">Atmósfera de tranquilidad en el destino [nuevo v07]</span></div>
+        <div class="sq-dim">D5 — Información y atención al visitante (5 atributos · sin cambio v07)</div>
         <div class="sq-item ind"><span class="sq-code">D5A1</span><span class="sq-text">Disponibilidad de información turística en el destino (señalética, mapas, OIT)</span></div>
         <div class="sq-item ind"><span class="sq-code">D5A2</span><span class="sq-text">Utilidad de la información recibida para orientarse en el destino</span></div>
         <div class="sq-item ind"><span class="sq-code">D5A3</span><span class="sq-text">Amabilidad y trato del personal en puntos de contacto (recepción, OIT, comercios)</span></div>
@@ -455,11 +455,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--sand);color:var(--dark);d
   </div></div>
   <div class="method-note"><strong>v07 vs v05:</strong> D1 añade 3 atributos (estado instalaciones, idiomas personal aloj, conocimiento destino) · D3 añade actitud de servicio · D4 añade atmósfera de tranquilidad (antes "paisaje y tranquilidad" era un solo ítem, ahora son dos). D2 y D5 sin cambio.<br><strong>Cuadrantes:</strong> Q1 Mantener · Q2 PRIORIZAR (alta I + bajo D) · Q3 Baja prioridad · Q4 Revisar sobreinversión.</div>
   <div class="ipa-tabs" id="ipa-tabs">
-    <div class="ipa-tab active" onclick="showIPA(0,this)">D1 · Alojamiento · 7 atr.</div>
-    <div class="ipa-tab" onclick="showIPA(1,this)">D2 · Gastronomía · 7 atr.</div>
-    <div class="ipa-tab" onclick="showIPA(2,this)">D3 · Experiencias · 5 atr.</div>
-    <div class="ipa-tab" onclick="showIPA(3,this)">D4 · Entorno · 5 atr.</div>
-    <div class="ipa-tab" onclick="showIPA(4,this)">D5 · Info/Atención · 5 atr.</div>
+    <div class="ipa-tab nv active" onclick="showIPA(0,this)">D1 · Alojamiento ★7atr.</div>
+    <div class="ipa-tab" onclick="showIPA(1,this)">D2 · Gastronomía 7atr.</div>
+    <div class="ipa-tab nv" onclick="showIPA(2,this)">D3 · Experiencias ★5atr.</div>
+    <div class="ipa-tab nv" onclick="showIPA(3,this)">D4 · Entorno ★5atr.</div>
+    <div class="ipa-tab" onclick="showIPA(4,this)">D5 · Info/Atención 5atr.</div>
   </div>
   <div class="grid g2">
     <div class="card">

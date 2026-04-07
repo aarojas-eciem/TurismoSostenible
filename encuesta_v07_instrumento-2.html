@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrumento de Encuesta al Turista v07 — ZOIT Coquimbo</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1F3864;
+  --navy2: #2C4F8C;
+  --coral: #E8634A;
+  --mint: #3A9B8C;
+  --gold: #C9993A;
+  --lav: #7B6FAD;
+  --teal: #1A6B6B;
+  --sand: #F5F0E8;
+  --white: #FFFFFF;
+  --gray1: #F8F6F2;
+  --gray2: #E8E4DC;
+  --gray3: #C4BFB4;
+  --gray4: #8A857C;
+  --gray5: #3D3A35;
+  --text: #1C1A17;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--sand); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+/* NAV */
+.topbar {
+  background: var(--navy);
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: stretch;
+  box-shadow: 0 2px 12px rgba(31,56,100,0.18);
+}
+.topbar-brand {
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 12px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.topbar-brand .badge {
+  font-family: 'Fraunces', serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  background: var(--coral); color: #fff;
+  padding: 3px 8px; border-radius: 3px;
+}
+.topbar-brand .title {
+  font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 400;
+}
+.tab-nav { display: flex; flex: 1; }
+.tab-btn {
+  flex: 1; padding: 0 20px; height: 52px;
+  border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  letter-spacing: 0.01em;
+}
+.tab-btn:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.04); }
+.tab-btn.active { color: #fff; border-bottom-color: var(--coral); background: rgba(255,255,255,0.06); }
+.tab-btn .tab-icon { font-size: 16px; }
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ===================== VISTA 1: ENCUESTA ===================== */
+.survey-wrap { max-width: 820px; margin: 0 auto; padding: 32px 20px 60px; }
+
+.survey-header {
+  background: var(--navy);
+  border-radius: 12px; padding: 32px 36px; margin-bottom: 28px;
+  color: white; position: relative; overflow: hidden;
+}
+.survey-header::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: var(--navy2); border-radius: 50%; opacity: 0.4;
+}
+.survey-header::after {
+  content: '';
+  position: absolute; bottom: -60px; right: 60px;
+  width: 140px; height: 140px;
+  background: var(--coral); border-radius: 50%; opacity: 0.12;
+}
+.survey-header .proj-title {
+  font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600;
+  margin-bottom: 6px; position: relative; z-index: 1;
+}
+.survey-header .proj-sub {
+  font-size: 13px; color: rgba(255,255,255,0.7); position: relative; z-index: 1;
+  margin-bottom: 20px;
+}
+.survey-header .meta-row {
+  display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 1;
+}
+.meta-pill {
+  font-size: 11.5px; padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.meta-pill.highlight { background: var(--coral); border-color: var(--coral); color: white; }
+
+/* ZOIT SELECTOR */
+.zoit-selector {
+  background: white; border-radius: 10px; padding: 20px 24px;
+  margin-bottom: 20px; border: 2px solid var(--gold);
+}
+.zoit-selector h4 {
+  font-family: 'Fraunces', serif; font-size: 14px; color: var(--gold);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.zoit-selector h4::before { content: '★'; font-size: 14px; }
+.zoit-options { display: flex; gap: 12px; flex-wrap: wrap; }
+.zoit-opt {
+  flex: 1; min-width: 200px; padding: 12px 16px; border-radius: 8px;
+  border: 2px solid var(--gray2); cursor: pointer;
+  background: var(--gray1); transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+}
+.zoit-opt:hover { border-color: var(--navy2); background: #EEF3FA; }
+.zoit-opt.selected { border-color: var(--navy); background: #EEF3FA; }
+.zoit-opt input[type=radio] { accent-color: var(--navy); width: 16px; height: 16px; }
+.zoit-opt label { font-size: 13px; font-weight: 500; cursor: pointer; color: var(--navy); }
+
+/* FIELD DATA */
+.field-data {
+  background: var(--navy); color: white; border-radius: 10px;
+  padding: 16px 20px; margin-bottom: 20px; font-size: 13px;
+}
+.field-data .fd-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5); margin-bottom: 12px; font-weight: 500;
+}
+.field-data .fd-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.fd-input {
+  flex: 1; min-width: 160px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px; padding: 8px 12px; color: white; font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+}
+.fd-input::placeholder { color: rgba(255,255,255,0.35); }
+.fd-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+
+/* PRESENTACION */
+.presentacion {
+  background: linear-gradient(135deg, #EEF3FA 0%, #F5F0E8 100%);
+  border-left: 4px solid var(--navy2); border-radius: 8px;
+  padding: 16px 20px; margin-bottom: 20px; font-size: 13px;
+  color: var(--navy); line-height: 1.7;
+}
+.presentacion strong { font-weight: 600; color: var(--navy); display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* SECTION CARD */
+.section-card {
+  background: white; border-radius: 12px; margin-bottom: 20px;
+  border: 1px solid var(--gray2); overflow: hidden;
+}
+.section-header {
+  padding: 14px 24px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; user-select: none;
+}
+.section-header:hover { background: var(--gray1); }
+.sec-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600;
+  color: white; flex-shrink: 0;
+}
+.sec-title { font-family: 'Fraunces', serif; font-size: 15px; font-weight: 600; flex: 1; }
+.sec-count { font-size: 11.5px; color: var(--gray4); background: var(--gray1); padding: 3px 8px; border-radius: 10px; }
+.sec-toggle { color: var(--gray3); font-size: 18px; transition: transform 0.2s; }
+.section-card.collapsed .sec-toggle { transform: rotate(-90deg); }
+.section-body { padding: 0 24px 24px; border-top: 1px solid var(--gray2); }
+.section-card.collapsed .section-body { display: none; }
+
+/* SUBSECTIONS */
+.subsec-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  font-weight: 600; color: var(--gray4); margin: 20px 0 12px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--gray2);
+}
+.note-encuestador {
+  background: #FFF8E7; border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0; padding: 8px 12px; font-size: 12px;
+  color: #7A5C00; margin-bottom: 12px; line-height: 1.5;
+}
+.note-encuestador strong { font-weight: 600; }
+
+/* QUESTION */
+.question { margin-bottom: 20px; }
+.q-label {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 10px;
+}
+.q-num {
+  font-family: 'Fraunces', serif; font-size: 13px; font-weight: 700;
+  color: var(--coral); min-width: 36px; padding-top: 1px;
+}
+.q-text { font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--navy); }
+.q-hint { font-size: 12px; color: var(--gray4); font-weight: 400; display: block; margin-top: 2px; }
+.options-grid { display: flex; flex-direction: column; gap: 6px; margin-left: 46px; }
+.options-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin-left: 46px; }
+.opt-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; padding: 4px 8px; border-radius: 5px;
+  transition: background 0.15s; cursor: pointer; line-height: 1.4;
+}
+.opt-item:hover { background: var(--gray1); }
+.opt-item input { accent-color: var(--navy); margin-top: 2px; flex-shrink: 0; }
+.opt-item.arrow-note { color: var(--coral); font-size: 12px; font-style: italic; margin-left: 4px; }
+.opt-zoit {
+  border-left: 3px solid var(--gold); padding-left: 10px;
+  background: #FFFBF0; border-radius: 0 5px 5px 0;
+}
+.zoit-tag {
+  font-size: 10.5px; font-weight: 600; color: var(--gold);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 6px; margin-left: 46px; margin-top: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.zoit-tag::before { content: '★'; }
+.text-input {
+  border: 1px solid var(--gray2); border-radius: 6px;
+  padding: 7px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: var(--text); background: var(--gray1); min-width: 160px;
+  outline: none; transition: border-color 0.15s;
+}
+.text-input:focus { border-color: var(--navy2); background: white; }
+.inline-input { display: inline-block; min-width: 100px; }
+
+/* IPA TABLE */
+.ipa-instruction {
+  background: var(--gray1); border-radius: 8px; padding: 12px 16px;
+  font-size: 12.5px; color: var(--gray5); margin-bottom: 16px;
+  line-height: 1.6; border-left: 3px solid var(--mint);
+}
+.dim-title {
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600;
+  color: var(--teal); margin: 20px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dim-title::before {
+  content: '';
+  display: inline-block; width: 8px; height: 8px;
+  background: var(--mint); border-radius: 50%;
+}
+.dim-change {
+  font-size: 11.5px; color: var(--gray4); background: #F0FAF8;
+  border-left: 2px solid var(--mint); padding: 6px 10px;
+  border-radius: 0 5px 5px 0; margin-bottom: 12px; line-height: 1.5;
+}
+.ipa-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.ipa-table thead tr { background: var(--navy); color: white; }
+.ipa-table th { padding: 9px 10px; text-align: center; font-weight: 500; font-size: 12px; }
+.ipa-table th:first-child { text-align: left; width: 44%; }
+.ipa-table td { padding: 9px 10px; border-bottom: 1px solid var(--gray2); vertical-align: middle; }
+.ipa-table td:first-child { font-size: 13px; line-height: 1.4; }
+.ipa-table tr:hover td { background: var(--gray1); }
+.scale-row { display: flex; gap: 4px; justify-content: center; }
+.scale-btn {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--gray2); background: white;
+  font-size: 11px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; color: var(--gray4);
+}
+.scale-btn:hover { border-color: var(--navy2); color: var(--navy); background: #EEF3FA; }
+.no-uso { text-align: center; }
+.no-uso input { accent-color: var(--gray4); }
+
+/* DAP CARDS */
+.dap-scenario {
+  background: var(--gray1); border-radius: 10px; padding: 18px 20px; margin-bottom: 16px;
+}
+.dap-scenario-title {
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600;
+  color: var(--navy); margin-bottom: 14px;
+}
+.dap-options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.dap-card {
+  background: white; border-radius: 8px; padding: 14px 16px;
+  border: 2px solid var(--gray2); transition: all 0.2s; cursor: pointer;
+}
+.dap-card:hover { border-color: var(--navy2); }
+.dap-card.opt-b { border-color: var(--mint); }
+.dap-card-label {
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; margin-bottom: 6px;
+}
+.dap-card.opt-a .dap-card-label { color: var(--gray4); }
+.dap-card.opt-b .dap-card-label { color: var(--mint); }
+.dap-card-text { font-size: 12.5px; line-height: 1.5; color: var(--gray5); }
+.dap-eleccion { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; margin-left: 0; }
+.dap-eleccion .opt-item { flex: 1; min-width: 140px; background: white; border: 1px solid var(--gray2); border-radius: 6px; padding: 6px 10px; }
+
+/* CIERRE */
+.cierre-card {
+  background: var(--navy); color: white; border-radius: 12px;
+  padding: 28px 32px; text-align: center; margin-top: 24px;
+}
+.cierre-card h3 { font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 10px; }
+.cierre-card p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.6; margin-bottom: 12px; }
+.cierre-note {
+  background: rgba(255,255,255,0.08); border-radius: 8px;
+  padding: 10px 16px; font-size: 12px; color: rgba(255,255,255,0.6);
+  text-align: left; border-left: 3px solid var(--coral);
+}
+
+/* ===================== VISTA 2: TABLA ===================== */
+.table-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+.table-toolbar {
+  background: white; border-radius: 10px; padding: 16px 20px;
+  margin-bottom: 20px; display: flex; gap: 14px; flex-wrap: wrap;
+  align-items: center; border: 1px solid var(--gray2);
+  box-shadow: 0 1px 4px rgba(31,56,100,0.06);
+}
+.toolbar-group { display: flex; align-items: center; gap: 8px; }
+.toolbar-label { font-size: 12px; font-weight: 500; color: var(--gray4); white-space: nowrap; }
+.toolbar-select {
+  font-family: 'DM Sans', sans-serif; font-size: 12.5px;
+  padding: 6px 10px; border-radius: 6px;
+  border: 1px solid var(--gray2); background: var(--gray1);
+  color: var(--text); cursor: pointer; outline: none;
+}
+.toolbar-select:focus { border-color: var(--navy2); }
+.t-stats { font-size: 12px; color: var(--gray4); margin-left: auto; font-style: italic; }
+
+.legend-row {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center;
+}
+.legend-label { font-size: 12px; color: var(--gray4); font-weight: 500; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 3px; font-weight: 500; }
+.t-o { background: #EEF3FA; color: var(--navy2); border: 1px solid #C5D5EA; }
+.t-z { background: #E8F5F0; color: var(--teal); border: 1px solid #B5DDD5; }
+.t-b { background: #FEF0EC; color: #A03520; border: 1px solid #F4C4B5; }
+.t-l { background: #F0EEF9; color: var(--lav); border: 1px solid #D0CBEA; }
+
+.acad-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: white; border-radius: 10px; overflow: hidden; border: 1px solid var(--gray2); }
+.acad-table col.c1 { width: 9%; }
+.acad-table col.c2 { width: 6%; }
+.acad-table col.c3 { width: 24%; }
+.acad-table col.c4 { width: 61%; }
+.acad-table thead tr { background: var(--navy); }
+.acad-table th { padding: 11px 12px; text-align: left; font-size: 11.5px; font-weight: 500; color: rgba(255,255,255,0.85); }
+.acad-table td { padding: 9px 12px; border-bottom: 1px solid var(--gray2); vertical-align: top; line-height: 1.6; color: var(--text); }
+.sh-row td { background: #F0F4FA; font-weight: 600; font-size: 11px; color: var(--navy2); text-transform: uppercase; letter-spacing: 0.05em; padding: 7px 12px; }
+.q-pn { font-weight: 600; font-size: 12.5px; color: var(--coral); }
+.q-pt { font-size: 12px; color: var(--gray4); margin-top: 2px; line-height: 1.4; }
+.just-text { font-size: 12.5px; line-height: 1.65; }
+.refs { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 4px; }
+.ref-link {
+  font-size: 11px; padding: 2px 7px; border-radius: 3px;
+  border: 1px solid #C5D5EA; color: var(--navy2);
+  background: #EEF3FA; text-decoration: none; transition: all 0.15s;
+}
+.ref-link:hover { background: var(--navy2); color: white; border-color: var(--navy2); }
+.hidden { display: none !important; }
+.no-results { padding: 40px; text-align: center; color: var(--gray4); font-size: 13px; background: white; border-radius: 10px; border: 1px solid var(--gray2); }
+
+/* Color dots for sections */
+.s-color { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="badge">v07</span>
+    <span class="title">Encuesta al Turista · ZOIT Coquimbo</span>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('encuesta',this)">
+      <span class="tab-icon" style="color:white">&#9998;</span> Vista instrumento
+    </button>
+    <button class="tab-btn" onclick="switchTab('tabla',this)">
+      <span class="tab-icon" style="color:white">&#9776;</span> Justificación académica
+    </button>
+  </div>
+</div>
+
+<!-- =================== PANEL ENCUESTA =================== -->
+<div id="panel-encuesta" class="panel active">
+<div class="survey-wrap">
+
+  <!-- HEADER -->
+  <div class="survey-header">
+    <div class="proj-title">Instrumento de Encuesta al Turista v07</div>
+    <div class="proj-sub">Estudio de Mercado · Perfil del Turista</div>
+
+  </div>
+
+  <!-- ZOIT SELECTOR -->
+  <div class="zoit-selector">
+    <h4>Instrumento aplicado en:</h4>
+    <div class="zoit-options">
+      <label class="zoit-opt" id="zoit1-opt" onclick="selectZoit(1)">
+        <input type="radio" name="zoit" value="1"> <label>ZOIT 1 — Valle del Elqui</label>
+      </label>
+      <label class="zoit-opt" id="zoit2-opt" onclick="selectZoit(2)">
+        <input type="radio" name="zoit" value="2"> <label>ZOIT 2 — Pichidangui–Quilimarí</label>
+      </label>
+    </div>
+  </div>
+
+  <!-- DATOS DE CAMPO -->
+  <div class="field-data">
+    <div class="fd-title">Datos de campo — completar antes de iniciar (no leer al encuestado)</div>
+    <div class="fd-row">
+      <div style="flex:2"><div class="fd-label">Punto de intercepción</div><input class="fd-input" type="text" placeholder="Indicar lugar"></div>
+      <div style="flex:2"><div class="fd-label">Fecha y hora</div><input class="fd-input" type="text" placeholder="DD/MM/AAAA HH:MM"></div>
+      <div style="flex:2"><div class="fd-label">Encuestador/a</div><input class="fd-input" type="text" placeholder="Nombre"></div>
+    </div>
+  </div>
+
+  <!-- PRESENTACIÓN -->
+  <div class="presentacion">
+    <strong>Presentación al encuestado</strong>
+    Buenos días/tardes. Somos investigadores de la Universidad Católica del Norte. Estamos realizando un estudio sobre el turismo en esta zona, financiado por el Gobierno Regional de Coquimbo. Su participación es voluntaria y anónima, y toma aproximadamente 15 minutos. La información que nos entregue será utilizada exclusivamente con fines de investigación. ¿Nos permite unos minutos?
+  </div>
+
+  <!-- FILTROS -->
+  <div class="section-card" id="s-filtro">
+    <div class="section-header" onclick="toggleSection('s-filtro')">
+      <div class="sec-num" style="background:var(--gray4)">F</div>
+      <div class="sec-title">Filtro de elegibilidad</div>
+      <span class="sec-count">2 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label"><span class="q-num">F1.</span><span class="q-text">¿Usted reside habitualmente fuera de este destino turístico (comuna o zona de visita)?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="f1"> Sí → continúa</label>
+          <label class="opt-item" style="color:var(--coral)"><input type="radio" name="f1"> No → agradecer y terminar</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">F2.</span><span class="q-text">¿Tiene usted 18 años o más?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="f2"> Sí → continúa</label>
+          <label class="opt-item" style="color:var(--coral)"><input type="radio" name="f2"> No → agradecer y terminar</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERFIL BÁSICO -->
+  <div class="section-card" id="s-perfil">
+    <div class="section-header" onclick="toggleSection('s-perfil')">
+      <div class="sec-num" style="background:var(--lav)">P</div>
+      <div class="sec-title">Perfil básico del visitante</div>
+      <span class="sec-count">4 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--gray4);margin:12px 0 16px;">Estas preguntas son para fines estadísticos. La encuesta es anónima.</p>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P1.</span><span class="q-text">¿Cuál es su edad?</span></div>
+        <div class="options-2col">
+          <label class="opt-item"><input type="radio" name="p1"> 18 a 24 años</label>
+          <label class="opt-item"><input type="radio" name="p1"> 25 a 34 años</label>
+          <label class="opt-item"><input type="radio" name="p1"> 35 a 44 años</label>
+          <label class="opt-item"><input type="radio" name="p1"> 45 a 54 años</label>
+          <label class="opt-item"><input type="radio" name="p1"> 55 a 64 años</label>
+          <label class="opt-item"><input type="radio" name="p1"> 65 años o más</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P2.</span><span class="q-text">¿Cuál es su género?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p2"> Femenino</label>
+          <label class="opt-item"><input type="radio" name="p2"> Masculino</label>
+          <label class="opt-item"><input type="radio" name="p2"> Otro</label>
+          <label class="opt-item"><input type="radio" name="p2"> Prefiere no indicar</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P31b.</span><span class="q-text">¿Cuántas personas aportan ingresos en su hogar?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p31b"> 1 persona</label>
+          <label class="opt-item"><input type="radio" name="p31b"> 2 personas</label>
+          <label class="opt-item"><input type="radio" name="p31b"> 3 o más personas</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P3.</span><span class="q-text">¿Cuál es su nivel de estudios completado?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p3"> Sin estudios formales o básica incompleta</label>
+          <label class="opt-item"><input type="radio" name="p3"> Básica completa o media incompleta</label>
+          <label class="opt-item"><input type="radio" name="p3"> Media completa</label>
+          <label class="opt-item"><input type="radio" name="p3"> Técnica superior (CFT o Instituto Profesional)</label>
+          <label class="opt-item"><input type="radio" name="p3"> Universitaria completa</label>
+          <label class="opt-item"><input type="radio" name="p3"> Postgrado completo (magíster, doctorado, especialización)</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 1 -->
+  <div class="section-card" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="sec-num" style="background:var(--navy2)">1</div>
+      <div class="sec-title">Sección 1 — Caracterización del viaje</div>
+      <span class="sec-count">6 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label"><span class="q-num">P4.</span><span class="q-text">¿Desde qué región de Chile viene usted? <span class="q-hint">Si es extranjero/a, indique el país en la casilla correspondiente.</span></span></div>
+        <div class="options-2col">
+          <label class="opt-item"><input type="radio" name="p4"> Arica y Parinacota</label>
+          <label class="opt-item"><input type="radio" name="p4"> Ñuble</label>
+          <label class="opt-item"><input type="radio" name="p4"> Tarapacá</label>
+          <label class="opt-item"><input type="radio" name="p4"> Biobío</label>
+          <label class="opt-item"><input type="radio" name="p4"> Antofagasta</label>
+          <label class="opt-item"><input type="radio" name="p4"> La Araucanía</label>
+          <label class="opt-item"><input type="radio" name="p4"> Atacama</label>
+          <label class="opt-item"><input type="radio" name="p4"> Los Ríos</label>
+          <label class="opt-item"><input type="radio" name="p4"> Coquimbo</label>
+          <label class="opt-item"><input type="radio" name="p4"> Los Lagos</label>
+          <label class="opt-item"><input type="radio" name="p4"> Valparaíso</label>
+          <label class="opt-item"><input type="radio" name="p4"> Aysén</label>
+          <label class="opt-item"><input type="radio" name="p4"> Metropolitana</label>
+          <label class="opt-item"><input type="radio" name="p4"> Magallanes</label>
+          <label class="opt-item"><input type="radio" name="p4"> O'Higgins</label>
+          <label class="opt-item"><input type="radio" name="p4"> Maule</label>
+        </div>
+        <div style="margin-top:8px;margin-left:46px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <label class="opt-item" style="flex:none"><input type="radio" name="p4"> Fuera de Chile →</label>
+          País: <input class="text-input inline-input" type="text" placeholder="País">
+          Región/dpto: <input class="text-input inline-input" type="text" placeholder="Región">
+        </div>
+        <div style="margin-top:8px;margin-left:46px;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:13px;">Comuna de residencia:</span>
+          <input class="text-input" type="text" style="min-width:200px" placeholder="____________________">
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P5.</span><span class="q-text">¿Con quién está realizando este viaje?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p5"> Solo/a</label>
+          <label class="opt-item"><input type="radio" name="p5"> En pareja sin hijos</label>
+          <label class="opt-item"><input type="radio" name="p5"> Con familia — hijos menores de 12 años</label>
+          <label class="opt-item"><input type="radio" name="p5"> Con familia — hijos entre 12 y 18 años</label>
+          <label class="opt-item"><input type="radio" name="p5"> Con amigos sin familia</label>
+          <label class="opt-item"><input type="radio" name="p5"> En grupo organizado o tour</label>
+          <label class="opt-item"><input type="radio" name="p5"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P6.</span><span class="q-text">¿Cómo llegó usted a esta zona?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p6"> Automóvil propio o de familiar/amigo</label>
+          <label class="opt-item"><input type="radio" name="p6"> Bus interurbano</label>
+          <label class="opt-item"><input type="radio" name="p6"> Avión</label>
+          <label class="opt-item"><input type="radio" name="p6"> Automóvil arrendado</label>
+          <label class="opt-item"><input type="radio" name="p6"> Motocicleta</label>
+          <label class="opt-item"><input type="radio" name="p6"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P7.</span><span class="q-text">¿Cuántas noches pernocta en esta zona durante este viaje?</span></div>
+        <div class="options-grid">
+          <label class="opt-item" style="color:var(--coral)"><input type="radio" name="p7"> No pernocta — es visita de un día → pasa a P9 (alimentación)</label>
+          <label class="opt-item"><input type="radio" name="p7"> 1 noche</label>
+          <label class="opt-item"><input type="radio" name="p7"> 2 noches</label>
+          <label class="opt-item"><input type="radio" name="p7"> 3 noches</label>
+          <label class="opt-item"><input type="radio" name="p7"> 4 noches</label>
+          <label class="opt-item"><input type="radio" name="p7"> 5 o más noches → ¿Cuántas? <input class="text-input inline-input" type="text" style="width:60px"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P8.</span><span class="q-text">¿En qué tipo de alojamiento se hospeda?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p8"> Hotel</label>
+          <label class="opt-item"><input type="radio" name="p8"> Hostal / residencial</label>
+          <label class="opt-item"><input type="radio" name="p8"> Cabaña turística</label>
+          <label class="opt-item"><input type="radio" name="p8"> Casa o departamento privado</label>
+          <label class="opt-item"><input type="radio" name="p8"> Camping</label>
+          <label class="opt-item"><input type="radio" name="p8"> Glamping (domo, experiencia outdoor equipada)</label>
+          <label class="opt-item"><input type="radio" name="p8"> Lodge o turismo naturaleza</label>
+          <label class="opt-item"><input type="radio" name="p8"> Bed & Breakfast / hospedaje familiar</label>
+          <label class="opt-item"><input type="radio" name="p8"> Casa de familiar o amigo sin costo</label>
+          <label class="opt-item"><input type="radio" name="p8"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P8b.</span><span class="q-text">¿Cómo realizó la reserva de su alojamiento?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p8b"> No reservó — llegó directamente</label>
+          <label class="opt-item"><input type="radio" name="p8b"> Por teléfono o WhatsApp al propietario</label>
+          <label class="opt-item"><input type="radio" name="p8b"> Por plataforma digital (Booking, Airbnb u otra)</label>
+          <label class="opt-item"><input type="radio" name="p8b"> A través de una agencia de viajes</label>
+          <label class="opt-item"><input type="radio" name="p8b"> No aplica — casa de familiar o amigo</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2 -->
+  <div class="section-card" id="s2">
+    <div class="section-header" onclick="toggleSection('s2')">
+      <div class="sec-num" style="background:var(--gold)">2</div>
+      <div class="sec-title">Sección 2 — Gasto turístico por persona</div>
+      <span class="sec-count">4 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="note-encuestador"><strong>Nota encuestador/a:</strong> Las preguntas de gasto se refieren ÚNICAMENTE al aporte personal del encuestado — no al total del grupo. Si comparte alojamiento o cuenta, indique solo su parte proporcional.</div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P9.</span><span class="q-text">¿Cuánto estima que gasta usted POR NOCHE en alojamiento? <span class="q-hint">(su parte proporcional)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p9"> No aplica — visita de un día o alojamiento sin costo</label>
+          <label class="opt-item"><input type="radio" name="p9"> Menos de $15.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> Entre $15.001 y $30.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> Entre $30.001 y $45.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> Entre $45.001 y $70.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> Entre $70.001 y $100.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> Más de $100.000 por noche</label>
+          <label class="opt-item"><input type="radio" name="p9"> No sabe / No responde</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P10.</span><span class="q-text">¿Cuánto estima que gasta usted POR DÍA en alimentación? <span class="q-hint">(desayuno, almuerzo, cena y colaciones — su parte)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p10"> Menos de $10.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> Entre $10.001 y $20.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> Entre $20.001 y $35.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> Entre $35.001 y $55.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> Entre $55.001 y $80.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> Más de $80.000 diarios</label>
+          <label class="opt-item"><input type="radio" name="p10"> No sabe / No responde</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P11.</span><span class="q-text">¿Cuánto estima que gastará EN TOTAL en actividades durante todo su viaje? <span class="q-hint">(tours, entradas, observatorios, buceo, etc. — su parte)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p11"> No paga por actividades</label>
+          <label class="opt-item"><input type="radio" name="p11"> Menos de $12.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> Entre $12.001 y $30.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> Entre $30.001 y $60.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> Entre $60.001 y $120.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> Entre $120.001 y $200.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> Más de $200.000</label>
+          <label class="opt-item"><input type="radio" name="p11"> No sabe / No responde</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P12.</span><span class="q-text">¿Cuánto estima que gastará EN TOTAL en productos locales, artesanía o souvenirs?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p12"> No realizará compras de este tipo</label>
+          <label class="opt-item"><input type="radio" name="p12"> Menos de $12.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> Entre $12.001 y $30.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> Entre $30.001 y $60.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> Entre $60.001 y $120.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> Entre $120.001 y $200.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> Más de $200.000</label>
+          <label class="opt-item"><input type="radio" name="p12"> No sabe / No responde</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3 -->
+  <div class="section-card" id="s3">
+    <div class="section-header" onclick="toggleSection('s3')">
+      <div class="sec-num" style="background:var(--coral)">3</div>
+      <div class="sec-title">Sección 3 — Planificación y decisión de visita</div>
+      <span class="sec-count">5 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label"><span class="q-num">P13.</span><span class="q-text">¿Es esta su primera visita a esta zona?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p13"> Sí, es la primera vez</label>
+          <label class="opt-item"><input type="radio" name="p13"> No, he venido entre 2 y 3 veces antes</label>
+          <label class="opt-item"><input type="radio" name="p13"> No, he venido 4 o más veces antes</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P14.</span><span class="q-text">¿Con cuánta anticipación planificó este viaje?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p14"> Lo decidí el mismo día o días antes</label>
+          <label class="opt-item"><input type="radio" name="p14"> Entre una semana y un mes antes</label>
+          <label class="opt-item"><input type="radio" name="p14"> Entre uno y tres meses antes</label>
+          <label class="opt-item"><input type="radio" name="p14"> Con más de tres meses de anticipación</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P15.</span><span class="q-text">¿Qué fuentes de información utilizó para planificar este viaje? <span class="q-hint">(Puede marcar más de una)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="checkbox" name="p15"> Recomendación de familiar o amigo</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Redes sociales (Instagram, TikTok, Facebook)</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Google u otro buscador web</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> TripAdvisor u otra plataforma de reseñas</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Booking, Airbnb u otra plataforma de alojamiento</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Sitio web oficial del destino o municipio</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Agencia de viajes</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Experiencia propia de visitas anteriores</label>
+          <label class="opt-item"><input type="checkbox" name="p15"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P16.</span><span class="q-text">¿Cuál es el motivo PRINCIPAL de su visita a esta zona? <span class="q-hint">(Marque solo una opción)</span></span></div>
+        <div class="subsec-title">Opciones comunes a ambas ZOIT</div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p16"> Descanso y relax</label>
+          <label class="opt-item"><input type="radio" name="p16"> Turismo de naturaleza o aventura</label>
+          <label class="opt-item"><input type="radio" name="p16"> Gastronomía y productos locales</label>
+          <label class="opt-item"><input type="radio" name="p16"> Cultura y patrimonio</label>
+          <label class="opt-item"><input type="radio" name="p16"> Visita a familiar o amigo</label>
+          <label class="opt-item"><input type="radio" name="p16"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+        <div class="zoit-tag zoit-only zoit1">ZOIT 1 — Valle del Elqui: activar también estas opciones</div>
+        <div class="options-grid zoit-only zoit1">
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Astroturismo (visita a observatorio, cielos oscuros)</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Turismo del pisco (pisquera, destilería, Ruta del Pisco)</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Turismo de bienestar (tinajas, terapias alternativas, spa)</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Ruta Gabriela Mistral (patrimonio literario y cultural)</label>
+        </div>
+        <div class="zoit-tag zoit-only zoit2">ZOIT 2 — Pichidangui–Quilimarí: activar también estas opciones</div>
+        <div class="options-grid zoit-only zoit2">
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Turismo de playa</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Deportes náuticos</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Ruta del Cuarzo</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Turismo de bienestar en el valle interior</label>
+          <label class="opt-item opt-zoit"><input type="radio" name="p16"> Pesca artesanal y vida de caleta</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P17.</span><span class="q-text">¿Consideró visitar otro destino en lugar de este durante la planificación?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p17"> No, este destino fue siempre la primera opción</label>
+          <label class="opt-item"><input type="radio" name="p17"> Sí → ¿Cuál consideró?
+            <div style="margin-top:6px;margin-left:20px;display:flex;flex-wrap:wrap;gap:6px">
+              <label class="opt-item"><input type="checkbox"> La Serena–Coquimbo</label>
+              <label class="opt-item"><input type="checkbox"> Valle del Limarí</label>
+              <label class="opt-item"><input type="checkbox"> Punta de Choros</label>
+              <label class="opt-item"><input type="checkbox"> Destino fuera de la región</label>
+              <label class="opt-item"><input type="checkbox"> Otro: <input class="text-input inline-input" type="text"></label>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 4 -->
+  <div class="section-card" id="s4">
+    <div class="section-header" onclick="toggleSection('s4')">
+      <div class="sec-num" style="background:var(--mint)">4</div>
+      <div class="sec-title">Sección 4 — Experiencia en el destino</div>
+      <span class="sec-count">3 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label"><span class="q-num">P18.</span><span class="q-text">¿Qué actividades ha realizado o planea realizar durante su visita? <span class="q-hint">(Puede marcar más de una)</span></span></div>
+        <div class="subsec-title">Actividades base — ambas ZOIT</div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="checkbox"> Comer en restaurante, cocinería o local de comida del territorio</label>
+          <label class="opt-item"><input type="checkbox"> Compra de productos locales o artesanía</label>
+          <label class="opt-item"><input type="checkbox"> Senderismo o caminatas en entorno natural</label>
+          <label class="opt-item"><input type="checkbox"> Fotografía del paisaje</label>
+          <label class="opt-item"><input type="checkbox"> Visita a atractivos culturales o patrimoniales</label>
+          <label class="opt-item"><input type="checkbox"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+        <div class="zoit-tag zoit-only zoit1">ZOIT 1 — Valle del Elqui</div>
+        <div class="options-grid zoit-only zoit1">
+          <label class="opt-item opt-zoit"><input type="checkbox"> Observación astronómica y astrofotografía (Mamalluca, Chakana u otros)</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Visita a pisquera o destilería</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Tour guiado por el valle</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Tinajas, spa o experiencias de bienestar</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Terapias alternativas</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Cabalgatas</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Recorrido por sitios del legado de Gabriela Mistral</label>
+        </div>
+        <div class="zoit-tag zoit-only zoit2">ZOIT 2 — Pichidangui–Quilimarí</div>
+        <div class="options-grid zoit-only zoit2">
+          <label class="opt-item opt-zoit"><input type="checkbox"> Baño de playa</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Pesca artesanal o visita a caleta de pescadores</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Camping en borde costero</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Buceo, kayak, SUP u otras actividades náuticas</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Visita al Valle de Quilimarí</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Ruta del Cuarzo</label>
+          <label class="opt-item opt-zoit"><input type="checkbox"> Turismo de bienestar en el valle interior</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P19.</span><span class="q-text">¿Ha comido o planea comer durante su estadía en restaurantes u otros locales de alimentación?</span></div>
+        <div class="options-grid">
+          <label class="opt-item" style="color:var(--mint)"><input type="radio" name="p19"> Sí → pasa a P20</label>
+          <label class="opt-item" style="color:var(--coral)"><input type="radio" name="p19"> No — prefiero cocinar o traer comida preparada → pasa a Sección 5</label>
+          <label class="opt-item" style="color:var(--coral)"><input type="radio" name="p19"> No — es visita de un día sin alimentación en la zona → pasa a Sección 5</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P20.</span><span class="q-text">¿En qué tipo de establecimiento ha comido o planea comer? <span class="q-hint">(Puede marcar más de una)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="checkbox"> Restaurante con carta y servicio de mesa</label>
+          <label class="opt-item"><input type="checkbox"> Picada o cocinería local</label>
+          <label class="opt-item"><input type="checkbox"> Café o pastelería</label>
+          <label class="opt-item"><input type="checkbox"> Food truck, puesto de comida o local en feria</label>
+          <label class="opt-item"><input type="checkbox"> Restaurante del alojamiento donde se hospeda</label>
+          <label class="opt-item"><input type="checkbox"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 5: IPA -->
+  <div class="section-card" id="s5">
+    <div class="section-header" onclick="toggleSection('s5')">
+      <div class="sec-num" style="background:var(--teal)">5</div>
+      <div class="sec-title">Sección 5 — Calidad percibida del destino (Escala IPA)</div>
+      <span class="sec-count">24 atributos · 5 dimensiones</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="ipa-instruction">Para cada atributo, indique: (1) cuán <strong>IMPORTANTE</strong> es para usted en un viaje de este tipo, y (2) cómo evalúa el <strong>DESEMPEÑO</strong> de este destino en ese atributo. Use escala de <strong>1 (muy bajo)</strong> a <strong>5 (muy alto)</strong>. Si no utilizó el servicio, marque la columna 'No usó'.</div>
+
+      <div class="dim-title">Dimensión 1 — Calidad del servicio en alojamiento</div>
+      <table class="ipa-table">
+        <thead><tr><th>Atributo</th><th>Importancia 1–5</th><th>Desempeño 1–5</th><th>No usó</th></tr></thead>
+        <tbody id="ipa-d1"></tbody>
+      </table>
+
+      <div class="dim-title">Dimensión 2 — Calidad del servicio en gastronomía</div>
+      <div class="dim-change">Cambios v07: (a) ítem 'Amabilidad y conocimiento' separado en dos ítems independientes; (b) incorporado precio/calidad; (c) agregado atributo de comunicación en idiomas, respaldado por brecha −57,2% en atención al cliente.</div>
+      <table class="ipa-table">
+        <thead><tr><th>Atributo</th><th>Importancia 1–5</th><th>Desempeño 1–5</th><th>No usó</th></tr></thead>
+        <tbody id="ipa-d2"></tbody>
+      </table>
+
+      <div class="dim-title">Dimensión 3 — Oferta de experiencias y actividades</div>
+      <div class="dim-change">Cambios v07: atributo de información reenfocado en oferta de actividades; se agrega ítem de actitud de servicio y vocación turística del personal (respaldado por brecha cualitativa de cultura de servicio en estudio de brechas).</div>
+      <table class="ipa-table">
+        <thead><tr><th>Atributo</th><th>Importancia 1–5</th><th>Desempeño 1–5</th><th>No usó</th></tr></thead>
+        <tbody id="ipa-d3"></tbody>
+      </table>
+
+      <div class="dim-title">Dimensión 4 — Entorno, autenticidad y sostenibilidad</div>
+      <table class="ipa-table">
+        <thead><tr><th>Atributo</th><th>Importancia 1–5</th><th>Desempeño 1–5</th><th>No usó</th></tr></thead>
+        <tbody id="ipa-d4"></tbody>
+      </table>
+
+      <div class="dim-title">Dimensión 5 — Información y atención al visitante</div>
+      <div class="dim-change">Cambios v07: se agrega atributo de disponibilidad de información en idiomas distintos al español, complementando el ítem de idiomas del personal en Dimensión 2.</div>
+      <table class="ipa-table">
+        <thead><tr><th>Atributo</th><th>Importancia 1–5</th><th>Desempeño 1–5</th><th>No usó</th></tr></thead>
+        <tbody id="ipa-d5"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 6 -->
+  <div class="section-card" id="s6">
+    <div class="section-header" onclick="toggleSection('s6')">
+      <div class="sec-num" style="background:var(--coral)">6</div>
+      <div class="sec-title">Sección 6 — Sostenibilidad y disposición a pagar</div>
+      <span class="sec-count">6 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="note-encuestador"><strong>Nota:</strong> Las siguientes preguntas presentan situaciones hipotéticas. Responda según lo que realmente haría.</div>
+
+      <div class="dap-scenario">
+        <div class="dap-scenario-title">Situación A — Restaurante</div>
+        <div class="dap-options-row">
+          <div class="dap-card opt-a"><div class="dap-card-label">Opción A — Estándar</div><div class="dap-card-text">Restaurante estándar. Sin características adicionales declaradas.</div></div>
+          <div class="dap-card opt-b"><div class="dap-card-label">Opción B — Con prácticas responsables</div><div class="dap-card-text">Restaurante que usa ingredientes locales de la zona, cuenta con personal con formación certificada y gestiona sus residuos responsablemente.</div></div>
+        </div>
+        <div class="dap-eleccion">
+          <label class="opt-item"><input type="radio" name="dap-a"> Elegiría la Opción A (estándar)</label>
+          <label class="opt-item"><input type="radio" name="dap-a"> Elegiría la Opción B (con prácticas responsables)</label>
+          <label class="opt-item"><input type="radio" name="dap-a"> Me es indiferente</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label"><span class="q-num">P21.</span><span class="q-text">Si el restaurante con prácticas responsables tuviera un precio mayor por plato, ¿cuánto más pagaría? <span class="q-hint">(sobre un plato de $15.000 como referencia)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p21"> No pagaría más — el precio es determinante para mí</label>
+          <label class="opt-item"><input type="radio" name="p21"> Hasta $750 más por plato (hasta $15.750 — aprox. 5% más)</label>
+          <label class="opt-item"><input type="radio" name="p21"> Entre $751 y $1.500 más (hasta $16.500 — aprox. 10% más)</label>
+          <label class="opt-item"><input type="radio" name="p21"> Entre $1.501 y $3.000 más (hasta $18.000 — aprox. 20% más)</label>
+          <label class="opt-item"><input type="radio" name="p21"> Más de $3.000 más por plato</label>
+        </div>
+      </div>
+
+      <div class="dap-scenario">
+        <div class="dap-scenario-title">Situación B — Alojamiento</div>
+        <div class="dap-options-row">
+          <div class="dap-card opt-a"><div class="dap-card-label">Opción A — Estándar</div><div class="dap-card-text">Alojamiento estándar. Sin características adicionales declaradas.</div></div>
+          <div class="dap-card opt-b"><div class="dap-card-label">Opción B — Con prácticas responsables</div><div class="dap-card-text">Alojamiento que usa energía renovable, gestiona sus residuos responsablemente y emplea personal local con formación certificada.</div></div>
+        </div>
+        <div class="dap-eleccion">
+          <label class="opt-item"><input type="radio" name="dap-b"> Elegiría la Opción A (estándar)</label>
+          <label class="opt-item"><input type="radio" name="dap-b"> Elegiría la Opción B (con prácticas responsables)</label>
+          <label class="opt-item"><input type="radio" name="dap-b"> Me es indiferente</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label"><span class="q-num">P22.</span><span class="q-text">Si ese alojamiento con prácticas responsables tuviera un precio mayor por noche, ¿cuánto más pagaría? <span class="q-hint">(sobre una noche de $45.000 como referencia)</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p22"> No pagaría más</label>
+          <label class="opt-item"><input type="radio" name="p22"> Hasta $2.250 más por noche (hasta $47.250 — aprox. 5% más)</label>
+          <label class="opt-item"><input type="radio" name="p22"> Entre $2.251 y $4.500 más (hasta $49.500 — aprox. 10% más)</label>
+          <label class="opt-item"><input type="radio" name="p22"> Entre $4.501 y $9.000 más (hasta $54.000 — aprox. 20% más)</label>
+          <label class="opt-item"><input type="radio" name="p22"> Más de $9.000 más por noche</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label"><span class="q-num">P23.</span><span class="q-text">¿Qué tan importante es para usted que el personal que le atiende sea de la propia comunidad local del destino?</span></div>
+        <div class="note-encuestador">Encuestador/a: esta pregunta se refiere al personal en general del destino, no solo al del alojamiento.</div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p23"> Muy importante — lo consideraría al elegir dónde alojarme o comer</label>
+          <label class="opt-item"><input type="radio" name="p23"> Importante — lo valoro, pero no es decisivo</label>
+          <label class="opt-item"><input type="radio" name="p23"> Poco importante</label>
+          <label class="opt-item"><input type="radio" name="p23"> Nada importante</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P24.</span><span class="q-text">¿Qué tan importante es para usted que ese personal cuente con formación o certificación formal en su área de trabajo?</span></div>
+        <div class="note-encuestador">Encuestador/a: ídem — se refiere al personal del destino en general.</div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p24"> Muy importante — lo consideraría al elegir dónde alojarme o comer</label>
+          <label class="opt-item"><input type="radio" name="p24"> Importante — lo valoro, pero no es decisivo</label>
+          <label class="opt-item"><input type="radio" name="p24"> Poco importante</label>
+          <label class="opt-item"><input type="radio" name="p24"> Nada importante</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P25.</span><span class="q-text">Al elegir qué consumir durante su viaje, ¿prefiere productos y alimentos de origen local?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p25"> Siempre prefiero productos locales cuando están disponibles</label>
+          <label class="opt-item"><input type="radio" name="p25"> Generalmente los prefiero, pero no siempre los elijo</label>
+          <label class="opt-item"><input type="radio" name="p25"> Me es indiferente el origen</label>
+          <label class="opt-item"><input type="radio" name="p25"> Prefiero el mejor precio independiente del origen</label>
+          <label class="opt-item"><input type="radio" name="p25"> El origen no influye en mi decisión</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P26.</span><span class="q-text">Durante este viaje, ¿tomó alguna de las siguientes decisiones? <span class="q-hint">(Puede marcar más de una — comportamiento real declarado)</span></span></div>
+        <div class="note-encuestador">Marque solo lo que efectivamente hizo o está haciendo en este viaje.</div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="checkbox"> Elegí un alojamiento o restaurante porque declaraba prácticas sustentables</label>
+          <label class="opt-item"><input type="checkbox"> Preferí comprar artesanía o productos directamente al productor local</label>
+          <label class="opt-item"><input type="checkbox"> Deposité los residuos en los puntos de reciclaje o basura habilitados</label>
+          <label class="opt-item"><input type="checkbox"> Pregunté al prestador sobre el origen local de los productos que consumí</label>
+          <label class="opt-item"><input type="checkbox"> Usé transporte compartido, bicicleta o caminé dentro del destino</label>
+          <label class="opt-item"><input type="checkbox"> Ninguna de las anteriores</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 7 -->
+  <div class="section-card" id="s7">
+    <div class="section-header" onclick="toggleSection('s7')">
+      <div class="sec-num" style="background:var(--lav)">7</div>
+      <div class="sec-title">Sección 7 — Intención futura</div>
+      <span class="sec-count">3 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <div class="question">
+        <div class="q-label"><span class="q-num">P27.</span><span class="q-text">¿Cuál es la probabilidad de que regrese a esta zona en los próximos dos años?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p27"> Muy alta</label>
+          <label class="opt-item"><input type="radio" name="p27"> Alta</label>
+          <label class="opt-item"><input type="radio" name="p27"> Media</label>
+          <label class="opt-item"><input type="radio" name="p27"> Baja</label>
+          <label class="opt-item"><input type="radio" name="p27"> Muy baja</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P28.</span><span class="q-text">¿Cuál es la probabilidad de que recomiende esta zona a familiares o amigos?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p28"> Muy alta</label>
+          <label class="opt-item"><input type="radio" name="p28"> Alta</label>
+          <label class="opt-item"><input type="radio" name="p28"> Media</label>
+          <label class="opt-item"><input type="radio" name="p28"> Baja</label>
+          <label class="opt-item"><input type="radio" name="p28"> Muy baja</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P29.</span><span class="q-text">Si regresara, ¿estaría dispuesto/a a gastar más si el destino ofreciera servicios de mayor calidad y con mayor énfasis en sostenibilidad?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p29"> Definitivamente sí</label>
+          <label class="opt-item"><input type="radio" name="p29"> Probablemente sí</label>
+          <label class="opt-item"><input type="radio" name="p29"> No lo sé</label>
+          <label class="opt-item"><input type="radio" name="p29"> Probablemente no</label>
+          <label class="opt-item"><input type="radio" name="p29"> Definitivamente no</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 8 -->
+  <div class="section-card" id="s8">
+    <div class="section-header" onclick="toggleSection('s8')">
+      <div class="sec-num" style="background:var(--navy)">8</div>
+      <div class="sec-title">Sección 8 — Perfil socioeconómico</div>
+      <span class="sec-count">3 preguntas</span>
+      <span class="sec-toggle">▾</span>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--gray4);margin:12px 0 16px;">Las siguientes preguntas son para fines estadísticos. La encuesta es anónima.</p>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P30.</span><span class="q-text">¿Cuál es su situación laboral actual?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p30"> Trabajador/a dependiente</label>
+          <label class="opt-item"><input type="radio" name="p30"> Trabajador/a independiente o emprendedor/a</label>
+          <label class="opt-item"><input type="radio" name="p30"> Estudiante</label>
+          <label class="opt-item"><input type="radio" name="p30"> Jubilado/a o pensionado/a</label>
+          <label class="opt-item"><input type="radio" name="p30"> Labores del hogar</label>
+          <label class="opt-item"><input type="radio" name="p30"> Desempleado/a</label>
+          <label class="opt-item"><input type="radio" name="p30"> Otro: <input class="text-input inline-input" type="text"></label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P31.</span><span class="q-text">¿En cuál de los siguientes tramos se ubica el ingreso mensual de su hogar? <span class="q-hint">Considere todos los ingresos del hogar: sueldos, pensiones, arriendos u otros.</span></span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p31"> Menos de $500.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Entre $500.001 y $1.000.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Entre $1.000.001 y $1.500.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Entre $1.500.001 y $2.500.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Entre $2.500.001 y $4.000.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Más de $4.000.000</label>
+          <label class="opt-item"><input type="radio" name="p31"> Prefiere no indicar</label>
+        </div>
+      </div>
+      <div class="question">
+        <div class="q-label"><span class="q-num">P32.</span><span class="q-text">¿Cuántos viajes turísticos fuera de su región de residencia realiza aproximadamente por año?</span></div>
+        <div class="options-grid">
+          <label class="opt-item"><input type="radio" name="p32"> Este es mi primer viaje fuera de mi región</label>
+          <label class="opt-item"><input type="radio" name="p32"> 1 viaje al año</label>
+          <label class="opt-item"><input type="radio" name="p32"> 2 a 3 viajes al año</label>
+          <label class="opt-item"><input type="radio" name="p32"> 4 o más viajes al año</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CIERRE -->
+  <div class="cierre-card">
+    <h3>Muchas gracias por su tiempo y colaboración</h3>
+    <p>La información que nos entregó contribuirá directamente al desarrollo del turismo sostenible en esta zona. Si tiene alguna consulta sobre este estudio, puede contactarnos a través de la Universidad Católica del Norte, sede Coquimbo.</p>
+    <div class="cierre-note">Encuestador/a: verificar que todas las secciones estén completas antes de cerrar el formulario.</div>
+  </div>
+
+</div>
+</div>
+
+<!-- =================== PANEL TABLA =================== -->
+<div id="panel-tabla" class="panel">
+<div class="table-wrap">
+
+  <div class="table-toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">Sección</span>
+      <select class="toolbar-select" id="fSec" onchange="filterTable()">
+        <option value="">Todas</option>
+        <option value="campo">Datos de campo y elegibilidad</option>
+        <option value="perfil">Perfil básico</option>
+        <option value="s1">Sección 1 — Caracterización del viaje</option>
+        <option value="s2">Sección 2 — Gasto turístico</option>
+        <option value="s3">Sección 3 — Planificación y decisión</option>
+        <option value="s4">Sección 4 — Experiencia en el destino</option>
+        <option value="s5">Sección 5 — Escala IPA</option>
+        <option value="s6">Sección 6 — Sostenibilidad y DAP</option>
+        <option value="s7">Sección 7 — Intención futura</option>
+        <option value="s8">Sección 8 — Perfil socioeconómico</option>
+      </select>
+    </div>
+    <div class="toolbar-group">
+      <span class="toolbar-label">Fuente</span>
+      <select class="toolbar-select" id="fFuente" onchange="filterTable()">
+        <option value="">Todas</option>
+        <option value="t-o">Objetivo C2</option>
+        <option value="t-z">Docs ZOIT</option>
+        <option value="t-b">Estudio brechas</option>
+        <option value="t-l">Literatura IPA</option>
+      </select>
+    </div>
+    <span class="t-stats" id="tStats"></span>
+  </div>
+
+  <div class="legend-row">
+    <span class="toolbar-label">Fuentes:</span>
+    <span class="tag t-o">Objetivo C2</span>
+    <span class="tag t-z">Docs ZOIT</span>
+    <span class="tag t-b">Estudio brechas</span>
+    <span class="tag t-l">Literatura IPA</span>
+  </div>
+
+  <table class="acad-table" id="acadTable">
+    <colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup>
+    <thead><tr><th>Sección</th><th>Ítem</th><th>Variable / contenido</th><th>Justificación académica</th></tr></thead>
+    <tbody id="acadBody"></tbody>
+  </table>
+  <div class="no-results hidden" id="noRes">No se encontraron ítems para los filtros seleccionados.</div>
+
+</div>
+</div>
+
+<script>
+// ---- TAB SWITCHING ----
+function switchTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ---- SECTION TOGGLE ----
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+// ---- ZOIT SELECTOR ----
+let currentZoit = 0;
+function selectZoit(n) {
+  currentZoit = n;
+  document.getElementById('zoit1-opt').classList.toggle('selected', n === 1);
+  document.getElementById('zoit2-opt').classList.toggle('selected', n === 2);
+  document.querySelectorAll('.zoit1').forEach(el => { el.style.display = n === 1 ? '' : 'none'; });
+  document.querySelectorAll('.zoit2').forEach(el => { el.style.display = n === 2 ? '' : 'none'; });
+}
+selectZoit(0);
+document.querySelectorAll('.zoit1, .zoit2').forEach(el => { el.style.display = 'none'; });
+
+// ---- IPA BUILDER ----
+const ipaData = {
+  d1: [
+    'Limpieza e higiene del alojamiento',
+    'Amabilidad y trato del personal del alojamiento',
+    'Relación entre precio pagado y calidad recibida en el alojamiento',
+    'Variedad de tipos de alojamiento disponibles en la zona',
+    'Estado de las instalaciones del alojamiento',
+    'Capacidad del personal para atender en más de un idioma (español / inglés / otro)',
+    'Conocimiento del personal sobre el destino, sus atractivos y actividades'
+  ],
+  d2: [
+    'Uso de ingredientes y productos propios de la zona',
+    'Calidad en la elaboración y presentación de los alimentos',
+    'Amabilidad y trato del personal de atención en locales de alimentación',
+    'Capacidad del personal para informar sobre los platos, ingredientes locales y el territorio',
+    'Capacidad del personal para atender en más de un idioma (español / inglés / otro)',
+    'Relación entre el precio pagado y la calidad de la experiencia gastronómica',
+    'Variedad de la oferta gastronómica disponible en el destino'
+  ],
+  d3: [
+    'Disponibilidad de actividades y tours más allá del atractivo principal',
+    'Claridad de la información sobre qué actividades realizar y cómo contratarlas',
+    'Calidad de guías y personal que conduce tours y actividades',
+    'Actitud de servicio del personal que conduce tours y actividades',
+    'Posibilidad de conocer la cultura, tradiciones y patrimonio local'
+  ],
+  d4: [
+    'Conservación del entorno natural del destino',
+    'Autenticidad e identidad propia del destino respecto a lugares similares',
+    'Condición de la infraestructura básica: baños, accesos y señalética',
+    'Belleza del paisaje durante la visita',
+    'Atmósfera de tranquilidad en el destino'
+  ],
+  d5: [
+    'Disponibilidad de información turística en el destino (señalética, mapas, OIT)',
+    'Utilidad de la información recibida para orientarse en el destino',
+    'Amabilidad y trato del personal en puntos de contacto (recepción, OIT, comercios)',
+    'Disponibilidad de información digital sobre el destino (web, redes, app, reseñas)',
+    'Disponibilidad de información turística en idiomas distintos al español (inglés u otro)'
+  ]
+};
+
+function buildScale(dim, row, type) {
+  return Array.from({length:5}, (_,i) => `<button class="scale-btn" onclick="this.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.style.background='');this.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.style.color='');this.style.background='${type==='imp'?'#1F3864':'#3A9B8C'}';this.style.color='white'">${i+1}</button>`).join('');
+}
+
+['d1','d2','d3','d4','d5'].forEach((d,di) => {
+  const tbody = document.getElementById('ipa-'+d);
+  ipaData[d].forEach((attr, ri) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${attr}</td>
+      <td><div class="scale-row">${buildScale(d,ri,'imp')}</div></td>
+      <td><div class="scale-row">${buildScale(d,ri,'des')}</div></td>
+      <td class="no-uso"><input type="checkbox"></td>`;
+    tbody.appendChild(tr);
+  });
+});
+
+// ---- ACADEMIC TABLE DATA ----
+const rows = [
+  {sec:'campo', secLabel:'Datos de campo y elegibilidad', item:'DC', var:'Punto de intercepción, fecha y encuestador/a', src:['t-o'], just:'La actividad 2.2 del Componente 2 establece la aplicación en puntos estratégicos de ambas ZOIT, lo que requiere registro sistemático del punto, momento y responsable para garantizar la trazabilidad del trabajo de campo.', refs:[]},
+  {sec:'campo', item:'F1', var:'Residencia habitual fuera del destino', src:['t-o'], just:'Delimita el universo de análisis a turistas en sentido estricto, excluyendo a la población residente del área de visita, condición necesaria para la validez del estudio de mercado.', refs:[]},
+  {sec:'campo', item:'F2', var:'Edad igual o superior a 18 años', src:['t-o'], just:'Establece el límite de edad para consentimiento informado autónomo y capacidad de gasto independiente, requisitos éticos y metodológicos estándar en estudios de mercado turístico.', refs:[]},
+  {sec:'perfil', secLabel:'Perfil básico del visitante', item:'P1', var:'Tramo etario', src:['t-o','t-l'], just:'Variable constitutiva del perfil del turista (indicador Producto 2). Lai y Hitchcock (2015) recomiendan incorporar variables sociodemográficas como covariables para el análisis de heterogeneidad de puntuaciones IPA entre segmentos.', refs:[{label:'Lai & Hitchcock (2015)',doi:'10.1016/j.tourman.2014.11.008'}]},
+  {sec:'perfil', item:'P2', var:'Género', src:['t-o','t-b'], just:'Variable constitutiva del perfil del turista. El estudio de brechas previo (ECIEM, 2024–2025) documentó brechas laborales diferenciadas por género en los sectores de alojamiento y alimentación, lo que hace necesario el cruce entre perfil del turista y variables de género.', refs:[]},
+  {sec:'perfil', item:'P3', var:'Nivel de estudios completado', src:['t-o','t-l'], just:'Variable constitutiva del perfil del turista. Suryawan et al. (2025) documentan que los turistas con mayor nivel educacional presentan valoraciones más elevadas de los atributos de conservación ambiental y mayor disposición a apoyar económicamente iniciativas de sostenibilidad.', refs:[{label:'Suryawan et al. (2025)',doi:'10.1016/j.evalprogplan.2025.102724'}]},
+  {sec:'perfil', item:'P31b', var:'Personas que aportan ingresos al hogar', src:['t-o'], just:'Variable proxy de capacidad económica del hogar, complementaria al tramo de ingreso (P31), que permite estimar de manera más precisa la DAP efectiva del turista y su pertenencia al segmento objetivo del estudio.', refs:[]},
+  {sec:'s1', secLabel:'Sección 1 — Caracterización del viaje', item:'P4', var:'Región de procedencia o país de origen', src:['t-o','t-z','t-l'], just:'Indicador: perfil del turista. Los documentos de postulación identifican la Región Metropolitana, Valparaíso y Antofagasta como principales mercados emisores de ambas ZOIT. Sörensson y von Friedrichs (2013) documentan diferencias sistemáticas en las valoraciones de importancia entre turistas nacionales e internacionales.', refs:[{label:'Sörensson & von Friedrichs (2013)',doi:'10.1016/j.jdmm.2012.11.002'}]},
+  {sec:'s1', item:'P5', var:'Composición del grupo de viaje', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento. Los planes de acción de ambas ZOIT identifican la tipología del viajero (familia con hijos, pareja, grupo de amigos, turista independiente) como variable central para la diferenciación de la oferta de servicios y actividades.', refs:[]},
+  {sec:'s1', item:'P6', var:'Medio de transporte utilizado', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento. La accesibilidad vial y la conectividad hacia los atractivos constituyen líneas de acción explícitas en los planes de ambas ZOIT.', refs:[]},
+  {sec:'s1', item:'P7', var:'Número de noches de pernoctación', src:['t-o'], just:'Indicador: patrones de comportamiento. Variable necesaria para el cálculo del gasto total estimado por turista y para distinguir el segmento de visitantes de día del segmento de turistas con pernoctación.', refs:[]},
+  {sec:'s1', item:'P8', var:'Tipo de establecimiento de alojamiento utilizado', src:['t-z','t-b'], just:'Los planes de acción contemplan el desarrollo de una oferta de alojamiento diversificada como producto turístico central en ambas ZOIT. Las brechas de pertinencia documentadas para recepcionistas (−23,7%) y camareras (−23,3%) remiten directamente a los establecimientos de alojamiento formal.', refs:[]},
+  {sec:'s1', item:'P8b', var:'Canal de reserva del alojamiento', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento digital del turista. Los planes contemplan estrategias de presencia en plataformas digitales de reserva como parte del posicionamiento de la oferta ZOIT.', refs:[]},
+  {sec:'s2', secLabel:'Sección 2 — Gasto turístico por persona', item:'P9', var:'Gasto estimado en alojamiento por noche', src:['t-o'], just:'Indicador comprometido: rango de valores dispuesto a pagar. Constituye la base de referencia para la calibración del escenario DAP de alojamiento (Situación B, Sección 6).', refs:[]},
+  {sec:'s2', item:'P10', var:'Gasto estimado en alimentación por día', src:['t-o'], just:'Indicador comprometido: rango de valores dispuesto a pagar. Base de referencia para la calibración del escenario DAP de restaurante (Situación A, Sección 6).', refs:[]},
+  {sec:'s2', item:'P11', var:'Gasto estimado en actividades durante el viaje', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento y gasto. El desarrollo de la oferta de actividades guiadas y experienciales constituye una línea estratégica central en los planes de acción de ambas ZOIT.', refs:[]},
+  {sec:'s2', item:'P12', var:'Gasto estimado en productos locales y artesanía', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento y gasto. La comercialización de productos locales y artesanía es identificada en ambos planes de acción como línea estratégica para el desarrollo económico territorial vinculado al turismo.', refs:[]},
+  {sec:'s3', secLabel:'Sección 3 — Planificación y decisión de visita', item:'P13', var:'Primera visita o visita repetida', src:['t-o'], just:'Indicador: perfil del turista. Permite distinguir el segmento de turistas nuevos del segmento fidelizado, diferenciación relevante para evaluar el alcance territorial de las ZOIT y la eficacia de las estrategias de posicionamiento.', refs:[]},
+  {sec:'s3', item:'P14', var:'Anticipación con que planificó el viaje', src:['t-o'], just:'Indicador: patrones de comportamiento. Variable que informa el ciclo de decisión de compra del turista y orienta las estrategias de difusión y promoción del destino.', refs:[]},
+  {sec:'s3', item:'P15', var:'Fuentes de información utilizadas para planificar el viaje', src:['t-o','t-z'], just:'Indicador: patrones de comportamiento. Los planes de ambas ZOIT contemplan estrategias de posicionamiento digital, presencia en plataformas de reseñas y redes sociales como canales prioritarios de difusión.', refs:[]},
+  {sec:'s3', item:'P16', var:'Motivo principal de la visita (opciones diferenciadas por ZOIT)', src:['t-o','t-z'], just:'Indicador: motivaciones del turista. Las opciones ZOIT-específicas (astroturismo, Ruta del Pisco, Ruta Gabriela Mistral para Valle del Elqui; turismo de playa, pesca artesanal, Ruta del Cuarzo para Pichidangui–Quilimarí) se derivan directamente de los productos turísticos prioritarios declarados en cada documento de postulación y plan de acción.', refs:[]},
+  {sec:'s3', item:'P17', var:'Destinos alternativos considerados durante la planificación', src:['t-o'], just:'Indicador: motivaciones y patrones de decisión. Permite identificar los competidores directos de cada ZOIT desde la perspectiva del turista, información relevante para el posicionamiento diferenciado del destino.', refs:[]},
+  {sec:'s4', secLabel:'Sección 4 — Experiencia en el destino', item:'P18', var:'Actividades realizadas o planificadas (opciones diferenciadas por ZOIT)', src:['t-z','t-l'], just:'Las opciones base y las específicas por territorio se extraen de los atractivos declarados en los planes de acción de cada ZOIT. Mn y Nuringsih (2020) y Mohd Adam et al. (2024) señalan la actividad experiencial como uno de los atributos con mayor brecha importancia-desempeño en destinos de escala local.', refs:[{label:'Mn & Nuringsih (2020)',doi:'10.2991/assehr.k.201209.008'},{label:'Mohd Adam et al. (2024)',doi:'10.47836/pjssh.32.1.05'}]},
+  {sec:'s4', item:'P19', var:'Consumo de alimentación en establecimientos del destino', src:['t-o','t-b'], just:'Pregunta filtro que condiciona la pertinencia de los ítems de gastronomía en la escala IPA. Las brechas documentadas en el sector alimentación hacen metodológicamente necesario desagregar quiénes consumen efectivamente en establecimientos locales.', refs:[]},
+  {sec:'s4', item:'P20', var:'Tipo de establecimiento de alimentación utilizado', src:['t-z','t-b'], just:'Los planes de acción identifican la gastronomía local (picadas, cocinerías, productos del territorio) como producto turístico a potenciar en ambas ZOIT. Las brechas de pertinencia para garzones (−57,2%) y chefs ejecutivos (−23,9%) se producen en los establecimientos de servicio de alimentación capturados por esta pregunta.', refs:[]},
+  {sec:'s5', secLabel:'Sección 5 — Escala IPA', item:'D1 (7)', var:'Calidad del servicio en alojamiento', src:['t-l','t-b'], just:'Boley et al. (2017) y Andronic y Untaru (2025) sitúan la calidad de servicio e infraestructura de alojamiento como atributos de alta importancia y frecuente brecha de desempeño. Brechas de pertinencia: recepcionistas −23,7% en atención al cliente; camareras −23,3% en limpieza; conserjes −29,0% en supervisión de normas. Las entrevistas documentaron escaso dominio del inglés y habilidades blandas insuficientes como brechas transversales.', refs:[{label:'Boley et al. (2017)',doi:'10.1016/j.tourman.2016.10.002'},{label:'Andronic & Untaru (2025)',doi:'10.3390/admsci15090358'}]},
+  {sec:'s5', item:'D2 (7)', var:'Calidad del servicio en gastronomía', src:['t-l','t-b','t-z'], just:'Wu y Yang (2023) identifican el uso de productos locales y la capacidad informativa del personal como atributos determinantes de la satisfacción en turismo rural. Sörensson y von Friedrichs (2013) documentan que la sostenibilidad expresada en el origen local de los insumos es prioritaria para turistas nacionales. Brechas: garzones −57,2%; chefs −23,9%. La separación entre ítems de amabilidad y capacidad informativa responde a Azzopardi y Nash (2013) y a la diferenciación de competencias en el estudio de brechas.', refs:[{label:'Wu & Yang (2023)',doi:'10.1016/j.jdmm.2023.100822'},{label:'Sörensson & von Friedrichs (2013)',doi:'10.1016/j.jdmm.2012.11.002'},{label:'Azzopardi & Nash (2013)',doi:'10.1016/j.tourman.2012.07.007'}]},
+  {sec:'s5', item:'D3 (5)', var:'Oferta de experiencias y actividades', src:['t-z','t-l','t-b'], just:'Los planes de acción identifican el desarrollo de actividades guiadas y la puesta en valor del patrimonio como líneas estratégicas prioritarias en ambas ZOIT. Mn y Nuringsih (2020) y Mohd Adam et al. (2024) sitúan las actividades experienciales como áreas de bajo desempeño recurrente. Las entrevistas documentaron falta de cultura de servicio en turismo como brecha cualitativa estructural, fundamentando el ítem de actitud de servicio como atributo independiente de la calidad técnica del guía.', refs:[{label:'Mn & Nuringsih (2020)',doi:'10.2991/assehr.k.201209.008'},{label:'Mohd Adam et al. (2024)',doi:'10.47836/pjssh.32.1.05'}]},
+  {sec:'s5', item:'D4 (5)', var:'Entorno, autenticidad y sostenibilidad', src:['t-l','t-z'], just:'Boley et al. (2017) y Akıncı y Öksüz (2022) documentan que la conservación ambiental y la autenticidad son los atributos de mayor importancia declarada y mayor brecha de desempeño percibido. Andronic y Untaru (2025) y Mn y Nuringsih (2020) identifican el mantenimiento de infraestructura básica como área de bajo desempeño recurrente en destinos rurales y naturales. La habilitación de señalética y accesos es una línea de inversión prioritaria en los planes de acción de ambas ZOIT.', refs:[{label:'Boley et al. (2017)',doi:'10.1016/j.tourman.2016.10.002'},{label:'Akıncı & Öksüz (2022)',doi:'10.30519/ahtr.894259'},{label:'Andronic & Untaru (2025)',doi:'10.3390/admsci15090358'}]},
+  {sec:'s5', item:'D5 (5)', var:'Información y atención al visitante', src:['t-l','t-b','t-z'], just:'Andronic y Untaru (2025) y Kurniawan et al. (2025) identifican la digitalización de servicios turísticos y la accesibilidad informacional como áreas con mayor brecha importancia-desempeño en destinos en desarrollo. Las entrevistas documentaron bajo conocimiento de plataformas digitales y escaso dominio del inglés como brechas cualitativas del personal. Los planes contemplan la presencia digital del destino como parte de las estrategias de promoción turística.', refs:[{label:'Andronic & Untaru (2025)',doi:'10.3390/admsci15090358'},{label:'Kurniawan et al. (2025)',doi:'10.69930/ajer.v2i2.425'}]},
+  {sec:'s6', secLabel:'Sección 6 — Sostenibilidad y DAP', item:'Sit. A', var:'Elección restaurante estándar vs. con prácticas responsables', src:['t-o','t-l'], just:'Indicador comprometido: rango de valores dispuesto a pagar por destino con foco en sostenibilidad. Suryawan et al. (2025) recomiendan el diseño de escenarios hipotéticos con precio de referencia explícito para reducir la ambigüedad de la respuesta y aumentar la validez del dato de DAP.', refs:[{label:'Suryawan et al. (2025)',doi:'10.1016/j.evalprogplan.2025.102724'}]},
+  {sec:'s6', item:'P21', var:'DAP adicional por plato en restaurante responsable', src:['t-o'], just:'Indicador: rango de DAP. El precio de referencia ($15.000 por plato) fue calibrado sobre la distribución de gasto en alimentación (P10) para garantizar la plausibilidad del escenario hipotético.', refs:[]},
+  {sec:'s6', item:'Sit. B', var:'Elección alojamiento estándar vs. con prácticas responsables', src:['t-o','t-l'], just:'Indicador comprometido: rango de DAP. Suryawan et al. (2025).', refs:[{label:'Suryawan et al. (2025)',doi:'10.1016/j.evalprogplan.2025.102724'}]},
+  {sec:'s6', item:'P22', var:'DAP adicional por noche en alojamiento responsable', src:['t-o'], just:'Indicador: rango de DAP. El precio de referencia ($45.000 por noche) fue calibrado sobre la distribución de gasto en alojamiento (P9) para garantizar la plausibilidad del escenario hipotético.', refs:[]},
+  {sec:'s6', item:'P23–P24', var:'Valoración del personal local y de la certificación formal', src:['t-o','t-b'], just:'Indicador: caracterización del destino que busca el turista sostenible. Articulan el estudio de mercado con el estudio de brechas del Componente 1: permiten medir la demanda de formación certificada (ChileValora) desde la perspectiva del turista, generando evidencia sobre la valorización social de la certificación de competencias laborales en el sector.', refs:[]},
+  {sec:'s6', item:'P25–P26', var:'Preferencia por productos locales y comportamiento sustentable efectivo', src:['t-o'], just:'Indicador: perfil e intereses del turista sostenible. P26 opera como medida de comportamiento real declarado, lo que permite contrastar la actitud hacia la sostenibilidad (P23–P25) con la conducta efectiva durante el viaje, distinción metodológicamente relevante para la caracterización del segmento objetivo.', refs:[]},
+  {sec:'s7', secLabel:'Sección 7 — Intención futura', item:'P27', var:'Probabilidad de retorno al destino en los próximos dos años', src:['t-o','t-l'], just:'Indicador: perfil e intereses del turista. Rašovská et al. (2020) y Boley et al. (2017) señalan la intención de retorno como indicador de lealtad al destino, variable relevante para evaluar la efectividad de las estrategias de posicionamiento ZOIT.', refs:[{label:'Rašovská et al. (2020)',doi:'10.1177/1354816620903913'},{label:'Boley et al. (2017)',doi:'10.1016/j.tourman.2016.10.002'}]},
+  {sec:'s7', item:'P28', var:'Probabilidad de recomendar el destino a familiares o amigos', src:['t-o','t-z'], just:'Indicador: perfil del turista. Opera como proxy del Net Promoter Score (NPS), medida estándar de satisfacción y lealtad que informa la capacidad del destino para generar recomendación boca a boca, canal identificado en P15 como el más relevante para la difusión de ambas ZOIT.', refs:[]},
+  {sec:'s7', item:'P29', var:'Disposición a gastar más ante mayor calidad y sostenibilidad en futura visita', src:['t-o'], just:'Indicador: rango de DAP en perspectiva futura. Complementa los escenarios hipotéticos de la Sección 6 con una medida de DAP orientada al desarrollo del destino, relevante para la planificación de inversiones en calidad y sostenibilidad de la oferta ZOIT.', refs:[]},
+  {sec:'s8', secLabel:'Sección 8 — Perfil socioeconómico', item:'P30', var:'Situación laboral actual', src:['t-o'], just:'Variable constitutiva del perfil socioeconómico del turista. Permite identificar segmentos laborales con mayor presencia en el destino y su relación con los patrones de gasto y la valoración de atributos de sostenibilidad.', refs:[]},
+  {sec:'s8', item:'P31', var:'Tramo de ingreso mensual del hogar', src:['t-o','t-l'], just:'Indicador: perfil socioeconómico. Lai y Hitchcock (2015) recomiendan el ingreso como covariable para el análisis de heterogeneidad IPA. Sörensson y von Friedrichs (2013) documentan diferencias sistemáticas en las valoraciones de importancia entre segmentos socioeconómicos. Suryawan et al. (2025) señalan que los turistas de mayor ingreso presentan mayor disposición a apoyar iniciativas de conservación.', refs:[{label:'Lai & Hitchcock (2015)',doi:'10.1016/j.tourman.2014.11.008'},{label:'Sörensson & von Friedrichs (2013)',doi:'10.1016/j.jdmm.2012.11.002'},{label:'Suryawan et al. (2025)',doi:'10.1016/j.evalprogplan.2025.102724'}]},
+  {sec:'s8', item:'P32', var:'Frecuencia de viajes turísticos fuera de la región por año', src:['t-o'], just:'Indicador: perfil del turista. Variable que permite caracterizar al turista según su experiencia viajera acumulada, lo que informa la sofisticación de sus expectativas y su familiaridad con estándares de calidad en destinos turísticos.', refs:[]}
+];
+
+function buildAcadTable(data) {
+  const tbody = document.getElementById('acadBody');
+  tbody.innerHTML = '';
+  let lastSec = '';
+  data.forEach(r => {
+    if (r.secLabel && r.secLabel !== lastSec) {
+      lastSec = r.secLabel;
+      const sh = document.createElement('tr');
+      sh.className = 'sh-row';
+      sh.dataset.sec = r.sec;
+      sh.innerHTML = `<td colspan="4">${r.secLabel}</td>`;
+      tbody.appendChild(sh);
+    }
+    const tr = document.createElement('tr');
+    tr.dataset.sec = r.sec;
+    tr.dataset.src = r.src.join(' ');
+    const tags = r.src.map(s => `<span class="tag ${s}">${s==='t-o'?'Objetivo C2':s==='t-z'?'Docs ZOIT':s==='t-b'?'Estudio brechas':'Literatura IPA'}</span>`).join(' ');
+    const refLinks = r.refs.map(ref => `<a class="ref-link" href="https://doi.org/${ref.doi}" target="_blank">${ref.label}</a>`).join('');
+    tr.innerHTML = `<td style="color:#8A857C;font-size:12px">${r.secLabel||''}</td>
+      <td><div class="q-pn">${r.item}</div></td>
+      <td><div class="q-pt">${r.var}</div></td>
+      <td class="just-text">${tags} ${r.just}${refLinks?`<div class="refs">${refLinks}</div>`:''}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterTable() {
+  const sec = document.getElementById('fSec').value;
+  const fuente = document.getElementById('fFuente').value;
+  const filtered = rows.filter(r => {
+    const secOk = !sec || r.sec === sec;
+    const fuenteOk = !fuente || r.src.includes(fuente);
+    return secOk && fuenteOk;
+  });
+  buildAcadTable(filtered);
+  document.getElementById('tStats').textContent = filtered.length + ' ítem' + (filtered.length !== 1 ? 's' : '') + ' mostrado' + (filtered.length !== 1 ? 's' : '');
+  document.getElementById('noRes').classList.toggle('hidden', filtered.length > 0);
+  document.getElementById('acadTable').classList.toggle('hidden', filtered.length === 0);
+}
+
+buildAcadTable(rows);
+filterTable();
+</script>
+</body>
+</html>

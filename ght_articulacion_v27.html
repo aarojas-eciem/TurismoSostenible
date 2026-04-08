@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Articulación GHT · Historia Sankey</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3f4f7;
+    --card: #ffffff;
+    --ink: #173b71;
+    --muted: #5f6b7a;
+    --line: #d7dce5;
+    --blue: #1f5fbf;
+    --sky: #71bde7;
+    --purple: #9d66d6;
+    --coral: #e66b5b;
+    --gold: #e0b112;
+    --teal: #3ea39e;
+    --chip: #eef3fb;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); }
+  .page { max-width: 1500px; margin: 0 auto; padding: 22px 22px 40px; }
+  .hero {
+    background: linear-gradient(135deg, #ffffff 0%, #eef4fb 100%);
+    border: 1px solid var(--line); border-radius: 20px;
+    padding: 26px 28px 22px;
+    box-shadow: 0 12px 30px rgba(31,95,191,0.06);
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 18px; align-items: start; }
+  .kicker {
+    display: inline-block; background: #d9ebff; color: var(--blue);
+    font-weight: 700; padding: 7px 12px; border-radius: 999px;
+    font-size: 12px; letter-spacing: .2px;
+  }
+  h1 { margin: 12px 0 10px; font-size: 40px; line-height: 1.08; letter-spacing: -1px; max-width: 980px; }
+  .subtitle { font-size: 17px; line-height: 1.45; color: var(--muted); max-width: 950px; }
+  .summary-panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+  .summary-panel h3 { margin: 0 0 12px; font-size: 15px; }
+  .summary-list { display: grid; gap: 12px; }
+  .summary-item { display: grid; grid-template-columns: 52px 1fr; gap: 12px; align-items: start; }
+  .summary-num { background: #1f5fbf; color: white; font-weight: 800; border-radius: 12px; text-align: center; padding: 12px 6px; font-size: 22px; line-height: 1; }
+  .summary-copy { color: var(--muted); font-size: 14px; line-height: 1.4; padding-top: 4px; }
+  .summary-copy b { color: var(--ink); }
+  .tabs-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tab-btn {
+    appearance: none; border: 1px solid var(--line); background: var(--card);
+    color: var(--ink); border-radius: 999px; padding: 10px 18px;
+    font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .15s ease;
+  }
+  .tab-btn:hover { border-color: #b9c7dd; transform: translateY(-1px); }
+  .tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); box-shadow: 0 8px 18px rgba(31,95,191,0.18); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .layout { margin-top: 18px; display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 18px; align-items: start; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-bottom: 18px; }
+  .sankey-wrap { border-radius: 16px; background: #fafbfe; border: 1px solid #e5e9f0; min-height: 580px; overflow: hidden; position: relative; }
+  svg { display: block; width: 100%; }
+  .caption { font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 10px; }
+  .sidebar { position: sticky; top: 18px; }
+  .info-card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-bottom: 14px; }
+  .info-card h3 { margin: 0 0 8px; font-size: 19px; line-height: 1.2; }
+  .info-card p { margin: 0 0 12px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+  .meta-grid { display: grid; gap: 9px; }
+  .meta-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; font-size: 13px; color: var(--muted); padding-bottom: 7px; border-bottom: 1px dashed #e2e8f0; }
+  .meta-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .meta-row b { color: var(--ink); }
+  .legend { display: grid; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+  .dot { width: 12px; height: 12px; border-radius: 4px; flex: 0 0 auto; }
+  .footer-note { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+  .node rect { cursor: pointer; stroke: rgba(20,45,90,0.15); stroke-width: 1; }
+  .node text { font-size: 11px; fill: #20324d; pointer-events: none; }
+  .link { fill: none; stroke: rgba(140,145,155,0.42); stroke-opacity: 1; cursor: pointer; transition: stroke .15s ease; }
+  .link:hover { stroke: rgba(31,95,191,0.55); }
+  .active-link { stroke: rgba(31,95,191,0.75) !important; }
+  .tooltip { position: fixed; pointer-events: none; background: rgba(23,59,113,0.96); color: white; padding: 10px 12px; border-radius: 10px; font-size: 12px; line-height: 1.4; max-width: 280px; opacity: 0; z-index: 999; box-shadow: 0 10px 24px rgba(0,0,0,0.18); }
+  .vista-sep { margin: 24px 0 8px; padding-bottom: 8px; border-bottom: 2px solid var(--line); display: flex; align-items: flex-start; gap: 12px; }
+  .vista-sep .vnum { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: white; background: linear-gradient(135deg, var(--sky), var(--blue)); flex-shrink: 0; margin-top: 2px; }
+  .vista-sep h3 { margin: 0 0 4px; font-size: 17px; }
+  .narrativa { background: linear-gradient(135deg,#f0f5ff,#e8f4fb); border: 1px solid #c8d8f0; border-radius: 16px; padding: 18px 22px; margin-bottom: 18px; font-size: 14px; line-height: 1.7; color: #2a3a5c; }
+  .narrativa strong { color: #1f5fbf; }
+  .lectura-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 16px; }
+  .lectura-card h3 { margin: 0 0 14px; font-size: 15px; }
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .kpi-item { background: #f4f7fc; border-radius: 12px; padding: 10px 12px; }
+  .kpi-item .kpi-val { font-size: 26px; font-weight: 800; color: #1f5fbf; line-height: 1; }
+  .kpi-item .kpi-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.3; }
+  .sub-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .sub-chip { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  @media (max-width: 1200px) { .layout { grid-template-columns: 1fr; } .sidebar { position: relative; top: auto; } .hero-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 800px) { h1 { font-size: 28px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker">Sector Gastronomía, Hotelería y Turismo</span>
+        <h1>Articulación entre certificación laboral y continuidad de estudios en educación superior</h1>
+        <div class="subtitle">
+          Visualización de los perfiles ocupacionales del sector Gastronomía, Hotelería y Turismo con articulación formal en educación superior.
+          Un <em>convenio de articulación</em> es el acuerdo mediante el cual una institución de educación superior reconoce y convalida asignaturas de sus programas a personas con certificación ocupacional ChileValora vigente.
+          <b>Chile: universo nacional</b> presenta el universo completo de convenios registrados ·
+          <b>Región de Coquimbo</b> presenta los convenios presenciales de la región más la oferta a distancia disponible a escala nacional.
+        </div>
+      </div>
+      <div class="summary-panel">
+        <h3>Lectura ejecutiva</h3>
+        <div class="summary-list">
+          <div class="summary-item">
+            <div class="summary-num" id="hero-articulan">13</div>
+            <div class="summary-copy">Perfiles con articulación sobre un universo de <b>38</b> perfiles sectoriales.</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-num" style="background:#9d66d6" id="hero-regiones">16</div>
+            <div class="summary-copy">Regiones con convenios presenciales activos en la base.</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-num" style="background:#3ea39e" id="hero-convenios">172</div>
+            <div class="summary-copy">Convenios totales observados (167 presenciales + 5 a distancia).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="margin-top:18px;">
+    <div class="tabs-nav">
+      <button class="tab-btn active" type="button" data-tab="tab-nacional">Chile: universo nacional</button>
+      <button class="tab-btn" type="button" data-tab="tab-coquimbo">Región de Coquimbo</button>
+    </div>
+  </div>
+
+  <!-- TAB NACIONAL -->
+  <div class="tab-panel active" id="tab-nacional">
+    <div class="layout" style="margin-top:14px;">
+      <main>
+        <div class="narrativa" id="narrativa-nacional"></div>
+
+        <div class="vista-sep">
+          <div class="vnum">2.1</div>
+          <div>
+            <h3>Correspondencia entre perfiles ocupacionales e instituciones de educación superior</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de carreras que cada institución ofrece en convenio para ese perfil.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="n_sankey1" class="sankey-wrap"></div>
+          <div id="n_sankey1Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+
+        <div class="vista-sep">
+          <div class="vnum" style="background:linear-gradient(135deg,#8f78d8,#1f5fbf)">2.2</div>
+          <div>
+            <h3>Profundidad del reconocimiento académico por perfil y carrera</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el promedio de asignaturas convalidadas en cada par perfil–carrera.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="n_sankey2" class="sankey-wrap"></div>
+          <div id="n_sankey2Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+
+        <div class="vista-sep">
+          <div class="vnum" style="background:linear-gradient(135deg,#3ea39e,#1f5fbf)">2.3</div>
+          <div>
+            <h3>Trayectoria formativa completa: perfil ocupacional, institución, carrera y modalidad</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de registros de convenio observados en cada tramo de la ruta.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="n_sankey3" class="sankey-wrap"></div>
+          <div id="n_sankey3Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="lectura-card">
+          <h3>Indicadores clave</h3>
+          <div class="kpi-grid" id="n-kpis"></div>
+          <div class="sub-chips" id="n-subsectores"></div>
+        </div>
+        <div class="info-card">
+          <h3>Panel de lectura</h3>
+          <p>Selecciona un nodo o flujo para ver detalle.</p>
+          <div class="meta-grid" id="n_selectionPanel"></div>
+        </div>
+        <div class="info-card">
+          <h3>Convenciones visuales</h3>
+          <div class="legend">
+            <div class="legend-item"><span class="dot" style="background:var(--coral)"></span> Gastronomía</div>
+            <div class="legend-item"><span class="dot" style="background:var(--gold)"></span> Hotelería</div>
+            <div class="legend-item"><span class="dot" style="background:var(--teal)"></span> Turismo</div>
+            <div class="legend-item"><span class="dot" style="background:var(--blue)"></span> Instituciones</div>
+            <div class="legend-item"><span class="dot" style="background:var(--sky)"></span> Carreras</div>
+            <div class="legend-item"><span class="dot" style="background:var(--purple)"></span> Modalidad</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- TAB COQUIMBO -->
+  <div class="tab-panel" id="tab-coquimbo">
+    <div class="layout" style="margin-top:14px;">
+      <main>
+        <div class="narrativa" id="narrativa-coquimbo"></div>
+
+        <div class="vista-sep">
+          <div class="vnum">2.1</div>
+          <div>
+            <h3>Correspondencia entre perfiles ocupacionales e instituciones de educación superior</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de carreras que cada institución ofrece en convenio para ese perfil.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="c_sankey1" class="sankey-wrap"></div>
+          <div id="c_sankey1Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+
+        <div class="vista-sep">
+          <div class="vnum" style="background:linear-gradient(135deg,#8f78d8,#1f5fbf)">2.2</div>
+          <div>
+            <h3>Profundidad del reconocimiento académico por perfil y carrera</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el promedio de asignaturas convalidadas en cada par perfil–carrera.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="c_sankey2" class="sankey-wrap"></div>
+          <div id="c_sankey2Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+
+        <div class="vista-sep">
+          <div class="vnum" style="background:linear-gradient(135deg,#3ea39e,#1f5fbf)">2.3</div>
+          <div>
+            <h3>Trayectoria formativa completa: perfil ocupacional, institución, carrera y modalidad</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de registros de convenio observados en cada tramo de la ruta.</span>
+          </div>
+        </div>
+        <div class="panel">
+          <div id="c_sankey3" class="sankey-wrap"></div>
+          <div id="c_sankey3Meta" class="caption" style="margin-top:8px;font-weight:600;color:#173b71;"></div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="lectura-card">
+          <h3>Indicadores clave</h3>
+          <div class="kpi-grid" id="c-kpis"></div>
+          <div class="sub-chips" id="c-subsectores"></div>
+        </div>
+        <div class="info-card">
+          <h3>Panel de lectura</h3>
+          <p>Selecciona un nodo o flujo para ver detalle.</p>
+          <div class="meta-grid" id="c_selectionPanel"></div>
+        </div>
+        <div class="info-card">
+          <h3>Convenciones visuales</h3>
+          <div class="legend">
+            <div class="legend-item"><span class="dot" style="background:var(--coral)"></span> Gastronomía</div>
+            <div class="legend-item"><span class="dot" style="background:var(--gold)"></span> Hotelería</div>
+            <div class="legend-item"><span class="dot" style="background:var(--teal)"></span> Turismo</div>
+            <div class="legend-item"><span class="dot" style="background:var(--blue)"></span> Instituciones</div>
+            <div class="legend-item"><span class="dot" style="background:var(--sky)"></span> Carreras</div>
+            <div class="legend-item"><span class="dot" style="background:var(--purple)"></span> Modalidad</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="footer-note" style="padding:2px 4px 0 4px;">
+    Fuente: Elaboración propia en base a estadísticas disponibles en ChileValora.
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const ALL_DATA = [{"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CFT ESTATAL DE SANTIAGO", "carrera": "T\u00e9cnico Nivel Superior en Contabilidad General", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 4, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "UNIVERSIDAD DE PLAYA ANCHA", "carrera": "T\u00e9cnico en Administraci\u00f3n Log\u00edstica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRI\u00d3N(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 2, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Producci\u00f3n de eventos", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-5132-001-V03", "perfil": "BARTENDER", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 5132, "modalidad": "Presencial"}, {"codigo": "P-5600-5132-001-V03", "perfil": "BARTENDER", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 1, "ciuo": 5132, "modalidad": "Presencial"}, {"codigo": "P-5600-5132-001-V03", "perfil": "BARTENDER", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 5132, "modalidad": "Presencial"}, {"codigo": "P-5600-5132-001-V03", "perfil": "BARTENDER", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 1, "ciuo": 5132, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 4, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "ARICA Y PARINACOTA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "ATACAMA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "AYS\u00c9N", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "LOS LAGOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "MAGALLANES Y ANT\u00c1RTICA CHILENA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "\u00d1UBLE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ARICA Y PARINACOTA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "ATACAMA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "AYS\u00c9N", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "LOS LAGOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "MAGALLANES Y ANT\u00c1RTICA CHILENA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "Administraci\u00f3n de Artes Culinarias y Servicios", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "CULINARY", "carrera": "T\u00e9cnico en Artes Culinarias", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "\u00d1UBLE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 1, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ARAUCAN\u00cdA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ARICA Y PARINACOTA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "ATACAMA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "AYS\u00c9N", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "B\u00cdO-B\u00cdO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "LOS LAGOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "LOS R\u00cdOS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "MAGALLANES Y ANT\u00c1RTICA CHILENA", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "MAULE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACI\u00d3N EN EMPRESAS GASTRON\u00d3MICAS", "asign": 1, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "GASTRONOM\u00cdA INTERNACIONAL", "asign": 1, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "TARAPAC\u00c1", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "VALPARA\u00cdSO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "\u00d1UBLE", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5510-4224-001-V03", "perfil": "RECEPCIONISTA", "subsector": "HOTELER\u00cdA", "region": "COQUIMBO", "institucion": "CFT ESTATAL COQUIMBO", "carrera": "T\u00e9cnico Nivel Superior en Turismo", "asign": 1, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "ANTOFAGASTA", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "ARAUCAN\u00cdA", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "B\u00cdO-B\u00cdO", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "LOS LAGOS", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "LOS LAGOS", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "MAGALLANES Y ANT\u00c1RTICA CHILENA", "institucion": "CFT ESTATAL DE MAGALLANES", "carrera": "T\u00e9cnico Nivel Superior en Ecoturismo y Sustentabilidad", "asign": 1, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "MAULE", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "O'HIGGINS", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-5249-004-V02", "perfil": "EJECUTIVO(A) DE VENTAS TOUR OPERADOR", "subsector": "TURISMO", "region": "MAGALLANES Y ANT\u00c1RTICA CHILENA", "institucion": "CFT ESTATAL DE MAGALLANES", "carrera": "T\u00e9cnico Nivel Superior en Ecoturismo y Sustentabilidad", "asign": 1, "ciuo": 5249, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-003-V02", "perfil": "JEFE(A) DE PRODUCTOS TUR\u00cdSTICOS", "subsector": "TURISMO", "region": "ANTOFAGASTA", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 1, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-003-V02", "perfil": "JEFE(A) DE PRODUCTOS TUR\u00cdSTICOS", "subsector": "TURISMO", "region": "ARAUCAN\u00cdA", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 1, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-003-V02", "perfil": "JEFE(A) DE PRODUCTOS TUR\u00cdSTICOS", "subsector": "TURISMO", "region": "B\u00cdO-B\u00cdO", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 1, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-7912-4221-003-V02", "perfil": "JEFE(A) DE PRODUCTOS TUR\u00cdSTICOS", "subsector": "TURISMO", "region": "LOS LAGOS", "institucion": "IP SANTO TOM\u00c1S", "carrera": "T\u00e9cnico en Gesti\u00f3n tur\u00edstica PLAN 6", "asign": 1, "ciuo": 4221, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "Ingenier\u00eda en Administraci\u00f3n de Empresas", "asign": 6, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "T\u00e9cnico Nivel Superior en Log\u00edstica", "asign": 2, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "T\u00e9cnico Nivel Superior en Recursos Humanos", "asign": 1, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "UNIVERSIDAD MAYOR", "carrera": "T\u00e9cnico Universitario en Administraci\u00f3n de Empresas", "asign": 4, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "Online", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Online"}];
+
+const COQ_DATA = [{"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1439, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 3, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 3434, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACI\u00d3N", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 1, "ciuo": 5246, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 7512, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administraci\u00f3n Gastron\u00f3mica", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE L\u00cdNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOM\u00cdA", "region": "COQUIMBO", "institucion": "INACAP", "carrera": "Gastronom\u00eda", "asign": 2, "ciuo": 1412, "modalidad": "Presencial"}, {"codigo": "P-5510-4224-001-V03", "perfil": "RECEPCIONISTA", "subsector": "HOTELER\u00cdA", "region": "COQUIMBO", "institucion": "CFT ESTATAL COQUIMBO", "carrera": "T\u00e9cnico Nivel Superior en Turismo", "asign": 1, "ciuo": 4224, "modalidad": "Presencial"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "Ingenier\u00eda en Administraci\u00f3n de Empresas", "asign": 6, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "T\u00e9cnico Nivel Superior en Log\u00edstica", "asign": 2, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "IACC", "carrera": "T\u00e9cnico Nivel Superior en Recursos Humanos", "asign": 1, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRON\u00d3MICOS", "subsector": "GASTRONOM\u00cdA", "region": "Online", "institucion": "UNIVERSIDAD MAYOR", "carrera": "T\u00e9cnico Universitario en Administraci\u00f3n de Empresas", "asign": 4, "ciuo": 1439, "modalidad": "Online"}, {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "region": "Online", "institucion": "AIEP", "carrera": "T\u00c9CNICO EN TURISMO", "asign": 2, "ciuo": 4221, "modalidad": "Online"}];
+
+const META = {"P-5600-1439-001-V02": {"codigo": "P-5600-1439-001-V02", "perfil": "ADMINISTRADOR(A) DE ESTABLECIMIENTOS GASTRONÓMICOS", "subsector": "GASTRONOMÍA", "ucls": 4, "estado": "Presencial + Online", "conv_presencial": 19, "inst_presencial": 5, "carr_presencial": 7, "max_presencial": 4, "conv_online": 4, "inst_online": 2, "carr_online": 4, "max_online": 6}, "P-7912-4221-001-V04": {"codigo": "P-7912-4221-001-V04", "perfil": "AGENTE DE VIAJES", "subsector": "TURISMO", "ucls": 3, "estado": "Presencial + Online", "conv_presencial": 9, "inst_presencial": 3, "carr_presencial": 3, "max_presencial": 2, "conv_online": 1, "inst_online": 1, "carr_online": 1, "max_online": 2}, "P-7912-4224-001-V03": {"codigo": "P-7912-4224-001-V03", "perfil": "ANFITRIÓN(A)", "subsector": "GASTRONOMÍA", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 6, "inst_presencial": 1, "carr_presencial": 3, "max_presencial": 2, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-3434-003-V01": {"codigo": "P-5600-3434-003-V01", "perfil": "BANQUETERO(A)", "subsector": "GASTRONOMÍA", "ucls": 8, "estado": "Solo Presencial", "conv_presencial": 13, "inst_presencial": 3, "carr_presencial": 3, "max_presencial": 4, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-5132-001-V03": {"codigo": "P-5600-5132-001-V03", "perfil": "BARTENDER", "subsector": "GASTRONOMÍA", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 4, "inst_presencial": 1, "carr_presencial": 2, "max_presencial": 1, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-3434-001-V02": {"codigo": "P-5600-3434-001-V02", "perfil": "CHEF EJECUTIVO", "subsector": "GASTRONOMÍA", "ucls": 4, "estado": "Solo Presencial", "conv_presencial": 15, "inst_presencial": 3, "carr_presencial": 4, "max_presencial": 4, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-3434-002-V02": {"codigo": "P-5600-3434-002-V02", "perfil": "JEFE(A) DE PARTIDA", "subsector": "GASTRONOMÍA", "ucls": 3, "estado": "Solo Presencial", "conv_presencial": 11, "inst_presencial": 2, "carr_presencial": 2, "max_presencial": 2, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-5246-002-V01": {"codigo": "P-5600-5246-002-V01", "perfil": "OPERADOR(A) DE SERVICIOS DE ALIMENTACIÓN", "subsector": "GASTRONOMÍA", "ucls": 4, "estado": "Solo Presencial", "conv_presencial": 24, "inst_presencial": 1, "carr_presencial": 2, "max_presencial": 1, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-7512-001-V03": {"codigo": "P-5600-7512-001-V03", "perfil": "PASTELERO(A)", "subsector": "GASTRONOMÍA", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 32, "inst_presencial": 3, "carr_presencial": 6, "max_presencial": 2, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5600-1412-003-V02": {"codigo": "P-5600-1412-003-V02", "perfil": "SUPERVISOR(A) DE LÍNEA DE SERVICIOS DE CASINO", "subsector": "GASTRONOMÍA", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 28, "inst_presencial": 2, "carr_presencial": 4, "max_presencial": 2, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-5510-4224-001-V03": {"codigo": "P-5510-4224-001-V03", "perfil": "RECEPCIONISTA", "subsector": "HOTELERÍA", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 1, "inst_presencial": 1, "carr_presencial": 1, "max_presencial": 1, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-7912-5249-004-V02": {"codigo": "P-7912-5249-004-V02", "perfil": "EJECUTIVO(A) DE VENTAS TOUR OPERADOR", "subsector": "TURISMO", "ucls": 2, "estado": "Solo Presencial", "conv_presencial": 1, "inst_presencial": 1, "carr_presencial": 1, "max_presencial": 1, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}, "P-7912-4221-003-V02": {"codigo": "P-7912-4221-003-V02", "perfil": "JEFE(A) DE PRODUCTOS TURÍSTICOS", "subsector": "TURISMO", "ucls": 3, "estado": "Solo Presencial", "conv_presencial": 4, "inst_presencial": 1, "carr_presencial": 1, "max_presencial": 1, "conv_online": 0, "inst_online": 0, "carr_online": 0, "max_online": 0}};
+
+const COLORS = {
+  "GASTRONOMÍA": "#e66b5b", "HOTELERÍA": "#e0b112", "TURISMO": "#3ea39e",
+  "Institución": "#1f5fbf", "Carrera": "#71bde7", "Modalidad": "#9d66d6", "Perfil": "#20324d"
+};
+const SUB_COLORS = {"GASTRONOMÍA":"#e66b5b","HOTELERÍA":"#e0b112","TURISMO":"#3ea39e"};
+const tooltip = document.getElementById('tooltip');
+
+// TABS
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+function shorten(t, max=34) { return t.length > max ? t.slice(0,max-1)+'…' : t; }
+function format1(x) { return Number(x||0).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+function showTooltip(e, html) { tooltip.innerHTML = html; tooltip.style.opacity = 1; tooltip.style.left = (e.clientX+16)+'px'; tooltip.style.top = (e.clientY-20)+'px'; }
+function hideTooltip() { tooltip.style.opacity = 0; }
+function labelForType(t) { return {'perfil':'Perfil','institucion':'Institución','carrera':'Carrera','modalidad':'Modalidad'}[t]||t; }
+
+function dedupeNodes(nodes) {
+  const seen = new Set();
+  return nodes.filter(n => { if (seen.has(n.id)) return false; seen.add(n.id); return true; });
+}
+function toSankeyFormat(nodes, links) {
+  return { nodes, links: links.map(l => ({...l, source: typeof l.source==='object'?l.source.id:l.source, target: typeof l.target==='object'?l.target.id:l.target})) };
+}
+function pruneGraph(graph) {
+  const used = new Set();
+  graph.links.forEach(l => { const s=typeof l.source==='object'?l.source.id:l.source; const t=typeof l.target==='object'?l.target.id:l.target; used.add(s); used.add(t); });
+  const nodes = dedupeNodes(graph.nodes.filter(n => used.has(n.id)));
+  const links = graph.links.map(l => ({...l, source:typeof l.source==='object'?l.source.id:l.source, target:typeof l.target==='object'?l.target.id:l.target})).filter(l => used.has(l.source)&&used.has(l.target));
+  return toSankeyFormat(nodes, links);
+}
+
+function buildSankey1(data) {
+  const grouped = d3.rollups(data, v => { const carreras=Array.from(new Set(v.map(d=>d.carrera))); return {value:carreras.length,carreras,modalidades:Array.from(new Set(v.map(d=>d.modalidad))),regiones:Array.from(new Set(v.map(d=>d.region)))}; }, d=>d.codigo, d=>d.institucion);
+  const nodes=[]; const idx=new Map();
+  function addNode(id,name,type,color,meta={}) { if(!idx.has(id)){idx.set(id,nodes.length);nodes.push({id,name,type,color,meta});} return idx.get(id); }
+  const links=[];
+  grouped.forEach(([codigo,insts]) => { const meta=META[codigo]; const pId=`p|${codigo}`; addNode(pId,meta.perfil,'perfil',COLORS[meta.subsector],meta); insts.forEach(([institucion,info]) => { const iId=`i|${institucion}`; addNode(iId,institucion,'institucion',COLORS['Institución'],{institucion}); links.push({source:pId,target:iId,value:info.value,detailType:'perfil_institucion',detail:{codigo,perfil:meta.perfil,institucion,carreras:info.carreras.sort(),modalidades:info.modalidades.sort(),regiones:info.regiones.sort(),countCarreras:info.value}}); }); });
+  return pruneGraph(toSankeyFormat(nodes, links));
+}
+
+function buildSankey2(data) {
+  const grouped = d3.rollups(data, v => { const a=v.map(d=>+d.asign); return {value:d3.mean(a),min:d3.min(a),max:d3.max(a),instituciones:Array.from(new Set(v.map(d=>d.institucion))).sort(),modalidades:Array.from(new Set(v.map(d=>d.modalidad))).sort()}; }, d=>d.codigo, d=>d.carrera);
+  const nodes=[]; const idx=new Map();
+  function addNode(id,name,type,color,meta={}) { if(!idx.has(id)){idx.set(id,nodes.length);nodes.push({id,name,type,color,meta});} return idx.get(id); }
+  const links=[];
+  grouped.forEach(([codigo,carrs]) => { const meta=META[codigo]; const pId=`p|${codigo}`; addNode(pId,meta.perfil,'perfil',COLORS[meta.subsector],meta); carrs.forEach(([carrera,info]) => { const cId=`c|${carrera}`; addNode(cId,carrera,'carrera',COLORS['Carrera'],{carrera}); links.push({source:pId,target:cId,value:info.value||0.001,detailType:'perfil_carrera',detail:{codigo,perfil:meta.perfil,carrera,promedio:info.value,minimo:info.min,maximo:info.max,instituciones:info.instituciones,modalidades:info.modalidades}}); }); });
+  return pruneGraph(toSankeyFormat(nodes, links));
+}
+
+function buildSankey3(data) {
+  const nodes=[]; const idx=new Map(); const linkMap=new Map();
+  function addNode(id,name,type,color,meta={}) { if(!idx.has(id)){idx.set(id,nodes.length);nodes.push({id,name,type,color,meta});} }
+  function addLink(s,t,raw,kind) { const k=`${s}>>>${t}`; if(!linkMap.has(k))linkMap.set(k,{source:s,target:t,value:0,raws:[],kind}); const e=linkMap.get(k); e.value+=1; e.raws.push(raw); }
+  data.forEach(r => { const meta=META[r.codigo]; const pId=`p|${r.codigo}`; const iId=`i|${r.institucion}`; const cId=`c|${r.institucion}|${r.carrera}`; const mId=`m|${r.modalidad}`; addNode(pId,meta.perfil,'perfil',COLORS[meta.subsector],meta); addNode(iId,r.institucion,'institucion',COLORS['Institución'],{institucion:r.institucion}); addNode(cId,r.carrera,'carrera',COLORS['Carrera'],{carrera:r.carrera}); addNode(mId,r.modalidad,'modalidad',COLORS['Modalidad'],{modalidad:r.modalidad}); addLink(pId,iId,r,'perfil_institucion'); addLink(iId,cId,r,'institucion_carrera'); addLink(cId,mId,r,'carrera_modalidad'); });
+  const links=Array.from(linkMap.values()).map(e => { const a=e.raws.map(r=>+r.asign); return {source:e.source,target:e.target,value:e.value,detailType:e.kind,detail:{registros:e.value,promedio:d3.mean(a),minimo:d3.min(a),maximo:d3.max(a),instituciones:Array.from(new Set(e.raws.map(r=>r.institucion))).sort(),carreras:Array.from(new Set(e.raws.map(r=>r.carrera))).sort(),modalidades:Array.from(new Set(e.raws.map(r=>r.modalidad))).sort(),regiones:Array.from(new Set(e.raws.map(r=>r.region))).sort()}}; });
+  return pruneGraph(toSankeyFormat(nodes, links));
+}
+
+function renderSankey(containerId, graph, options={}) {
+  const old = document.getElementById(containerId);
+  const fresh = document.createElement('div');
+  fresh.id = containerId; fresh.className = old.className;
+  old.parentNode.replaceChild(fresh, old);
+  const width = Math.max(fresh.clientWidth, 700);
+  if (!graph.nodes.length || !graph.links.length) { fresh.innerHTML = '<div style="min-height:300px;display:flex;align-items:center;justify-content:center;color:#5f6b7a;">Sin datos para mostrar.</div>'; return; }
+  const safeGraph = pruneGraph(graph);
+  const nc = safeGraph.nodes.length;
+  const isCoqS3 = containerId === 'c_sankey3';
+  const height = Math.max(isCoqS3 ? 700 : 500, nc * (containerId.includes('3') ? 40 : 28));
+  const svg = d3.select(fresh).append('svg').attr('viewBox',`0 0 ${width} ${height}`).attr('width',width).attr('height',height).attr('preserveAspectRatio','xMidYMin meet');
+  const sankey = d3.sankey().nodeId(d=>d.id).nodeWidth(options.nodeWidth||15).nodePadding(options.nodePadding||14).nodeAlign(options.nodeAlign||d3.sankeyJustify).nodeSort((a,b)=>d3.descending(a.value||0,b.value||0)||d3.ascending(a.name,b.name)).extent([[18,16],[width-18,height-16]]);
+  let data;
+  try { data = sankey({nodes:safeGraph.nodes.map(d=>({...d})),links:safeGraph.links.map(d=>({...d}))}); }
+  catch(e) { fresh.innerHTML = '<div style="min-height:300px;display:flex;align-items:center;justify-content:center;color:#5f6b7a;">Error al renderizar.</div>'; return; }
+  const prefix = containerId.startsWith('n_') ? 'n' : 'c';
+  const linkSel = svg.append('g').attr('fill','none').selectAll('path').data(data.links).join('path').attr('class','link').attr('d',d3.sankeyLinkHorizontal()).attr('stroke-width',d=>Math.max(1.4,d.width))
+    .on('mousemove',(event,d)=>{ const body=d.detailType==='perfil_institucion'?`<b>${d.detail.perfil}</b><br>Institución: ${d.detail.institucion}<br>Carreras: ${d.detail.countCarreras}`:d.detailType==='perfil_carrera'?`<b>${d.detail.perfil}</b><br>Carrera: ${d.detail.carrera}<br>Promedio: ${format1(d.detail.promedio)}`:`<b>Flujo</b><br>Registros: ${d.detail?.registros||d.value}`; showTooltip(event,body); })
+    .on('mouseleave',hideTooltip)
+    .on('click',function(event,d){ linkSel.classed('active-link',false); d3.select(this).classed('active-link',true); updateSelectionFromLink(d,prefix); });
+  const node = svg.append('g').selectAll('g').data(data.nodes).join('g').attr('class','node');
+  node.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('height',d=>Math.max(8,d.y1-d.y0)).attr('width',d=>d.x1-d.x0).attr('fill',d=>d.color).on('mousemove',(e,d)=>showTooltip(e,`<b>${d.name}</b><br>${labelForType(d.type)}`)).on('mouseleave',hideTooltip).on('click',(e,d)=>updateSelectionFromNode(d,prefix));
+  node.append('text').attr('x',d=>d.x0<width/2?d.x1+7:d.x0-7).attr('y',d=>(d.y0+d.y1)/2).attr('dy','0.35em').attr('text-anchor',d=>d.x0<width/2?'start':'end').text(d=>shorten(d.name,d.type==='perfil'?33:30));
+}
+
+function renderSelection(prefix, rows) {
+  const el = document.getElementById(prefix+'_selectionPanel');
+  if (el) el.innerHTML = rows.map(([k,v])=>`<div class="meta-row"><span>${k}</span><b>${v||'—'}</b></div>`).join('');
+}
+function updateSelectionFromNode(d, prefix) {
+  let rows = [];
+  if (d.type==='perfil') { const m=META[d.meta?.codigo]||d.meta||{}; rows=[['Tipo','Perfil'],['Nombre',d.name],['Código',m.codigo||'—'],['Subsector',m.subsector||'—'],['Estado',m.estado||'—'],['Conv. presenciales',m.conv_presencial??'—'],['Conv. online',m.conv_online??'—'],['Carreras presenciales',m.carr_presencial??'—'],['Carreras online',m.carr_online??'—']]; }
+  else { rows=[['Tipo',labelForType(d.type)],['Nombre',d.name]]; }
+  renderSelection(prefix, rows);
+}
+function updateSelectionFromLink(d, prefix) {
+  let rows = [];
+  if (d.detailType==='perfil_institucion') { rows=[['Tipo de flujo','Perfil → Institución'],['Perfil',d.detail.perfil],['Código',d.detail.codigo],['Institución',d.detail.institucion],['Carreras distintas',d.detail.countCarreras],['Modalidades',d.detail.modalidades?.join(', ')],['Regiones',d.detail.regiones?.join(', ')],['Carreras',d.detail.carreras?.join(' · ')]]; }
+  else if (d.detailType==='perfil_carrera') { rows=[['Tipo de flujo','Perfil → Carrera'],['Perfil',d.detail.perfil],['Código',d.detail.codigo],['Carrera',d.detail.carrera],['Promedio asignaturas',format1(d.detail.promedio)],['Mínimo',d.detail.minimo],['Máximo',d.detail.maximo],['Instituciones',d.detail.instituciones?.join(', ')],['Modalidades',d.detail.modalidades?.join(', ')]]; }
+  else { rows=[['Tipo de flujo',d.detailType?.replaceAll('_',' → ')],['Registros',d.detail?.registros??d.value],['Promedio asignaturas',format1(d.detail?.promedio||0)],['Mínimo',d.detail?.minimo??'—'],['Máximo',d.detail?.maximo??'—'],['Instituciones',d.detail?.instituciones?.join(', ')],['Carreras',d.detail?.carreras?.join(' · ')],['Modalidades',d.detail?.modalidades?.join(', ')],['Regiones',d.detail?.regiones?.join(', ')]]; }
+  renderSelection(prefix, rows);
+}
+
+function computeStats(data) {
+  const perfiles=new Set(data.map(d=>d.codigo)), instituciones=new Set(data.map(d=>d.institucion)), carreras=new Set(data.map(d=>d.institucion+'|'+d.carrera+'|'+d.modalidad));
+  const presencial=data.filter(d=>d.modalidad==='Presencial'), online=data.filter(d=>d.modalidad==='Online');
+  const avg=data.length?data.reduce((s,d)=>s+d.asign,0)/data.length:0;
+  const subs={}; data.forEach(d=>{subs[d.subsector]=(subs[d.subsector]||0)+1;});
+  const instCount={}; data.forEach(d=>{instCount[d.institucion]=(instCount[d.institucion]||0)+1;});
+  const topInst=Object.entries(instCount).sort((a,b)=>b[1]-a[1])[0];
+  return {perfiles:perfiles.size,instituciones:instituciones.size,carreras:carreras.size,presencial:presencial.length,online:online.length,regiones:new Set(presencial.map(d=>d.region)).size,avg,subs,topInst:topInst[0],pctTop:data.length?Math.round(topInst[1]/data.length*100):0};
+}
+
+function renderKPIs(prefix, stats) {
+  const kpis=[[stats.perfiles,'Perfiles con articulación'],[stats.instituciones,'Instituciones receptoras'],[stats.carreras,'Carreras en convenio'],[format1(stats.avg),'Prom. asignaturas convalidadas'],[stats.presencial,'Convenios presenciales'],[stats.online,'Convenios a distancia']];
+  const el=document.getElementById(prefix+'-kpis');
+  if(el) el.innerHTML=kpis.map(([v,l])=>`<div class="kpi-item"><div class="kpi-val">${v}</div><div class="kpi-lbl">${l}</div></div>`).join('');
+  const subEl=document.getElementById(prefix+'-subsectores');
+  if(subEl) subEl.innerHTML=Object.entries(stats.subs).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`<span class="sub-chip" style="background:${SUB_COLORS[s]}22;color:${SUB_COLORS[s]};border:1px solid ${SUB_COLORS[s]}44">${s}: ${n} conv.</span>`).join('');
+}
+
+function renderNarrativa(prefix, stats, data) {
+  const el=document.getElementById('narrativa-'+(prefix==='n'?'nacional':'coquimbo'));
+  if(!el) return;
+  const subsTexto=Object.entries(stats.subs).sort((a,b)=>b[1]-a[1]).map(([s,n])=>`${s.charAt(0)+s.slice(1).toLowerCase()} (${n})`).join(', ');
+  const instPres={}; data.filter(d=>d.modalidad==='Presencial').forEach(d=>{instPres[d.institucion]=(instPres[d.institucion]||0)+1;});
+  const topPres=Object.entries(instPres).sort((a,b)=>b[1]-a[1]);
+  const topPresTexto=topPres.slice(0,2).map(([i,n])=>`${i} (${n} conv.)`).join(' y ');
+  const carrCount={}; data.forEach(d=>{carrCount[d.carrera]=(carrCount[d.carrera]||0)+1;});
+  const topCarr=Object.entries(carrCount).sort((a,b)=>b[1]-a[1])[0];
+  const asignVals=data.map(d=>d.asign).filter(v=>v>0);
+  const asignMax=asignVals.length?Math.max(...asignVals):0;
+  const asignMin=asignVals.length?Math.min(...asignVals):0;
+  const asignSorted=[...asignVals].sort((a,b)=>a-b);
+  const asignMed=asignSorted.length?asignSorted[Math.floor(asignSorted.length/2)]:0;
+  const esNacional=prefix==='n';
+  const contexto=esNacional
+    ?`Del universo de <strong>38 perfiles ocupacionales del sector Gastronomía, Hotelería y Turismo</strong> evaluados por ChileValora, <strong>${stats.perfiles} (${Math.round(stats.perfiles/38*100)}%)</strong> registran articulación formal con al menos una institución de educación superior, evidenciando que aproximadamente un tercio del sector dispone de trayectorias de continuidad formativa con reconocimiento académico explícito. Un <em>convenio de articulación</em> corresponde al acuerdo suscrito entre ChileValora y una institución de educación superior mediante el cual esta última reconoce y convalida asignaturas de sus programas de estudio a personas que acrediten la certificación de un perfil ocupacional.`
+    :`En la Región de Coquimbo, considerando los convenios de articulación presenciales suscritos en la región junto con la oferta de formación a distancia disponible a escala nacional —no territorializada en la base de datos de ChileValora—, se identifican <strong>${stats.perfiles} perfiles ocupacionales</strong> del sector Gastronomía, Hotelería y Turismo con articulación activa, lo que representa el ${Math.round(stats.perfiles/13*100)}% del universo nacional de perfiles articulados.`;
+  const cobertura=esNacional
+    ?`La red de continuidad formativa involucra a <strong>${stats.instituciones} instituciones de educación superior</strong>, con una oferta de <strong>${stats.carreras} programas de estudio distintos</strong> distribuidos en <strong>${stats.regiones} regiones</strong> del territorio nacional, lo que refleja una cobertura geográfica amplia aunque heterogénea en términos de densidad institucional y sectorial.`
+    :`La cobertura institucional en la región descansa principalmente en <strong>${topPresTexto}</strong>, lo que revela una oferta de articulación presencial acotada a un número reducido de actores. A ello se suman ${stats.online} convenios en modalidad a distancia a través de instituciones de alcance nacional, ampliando las posibilidades de continuidad formativa para los trabajadores certificados de la región.`;
+  const profundidad=`En términos de profundidad del reconocimiento académico, el número de asignaturas convalidadas por convenio presenta un promedio de <strong>${format1(stats.avg)}</strong>, con un mínimo de <strong>${asignMin}</strong> y un máximo de <strong>${asignMax}</strong> asignaturas (mediana: ${asignMed}). La distribución por subsector muestra predominio de ${subsTexto}, lo que refleja la estructura productiva dominante en el ámbito analizado.`;
+  const carrera=topCarr?` El programa de estudios con mayor frecuencia de articulación es <strong>${topCarr[0]}</strong>, concentrando ${topCarr[1]} registros de convenio.`:'';
+  el.innerHTML=`<p style="margin:0 0 10px">${contexto}</p><p style="margin:0 0 10px">${cobertura}</p><p style="margin:0">${profundidad}${carrera}</p>`;
+}
+
+function setSankeyMeta(id, data, graph) {
+  const el=document.getElementById(id+'Meta');
+  if(!el) return;
+  if(id.includes('1')) el.textContent=`${graph.nodes.length} nodos · ${new Set(data.map(d=>d.codigo)).size} perfiles · ${new Set(data.map(d=>d.institucion)).size} instituciones`;
+  else if(id.includes('2')) el.textContent=`${graph.nodes.length} nodos · promedio ${data.length?format1(data.reduce((s,d)=>s+d.asign,0)/data.length):0} asignaturas`;
+  else el.textContent=`${graph.nodes.length} nodos · ${data.length} registros en ruta completa`;
+}
+
+function renderTab(prefix, data) {
+  const s=computeStats(data);
+  renderKPIs(prefix, s);
+  renderNarrativa(prefix, s, data);
+  const g1=buildSankey1(data), g2=buildSankey2(data), g3=buildSankey3(data);
+  const pad3=prefix==='c'?6:14;
+  renderSankey(prefix+'_sankey1', g1, {nodeWidth:16, nodePadding:18, nodeAlign:d3.sankeyJustify});
+  renderSankey(prefix+'_sankey2', g2, {nodeWidth:16, nodePadding:18, nodeAlign:d3.sankeyJustify});
+  renderSankey(prefix+'_sankey3', g3, {nodeWidth:14, nodePadding:pad3, nodeAlign:d3.sankeyLeft});
+  setSankeyMeta(prefix+'_sankey1', data, g1);
+  setSankeyMeta(prefix+'_sankey2', data, g2);
+  setSankeyMeta(prefix+'_sankey3', data, g3);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+renderTab('n', ALL_DATA);
+renderTab('c', COQ_DATA);
+</script>
+</body>
+</html>

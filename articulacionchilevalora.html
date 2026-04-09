@@ -171,8 +171,8 @@
         <div class="vista-sep">
           <div class="vnum" style="background:linear-gradient(135deg,#3ea39e,#1f5fbf)">2.3</div>
           <div>
-            <h3>Trayectoria formativa completa: perfil ocupacional, institución, carrera y modalidad</h3>
-            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de registros de convenio observados en cada tramo de la ruta.</span>
+            <h3>Trayectoria formativa: perfil ocupacional, carrera e institución</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de convenios observados en cada tramo (perfil → carrera → institución).</span>
           </div>
         </div>
         <div class="panel">
@@ -240,8 +240,8 @@
         <div class="vista-sep">
           <div class="vnum" style="background:linear-gradient(135deg,#3ea39e,#1f5fbf)">2.3</div>
           <div>
-            <h3>Trayectoria formativa completa: perfil ocupacional, institución, carrera y modalidad</h3>
-            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de registros de convenio observados en cada tramo de la ruta.</span>
+            <h3>Trayectoria formativa: perfil ocupacional, carrera e institución</h3>
+            <span style="font-size:12px;color:var(--muted)">El grosor del flujo representa el número de convenios observados en cada tramo (perfil → carrera → institución).</span>
           </div>
         </div>
         <div class="panel">
@@ -347,12 +347,128 @@ function buildSankey2(data) {
 }
 
 function buildSankey3(data) {
+  // Estructura: perfil → carrera → institución (sin modalidad)
   const nodes=[]; const idx=new Map(); const linkMap=new Map();
   function addNode(id,name,type,color,meta={}) { if(!idx.has(id)){idx.set(id,nodes.length);nodes.push({id,name,type,color,meta});} }
   function addLink(s,t,raw,kind) { const k=`${s}>>>${t}`; if(!linkMap.has(k))linkMap.set(k,{source:s,target:t,value:0,raws:[],kind}); const e=linkMap.get(k); e.value+=1; e.raws.push(raw); }
-  data.forEach(r => { const meta=META[r.codigo]; const pId=`p|${r.codigo}`; const iId=`i|${r.institucion}`; const cId=`c|${r.institucion}|${r.carrera}`; const mId=`m|${r.modalidad}`; addNode(pId,meta.perfil,'perfil',COLORS[meta.subsector],meta); addNode(iId,r.institucion,'institucion',COLORS['Institución'],{institucion:r.institucion}); addNode(cId,r.carrera,'carrera',COLORS['Carrera'],{carrera:r.carrera}); addNode(mId,r.modalidad,'modalidad',COLORS['Modalidad'],{modalidad:r.modalidad}); addLink(pId,iId,r,'perfil_institucion'); addLink(iId,cId,r,'institucion_carrera'); addLink(cId,mId,r,'carrera_modalidad'); });
-  const links=Array.from(linkMap.values()).map(e => { const a=e.raws.map(r=>+r.asign); return {source:e.source,target:e.target,value:e.value,detailType:e.kind,detail:{registros:e.value,promedio:d3.mean(a),minimo:d3.min(a),maximo:d3.max(a),instituciones:Array.from(new Set(e.raws.map(r=>r.institucion))).sort(),carreras:Array.from(new Set(e.raws.map(r=>r.carrera))).sort(),modalidades:Array.from(new Set(e.raws.map(r=>r.modalidad))).sort(),regiones:Array.from(new Set(e.raws.map(r=>r.region))).sort()}}; });
+  data.forEach(r => {
+    const meta=META[r.codigo];
+    const pId=`p|${r.codigo}`;
+    const cId=`c|${r.carrera}`;          // carrera sin prefijo de institución → nodo compartido
+    const iId=`i|${r.institucion}`;
+    addNode(pId, meta.perfil,    'perfil',      COLORS[meta.subsector], meta);
+    addNode(cId, r.carrera,      'carrera',     COLORS['Carrera'],      {carrera:r.carrera});
+    addNode(iId, r.institucion,  'institucion', COLORS['Institución'],  {institucion:r.institucion});
+    addLink(pId, cId, r, 'perfil_carrera');
+    addLink(cId, iId, r, 'carrera_institucion');
+  });
+  const links=Array.from(linkMap.values()).map(e => {
+    const a=e.raws.map(r=>+r.asign);
+    // Extraer nombres origen y destino desde el id del nodo
+    const srcName = e.source.startsWith('p|') ? (META[e.source.slice(2)]?.perfil || e.source.slice(2))
+                  : e.source.startsWith('c|') ? e.source.slice(2)
+                  : e.source.slice(2);
+    const tgtName = e.target.startsWith('i|') ? e.target.slice(2)
+                  : e.target.startsWith('c|') ? e.target.slice(2)
+                  : e.target.slice(2);
+    return {source:e.source,target:e.target,value:e.value,detailType:e.kind,
+      detail:{
+        registros:e.value,
+        promedio:d3.mean(a),minimo:d3.min(a),maximo:d3.max(a),
+        origen: srcName,
+        destino: tgtName,
+        perfiles:Array.from(new Set(e.raws.map(r=>META[r.codigo]?.perfil||r.codigo))).sort(),
+        instituciones:Array.from(new Set(e.raws.map(r=>r.institucion))).sort(),
+        carreras:Array.from(new Set(e.raws.map(r=>r.carrera))).sort(),
+        modalidades:Array.from(new Set(e.raws.map(r=>r.modalidad))).sort(),
+        regiones:Array.from(new Set(e.raws.map(r=>r.region))).sort()}};
+  });
   return pruneGraph(toSankeyFormat(nodes, links));
+}
+
+function nodeTooltipFull(d, containerId, local) {
+  const snum = containerId.includes('1') ? 1 : containerId.includes('2') ? 2 : 3;
+  const m = d.meta || {};
+
+  if (d.type === 'perfil') {
+    // Stats locales (filtro activo) vs nacionales (META global)
+    const esLocal = !!local;
+    const lineas = [`<b>${d.name}</b>`, `Subsector: ${m.subsector||'—'}`];
+
+    if (snum === 1) {
+      if (esLocal) {
+        lineas.push(`── Región ──`);
+        lineas.push(`Instituciones con convenio: ${local.instituciones}`);
+        lineas.push(`Carreras distintas: ${local.carreras}`);
+        lineas.push(`Convenios presenciales: ${local.convenios}`);
+        lineas.push(`── País ──`);
+        lineas.push(`Instituciones con convenio: ${m.inst_presencial??'—'}`);
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Convenios presenciales: ${m.conv_presencial??'—'}`);
+        if (m.conv_online) lineas.push(`Convenios a distancia: ${m.conv_online}`);
+      } else {
+        lineas.push(`Instituciones con convenio: ${m.inst_presencial??'—'}`);
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Convenios presenciales: ${m.conv_presencial??'—'}`);
+        if (m.conv_online) lineas.push(`Convenios a distancia: ${m.conv_online}`);
+      }
+    } else if (snum === 2) {
+      if (esLocal) {
+        lineas.push(`── Región ──`);
+        lineas.push(`Carreras distintas: ${local.carreras}`);
+        lineas.push(`Máx. asignaturas convalidadas: ${local.maxAsign}`);
+        lineas.push(`── País ──`);
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Máx. asign. presencial: ${m.max_presencial??'—'}`);
+        if (m.conv_online) lineas.push(`Máx. asign. distancia: ${m.max_online}`);
+      } else {
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Máx. asign. presencial: ${m.max_presencial??'—'}`);
+        if (m.conv_online) lineas.push(`Máx. asign. distancia: ${m.max_online}`);
+      }
+    } else {
+      if (esLocal) {
+        lineas.push(`── Región ──`);
+        lineas.push(`Carreras distintas: ${local.carreras}`);
+        lineas.push(`Instituciones: ${local.instituciones}`);
+        lineas.push(`Convenios presenciales: ${local.convenios}`);
+        lineas.push(`── País ──`);
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Instituciones: ${m.inst_presencial??'—'}`);
+        lineas.push(`Convenios presenciales: ${m.conv_presencial??'—'}`);
+      } else {
+        lineas.push(`Carreras distintas: ${m.carr_presencial??'—'}`);
+        lineas.push(`Instituciones: ${m.inst_presencial??'—'}`);
+        lineas.push(`Convenios presenciales: ${m.conv_presencial??'—'}`);
+      }
+    }
+    return lineas.join('<br>');
+  }
+
+  if (d.type === 'institucion') {
+    const inst = d.name;
+    if (snum === 1) {
+      return `<b>${inst}</b><br>Institución de educación superior receptora.<br>El grosor de los flujos entrantes indica<br>cuántas carreras ofrece para cada perfil.`;
+    }
+    return `<b>${inst}</b><br>Institución de educación superior receptora.<br>Destino final de la trayectoria formativa.`;
+  }
+
+  if (d.type === 'carrera') {
+    const carr = d.name;
+    if (snum === 2) {
+      return `<b>${carr}</b><br>Programa de estudios en convenio.<br>El grosor del flujo entrante indica el<br>promedio de asignaturas convalidadas.`;
+    }
+    return `<b>${carr}</b><br>Programa de estudios articulado.<br>Nodo intermedio entre el perfil<br>ocupacional y la institución receptora.`;
+  }
+
+  if (d.type === 'modalidad') {
+    const desc = d.name === 'Presencial'
+      ? 'Convenio en sede física de la institución,<br>asociado a una región específica.'
+      : 'Convenio a distancia, disponible<br>a nivel nacional sin restricción territorial.';
+    return `<b>${d.name}</b><br>${desc}`;
+  }
+
+  return `<b>${d.name}</b><br>${labelForType(d.type)}`;
 }
 
 function renderSankey(containerId, graph, options={}) {
@@ -373,11 +489,40 @@ function renderSankey(containerId, graph, options={}) {
   catch(e) { fresh.innerHTML = '<div style="min-height:300px;display:flex;align-items:center;justify-content:center;color:#5f6b7a;">Error al renderizar.</div>'; return; }
   const prefix = containerId.startsWith('n_') ? 'n' : 'c';
   const linkSel = svg.append('g').attr('fill','none').selectAll('path').data(data.links).join('path').attr('class','link').attr('d',d3.sankeyLinkHorizontal()).attr('stroke-width',d=>Math.max(1.4,d.width))
-    .on('mousemove',(event,d)=>{ const body=d.detailType==='perfil_institucion'?`<b>${d.detail.perfil}</b><br>Institución: ${d.detail.institucion}<br>Carreras: ${d.detail.countCarreras}`:d.detailType==='perfil_carrera'?`<b>${d.detail.perfil}</b><br>Carrera: ${d.detail.carrera}<br>Promedio: ${format1(d.detail.promedio)}`:`<b>Flujo</b><br>Registros: ${d.detail?.registros||d.value}`; showTooltip(event,body); })
+    .on('mousemove',(event,d)=>{ 
+      let body;
+      if (d.detailType==='perfil_institucion') {
+        body = `<b>${d.detail.perfil}</b><br>Institución: ${d.detail.institucion}<br>Carreras en convenio: ${d.detail.countCarreras}`;
+      } else if (d.detailType==='perfil_carrera') {
+        // sankey2 guarda detail.perfil/carrera; sankey3 guarda detail.origen/destino
+        const pfx = d.detail.perfil || d.detail.origen || '—';
+        const crx = d.detail.carrera || d.detail.destino || '—';
+        body = `<b>${pfx}</b><br>→ Carrera: ${crx}<br>Prom. asign.: ${format1(d.detail.promedio)} · Mín: ${d.detail.minimo??'—'} · Máx: ${d.detail.maximo??'—'}<br>Instituciones: ${d.detail.instituciones?.join(', ')||'—'}`;
+      } else if (d.detailType==='carrera_institucion') {
+        body = `<b>${d.detail.origen}</b><br>→ Institución: ${d.detail.destino}<br>Convenios: ${d.detail.registros}<br>Prom. asign.: ${format1(d.detail.promedio)} · Mín: ${d.detail.minimo??'—'} · Máx: ${d.detail.maximo??'—'}<br>Perfiles: ${d.detail.perfiles?.join(', ')}<br>Modalidades: ${d.detail.modalidades?.join(', ')}`;
+      } else {
+        body = `<b>Flujo</b><br>Registros: ${d.detail?.registros||d.value}`;
+      }
+      showTooltip(event,body); })
     .on('mouseleave',hideTooltip)
     .on('click',function(event,d){ linkSel.classed('active-link',false); d3.select(this).classed('active-link',true); updateSelectionFromLink(d,prefix); });
+  // Calcular stats locales desde los datos del grafo actual (no del META global)
+  const localStats = {};
+  safeGraph.nodes.forEach(n => {
+    if (n.type === 'perfil') {
+      const rows = graph._rawData ? graph._rawData.filter(r => r.codigo === n.id.slice(2)) : [];
+      localStats[n.id] = {
+        carreras: new Set(rows.map(r => r.carrera)).size,
+        instituciones: new Set(rows.map(r => r.institucion)).size,
+        convenios: rows.filter(r => r.modalidad === 'Presencial').length,
+        conveniosOnline: rows.filter(r => r.modalidad === 'Online').length,
+        maxAsign: rows.length ? Math.max(...rows.map(r => r.asign)) : 0,
+      };
+    }
+  });
+
   const node = svg.append('g').selectAll('g').data(data.nodes).join('g').attr('class','node');
-  node.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('height',d=>Math.max(8,d.y1-d.y0)).attr('width',d=>d.x1-d.x0).attr('fill',d=>d.color).on('mousemove',(e,d)=>showTooltip(e,`<b>${d.name}</b><br>${labelForType(d.type)}`)).on('mouseleave',hideTooltip).on('click',(e,d)=>updateSelectionFromNode(d,prefix));
+  node.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('height',d=>Math.max(8,d.y1-d.y0)).attr('width',d=>d.x1-d.x0).attr('fill',d=>d.color).on('mousemove',(e,d)=>{ showTooltip(e, nodeTooltipFull(d, containerId, localStats[d.id])); }).on('mouseleave',hideTooltip).on('click',(e,d)=>updateSelectionFromNode(d,prefix));
   node.append('text').attr('x',d=>d.x0<width/2?d.x1+7:d.x0-7).attr('y',d=>(d.y0+d.y1)/2).attr('dy','0.35em').attr('text-anchor',d=>d.x0<width/2?'start':'end').text(d=>shorten(d.name,d.type==='perfil'?33:30));
 }
 
@@ -395,7 +540,36 @@ function updateSelectionFromLink(d, prefix) {
   let rows = [];
   if (d.detailType==='perfil_institucion') { rows=[['Tipo de flujo','Perfil → Institución'],['Perfil',d.detail.perfil],['Código',d.detail.codigo],['Institución',d.detail.institucion],['Carreras distintas',d.detail.countCarreras],['Modalidades',d.detail.modalidades?.join(', ')],['Regiones',d.detail.regiones?.join(', ')],['Carreras',d.detail.carreras?.join(' · ')]]; }
   else if (d.detailType==='perfil_carrera') { rows=[['Tipo de flujo','Perfil → Carrera'],['Perfil',d.detail.perfil],['Código',d.detail.codigo],['Carrera',d.detail.carrera],['Promedio asignaturas',format1(d.detail.promedio)],['Mínimo',d.detail.minimo],['Máximo',d.detail.maximo],['Instituciones',d.detail.instituciones?.join(', ')],['Modalidades',d.detail.modalidades?.join(', ')]]; }
-  else { rows=[['Tipo de flujo',d.detailType?.replaceAll('_',' → ')],['Registros',d.detail?.registros??d.value],['Promedio asignaturas',format1(d.detail?.promedio||0)],['Mínimo',d.detail?.minimo??'—'],['Máximo',d.detail?.maximo??'—'],['Instituciones',d.detail?.instituciones?.join(', ')],['Carreras',d.detail?.carreras?.join(' · ')],['Modalidades',d.detail?.modalidades?.join(', ')],['Regiones',d.detail?.regiones?.join(', ')]]; }
+  else if (d.detailType==='perfil_carrera') {
+    const pfx = d.detail.perfil || d.detail.origen || '—';
+    const crx = d.detail.carrera || d.detail.destino || '—';
+    rows=[
+      ['Tipo de flujo','Perfil → Carrera'],
+      ['Perfil', pfx],
+      ['Carrera', crx],
+      ['Convenios', d.detail.registros ?? d.detail.observaciones ?? '—'],
+      ['Promedio asignaturas', format1(d.detail.promedio)],
+      ['Mínimo', d.detail.minimo??'—'],
+      ['Máximo', d.detail.maximo??'—'],
+      ['Instituciones', d.detail.instituciones?.join(', ')||'—'],
+      ['Modalidades', d.detail.modalidades?.join(', ')||'—'],
+    ];
+  } else if (d.detailType==='carrera_institucion') {
+    rows=[
+      ['Tipo de flujo','Carrera → Institución'],
+      ['Carrera',d.detail.origen],
+      ['Institución',d.detail.destino],
+      ['Convenios',d.detail.registros],
+      ['Promedio asignaturas',format1(d.detail.promedio)],
+      ['Mínimo',d.detail.minimo??'—'],
+      ['Máximo',d.detail.maximo??'—'],
+      ['Perfiles',d.detail.perfiles?.join(', ')],
+      ['Modalidades',d.detail.modalidades?.join(', ')],
+      ['Regiones',d.detail.regiones?.join(', ')],
+    ];
+  } else {
+    rows=[['Tipo de flujo',d.detailType?.replaceAll('_',' → ')],['Registros',d.detail?.registros??d.value],['Promedio asignaturas',format1(d.detail?.promedio||0)],['Mínimo',d.detail?.minimo??'—'],['Máximo',d.detail?.maximo??'—'],['Instituciones',d.detail?.instituciones?.join(', ')],['Carreras',d.detail?.carreras?.join(' · ')],['Modalidades',d.detail?.modalidades?.join(', ')],['Regiones',d.detail?.regiones?.join(', ')]];
+  }
   renderSelection(prefix, rows);
 }
 
@@ -456,6 +630,8 @@ function renderTab(prefix, data) {
   renderKPIs(prefix, s);
   renderNarrativa(prefix, s, data);
   const g1=buildSankey1(data), g2=buildSankey2(data), g3=buildSankey3(data);
+  // Adjuntar datos crudos al grafo para calcular stats locales en tooltips
+  g1._rawData = data; g2._rawData = data; g3._rawData = data;
   const pad3=prefix==='c'?6:14;
   renderSankey(prefix+'_sankey1', g1, {nodeWidth:16, nodePadding:18, nodeAlign:d3.sankeyJustify});
   renderSankey(prefix+'_sankey2', g2, {nodeWidth:16, nodePadding:18, nodeAlign:d3.sankeyJustify});

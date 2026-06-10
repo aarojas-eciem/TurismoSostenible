@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard ZOIT Coquimbo — BIP 40075888-0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1F3864;--navy2:#2c4f8c;--coral:#E8634A;--gold:#C9993A;
+  --mint:#3A9B8C;--lav:#7B6FAD;--teal:#1A6B6B;--sand:#F5F0E8;
+  --border:rgba(31,56,100,0.11);--bg:#F7F5F0;--white:#fff;
+  --text:#1a1a2e;--muted:#64748b;--sidebar:272px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);height:100vh;position:sticky;top:0;
+  background:var(--navy);color:#fff;display:flex;flex-direction:column;overflow-y:auto;
+  box-shadow:4px 0 24px rgba(0,0,0,.18);z-index:100;
+}
+.sb-brand{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{font-family:'Fraunces',serif;font-size:11px;opacity:.6;letter-spacing:.08em;text-transform:uppercase;line-height:1.4}
+.sb-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;line-height:1.35;margin-top:6px}
+.sb-bip{font-size:10px;opacity:.45;margin-top:4px;font-family:'DM Sans',sans-serif}
+
+/* Zone selector */
+.sb-zone{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-zone-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.5;margin-bottom:8px}
+.zone-btn{width:100%;text-align:left;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.15);
+  background:transparent;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;margin-bottom:5px;transition:all .2s;display:flex;align-items:center;gap:8px}
+.zone-btn .zd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.zone-btn.active{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.4)}
+.zone-btn:hover{background:rgba(255,255,255,.1)}
+.zd-c{background:#fff}.zd-v{background:var(--mint)}.zd-p{background:var(--coral)}
+
+/* Nav */
+.sb-nav{padding:12px 0;flex:1}
+.nav-item{display:block;padding:9px 20px;font-size:12px;color:rgba(255,255,255,.65);
+  text-decoration:none;cursor:pointer;border-left:3px solid transparent;transition:all .2s;
+  border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover,.nav-item.active{color:#fff;background:rgba(255,255,255,.08);border-left-color:var(--gold)}
+.nav-num{display:inline-block;width:18px;height:18px;border-radius:4px;background:rgba(255,255,255,.1);
+  font-size:9px;line-height:18px;text-align:center;margin-right:8px;font-weight:600}
+
+/* Footer */
+.sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;opacity:.4;line-height:1.6}
+
+/* ── TOPBAR ──────────────────────────────────────────────────────────── */
+#topbar{
+  position:sticky;top:0;z-index:50;background:rgba(247,245,240,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;
+  justify-content:space-between;
+}
+.tb-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--navy)}
+.tb-badges{display:flex;gap:8px}
+.badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-zone{background:var(--navy);color:#fff}
+.badge-n{background:var(--sand);color:var(--navy);border:1px solid var(--border)}
+
+/* ── MAIN ────────────────────────────────────────────────────────────── */
+#main{flex:1;overflow-y:auto;min-width:0}
+.main-inner{padding:0 32px 48px}
+
+/* ── SECTIONS ────────────────────────────────────────────────────────── */
+.section{padding:40px 0 0}
+
+.sec-head{display:flex;align-items:flex-end;gap:16px;margin-bottom:24px}
+.sec-num{font-family:'Fraunces',serif;font-size:64px;font-weight:700;color:var(--border);line-height:1}
+.sec-titles h2{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--navy);line-height:1.2}
+.sec-titles p{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* ── KPI CARDS ───────────────────────────────────────────────────────── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--white);border-radius:12px;padding:18px 20px;border:1px solid var(--border);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--navy))}
+.kpi-val{font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--navy);line-height:1}
+.kpi-label{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:2px;opacity:.7}
+
+/* ── CHART GRID ──────────────────────────────────────────────────────── */
+.chart-grid{display:grid;gap:18px;margin-bottom:18px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g1{grid-template-columns:1fr}
+.chart-card{background:var(--white);border-radius:12px;padding:20px;border:1px solid var(--border)}
+.chart-card h3{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.chart-card .src{font-size:10px;color:var(--muted);margin-bottom:14px}
+.canvas-wrap{position:relative;height:220px}
+.canvas-wrap.tall{height:300px}
+.canvas-wrap.xtall{height:380px}
+
+/* ── NOTA METODOLÓGICA ───────────────────────────────────────────────── */
+.nota{background:var(--sand);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;
+  padding:10px 14px;font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5}
+
+/* ── IPA ─────────────────────────────────────────────────────────────── */
+.ipa-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.ipa-tab{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);
+  font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.ipa-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ipa-view{display:none}.ipa-view.active{display:block}
+
+/* IPA scatter container */
+#ipa-scatter-wrap{position:relative;height:480px}
+
+/* Quadrant cards */
+.quad-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.quad-card{border-radius:10px;padding:12px 14px}
+.quad-card h4{font-size:12px;font-weight:700;margin-bottom:4px}
+.quad-card p{font-size:10px;line-height:1.4;opacity:.85}
+.qI{background:#FDECEA;border:1.5px solid #E8634A;color:#b71c1c}
+.qII{background:#E8F5E9;border:1.5px solid #2E7D32;color:#1b5e20}
+.qIII{background:#F5F5F5;border:1.5px solid #9E9E9E;color:#424242}
+.qIV{background:#FFF8E1;border:1.5px solid #C9993A;color:#6d4c00}
+
+/* GAP TABLE */
+.gap-table{width:100%;border-collapse:collapse;font-size:11px}
+.gap-table th{background:var(--navy);color:#fff;padding:8px 10px;text-align:left;font-weight:600;font-size:10px}
+.gap-table td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.gap-table tr:nth-child(even) td{background:var(--sand)}
+.gap-bar-wrap{display:flex;align-items:center;gap:6px}
+.gap-bar{height:8px;border-radius:4px;min-width:2px}
+.qbadge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;color:#fff}
+.qbI{background:#E8634A}.qbII{background:#2E7D32}.qbIII{background:#9E9E9E}.qbIV{background:#C9993A}
+
+/* ── DIMENSION LEGEND ────────────────────────────────────────────────── */
+.dim-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.dim-chip{padding:4px 10px;border-radius:12px;font-size:10px;font-weight:600}
+.dD1{background:#EEF2F8;color:#1F3864}.dD2{background:#FFF3E0;color:#7d4200}
+.dD3{background:#E8F5E9;color:#1b5e20}.dD4{background:#FCE4EC;color:#880e4f}
+.dD5{background:#EDE7F6;color:#311b92}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  #sidebar{position:fixed;left:-272px;transition:left .3s}
+  #sidebar.open{left:0}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3{grid-template-columns:1fr}
+  .quad-cards{grid-template-columns:repeat(2,1fr)}
+  #hamburger{display:flex}
+}
+#hamburger{display:none;position:fixed;top:12px;left:12px;z-index:200;
+  width:40px;height:40px;background:var(--navy);border-radius:8px;border:none;
+  cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+#hamburger span{width:20px;height:2px;background:#fff;border-radius:2px}
+</style>
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+  <span></span><span></span><span></span>
+</button>
+
+<nav id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">UCN · ECIEM · Región de Coquimbo</div>
+    <div class="sb-title">Estudio de Mercado<br>Turismo Sostenible ZOIT</div>
+    <div class="sb-bip">BIP 40075888-0 · Componente 2 · 2026</div>
+  </div>
+  <div class="sb-zone">
+    <div class="sb-zone-label">Nivel de análisis</div>
+    <button class="zone-btn active" data-zone="combinado" onclick="setZone('combinado',this)">
+      <span class="zd zd-c"></span>Combinado
+    </button>
+    <button class="zone-btn" data-zone="valleElqui" onclick="setZone('valleElqui',this)">
+      <span class="zd zd-v"></span>Valle del Elqui
+    </button>
+    <button class="zone-btn" data-zone="pichidangui" onclick="setZone('pichidangui',this)">
+      <span class="zd zd-p"></span>Pichidangui–Quilimarí
+    </button>
+  </div>
+  <div class="sb-nav">
+    <button class="nav-item" onclick="scrollSec('s1')"><span class="nav-num">1</span>Perfil sociodemográfico</button>
+    <button class="nav-item" onclick="scrollSec('s2')"><span class="nav-num">2</span>Caracterización del viaje</button>
+    <button class="nav-item" onclick="scrollSec('s3')"><span class="nav-num">3</span>Gasto turístico</button>
+    <button class="nav-item" onclick="scrollSec('s4')"><span class="nav-num">4</span>Planificación y decisión</button>
+    <button class="nav-item" onclick="scrollSec('s5')"><span class="nav-num">5</span>Experiencia en destino</button>
+    <button class="nav-item" onclick="scrollSec('s6')"><span class="nav-num">6</span>Calidad percibida IPA</button>
+    <button class="nav-item" onclick="scrollSec('s7')"><span class="nav-num">7</span>Sostenibilidad</button>
+    <button class="nav-item" onclick="scrollSec('s8')"><span class="nav-num">8</span>Sostenibilidad y DAP</button>
+    <button class="nav-item" onclick="scrollSec('s9')"><span class="nav-num">9</span>Intención futura</button>
+  </div>
+  <div class="sb-footer">
+    n Combinado: 196 · Valle del Elqui: 100<br>Pichidangui–Quilimarí: 96<br>Trabajo de campo: 2026
+  </div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div class="tb-title" id="tb-title">Perfil sociodemográfico</div>
+    <div class="tb-badges">
+      <span class="badge badge-zone" id="badge-zone">Combinado</span>
+      <span class="badge badge-n" id="badge-n">n = 196</span>
+    </div>
+  </div>
+  <div class="main-inner">
+
+<!-- ══ S1 PERFIL ══════════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <div class="sec-titles">
+      <h2>Perfil sociodemográfico del visitante</h2>
+      <p>Caracterización de la muestra — P1, P2, P3, P4, P5, P34, P35</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-n">196</div>
+      <div class="kpi-label">Encuestados válidos</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-fem">52%</div>
+      <div class="kpi-label">Género femenino</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-edadmod">25–34</div>
+      <div class="kpi-label">Tramo etario más frecuente</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-univ">63%</div>
+      <div class="kpi-label">Universitario o técnico superior</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Distribución por edad</h3>
+      <div class="src">P1 — n según zona</div>
+      <div class="canvas-wrap"><canvas id="ch-edad"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Género</h3>
+      <div class="src">P2</div>
+      <div class="canvas-wrap"><canvas id="ch-genero"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Nivel de estudios</h3>
+      <div class="src">P3</div>
+      <div class="canvas-wrap tall"><canvas id="ch-estudios"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Región de procedencia (top 6)</h3>
+      <div class="src">P4</div>
+      <div class="canvas-wrap tall"><canvas id="ch-region"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Ingreso mensual del hogar</h3>
+      <div class="src">P35</div>
+      <div class="canvas-wrap"><canvas id="ch-ingreso"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Situación laboral</h3>
+      <div class="src">P34</div>
+      <div class="canvas-wrap"><canvas id="ch-laboral"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">Muestra intencional de visitantes mayores de 18 años residentes fuera del destino, obtenida mediante encuesta presencial asistida por encuestador. Participación voluntaria y anónima. Para análisis separados por zona, n varía entre 96 y 100.</div>
+</div>
+
+<!-- ══ S2 VIAJE ════════════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <div class="sec-titles">
+      <h2>Caracterización del viaje</h2>
+      <p>Compañía, transporte, noches, alojamiento y reserva — P5–P10</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-auto">65%</div>
+      <div class="kpi-label">Llegan en automóvil propio</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-pareja">31%</div>
+      <div class="kpi-label">Viajan en pareja (sin hijos)</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-2n">29%</div>
+      <div class="kpi-label">Pernoctan 2 noches</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-sinres">25%</div>
+      <div class="kpi-label">Casa familiar (sin costo)</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Medio de transporte</h3>
+      <div class="src">P7</div>
+      <div class="canvas-wrap"><canvas id="ch-transp"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Noches de pernocta</h3>
+      <div class="src">P8</div>
+      <div class="canvas-wrap"><canvas id="ch-noches"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Tipo de alojamiento</h3>
+      <div class="src">P9</div>
+      <div class="canvas-wrap tall"><canvas id="ch-aloj"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Canal de reserva</h3>
+      <div class="src">P10</div>
+      <div class="canvas-wrap"><canvas id="ch-reserva"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Compañía de viaje</h3>
+      <div class="src">P5 — con quién realiza el viaje</div>
+      <div class="canvas-wrap tall"><canvas id="ch-grupo"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Número de acompañantes</h3>
+      <div class="src">P6</div>
+      <div class="canvas-wrap"><canvas id="ch-acomp"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">El turismo de excursión (visita de un día) es significativo en ambas zonas, especialmente en Valle del Elqui (39%). El automóvil propio domina el acceso, lo que indica alta dependencia del transporte privado.</div>
+</div>
+
+<!-- ══ S3 GASTO ════════════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <div class="sec-titles">
+      <h2>Gasto turístico por persona</h2>
+      <p>Distribución de gasto declarado y medias estimadas (punto medio de rango) — P11–P14</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-gastoaloj" style="font-size:22px">$<span id="kv-aloj">22.624</span></div>
+      <div class="kpi-label">Media gasto noche alojamiento</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-gastoalim" style="font-size:22px">$<span id="kv-alim">32.566</span></div>
+      <div class="kpi-label">Media gasto diario alimentación</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-gastototal" style="font-size:22px">$<span id="kv-total">52.130</span></div>
+      <div class="kpi-label">Gasto diario total estimado</div>
+      <div class="kpi-sub">Alojamiento + alimentación</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val">41%</div>
+      <div class="kpi-label">Mayor tramo alimentación</div>
+      <div class="kpi-sub" id="kpi-alimcat">$25.001–$50.000/día</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Gasto por noche — Alojamiento</h3>
+      <div class="src">P11 — media estimada por punto medio de rango</div>
+      <div class="canvas-wrap"><canvas id="ch-gnoche"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Gasto diario — Alimentación</h3>
+      <div class="src">P12</div>
+      <div class="canvas-wrap"><canvas id="ch-galim"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Gasto total — Actividades</h3>
+      <div class="src">P13 (gasto total del viaje en actividades)</div>
+      <div class="canvas-wrap"><canvas id="ch-gact"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Gasto total — Productos locales</h3>
+      <div class="src">P14</div>
+      <div class="canvas-wrap"><canvas id="ch-gprod"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">Las medias se calculan usando el punto medio de cada rango de gasto declarado, excluyendo las categorías "No sabe/No responde". El gasto total diario combina alojamiento (prorrateado) y alimentación, constituyendo una estimación conservadora del gasto in situ por turista.</div>
+</div>
+
+<!-- ══ S4 PLANIFICACION ════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="sec-head">
+    <div class="sec-num">04</div>
+    <div class="sec-titles">
+      <h2>Planificación y decisión de visita</h2>
+      <p>Primera visita, anticipación, fuentes de información, importancia de sostenibilidad — P15–P19</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-primvis">30%</div>
+      <div class="kpi-label">Primera visita al destino</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-fielesn">39%</div>
+      <div class="kpi-label">4+ visitas previas (visitante fiel)</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-semmes">47%</div>
+      <div class="kpi-label">Planifica 1 semana–1 mes antes</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-sostimp">75%</div>
+      <div class="kpi-label">Sostenibilidad: Importante o Muy importante</div>
+    </div>
+  </div>
+
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Primera visita vs. visitas previas al destino</h3>
+      <div class="src">P15 — ¿Es esta su primera visita?</div>
+      <div class="canvas-wrap"><canvas id="ch-primera"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Anticipación en la planificación</h3>
+      <div class="src">P16 — con cuánta anticipación planificó el viaje</div>
+      <div class="canvas-wrap"><canvas id="ch-anticip2"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Fuentes de información (multirespuesta)</h3>
+      <div class="src">P17 — % sobre n total de la zona</div>
+      <div class="canvas-wrap tall"><canvas id="ch-fuentes"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Anticipación en la planificación</h3>
+      <div class="src">P16</div>
+      <div class="canvas-wrap"><canvas id="ch-anticip"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Importancia sostenibilidad al elegir destino</h3>
+      <div class="src">P18</div>
+      <div class="canvas-wrap"><canvas id="ch-sost18"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Importancia formación del personal</h3>
+      <div class="src">P19</div>
+      <div class="canvas-wrap"><canvas id="ch-form19"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">La recomendación de familiares o amigos y la experiencia propia acumulada son las fuentes de decisión dominantes. Esto subraya la importancia de la satisfacción del visitante actual como motor de demanda futura. La planificación de corto plazo (≤1 mes) predomina, indicando flexibilidad de última hora en la elección del destino.</div>
+</div>
+
+<!-- ══ S5 EXPERIENCIA ══════════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <div class="sec-titles">
+      <h2>Experiencia en el destino</h2>
+      <p>Motivo de visita y actividades realizadas — P20–P23. Las actividades son zona-específicas.</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-motivo1">Descanso</div>
+      <div class="kpi-label">Motivo principal más frecuente</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-actrest">67%</div>
+      <div class="kpi-label">Come en restaurant/cocinería local</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-actfoto">53%</div>
+      <div class="kpi-label">Fotografía del paisaje</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-actprod">44%</div>
+      <div class="kpi-label">Compra productos locales/artesanía</div>
+    </div>
+  </div>
+
+  <!-- Motivos por zona (dual) -->
+  <div class="chart-grid g2" id="motivo-grid-dual" style="display:none">
+    <div class="chart-card">
+      <h3>Motivo de visita — Valle del Elqui</h3>
+      <div class="src">P20 VE (n=100)</div>
+      <div class="canvas-wrap tall"><canvas id="ch-motvo-ve"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Motivo de visita — Pichidangui–Quilimarí</h3>
+      <div class="src">P20 PQ (n=96)</div>
+      <div class="canvas-wrap tall"><canvas id="ch-motvo-pq"></canvas></div>
+    </div>
+  </div>
+  <!-- Motivo zona única -->
+  <div class="chart-grid g1" id="motivo-grid-single">
+    <div class="chart-card">
+      <h3 id="ch-motivo-title">Motivo principal de visita</h3>
+      <div class="src">P20 — zona seleccionada</div>
+      <div class="canvas-wrap tall"><canvas id="ch-motivo"></canvas></div>
+    </div>
+  </div>
+
+
+
+  <div class="chart-grid g1">
+    <div class="chart-card">
+      <h3>Actividades realizadas o planificadas durante la visita (multirespuesta)</h3>
+      <div class="src">P21 — actividades según zona activa. Porcentaje sobre n de la zona.</div>
+      <div class="canvas-wrap xtall"><canvas id="ch-actividades"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>¿Come o planea comer en establecimientos gastronómicos?</h3>
+      <div class="src">P22</div>
+      <div class="canvas-wrap"><canvas id="ch-come22"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Tipo de establecimiento gastronómico visitado (multirespuesta)</h3>
+      <div class="src">P23 — porcentaje sobre n de la zona</div>
+      <div class="canvas-wrap"><canvas id="ch-tipoestab"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">Las actividades marcadas con asterisco son comunes a ambas ZOIT. El resto son categorías específicas de cada zona. Para el nivel Combinado, se muestran las actividades de Pichidangui–Quilimarí (destino costero con mayor diversidad de actividades al aire libre). Para cada zona por separado, se cargan sus propias actividades.</div>
+</div>
+
+<!-- ══ S6 IPA ══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="sec-head">
+    <div class="sec-num">06</div>
+    <div class="sec-titles">
+      <h2>Calidad percibida del destino — Análisis IPA</h2>
+      <p>Importancia vs. Desempeño · 18 atributos · 5 dimensiones · Ejes data-centered — P24–P25</p>
+    </div>
+  </div>
+
+  <div class="ipa-tabs">
+    <button class="ipa-tab active" onclick="setIpaView('scatter',this)">Matriz IPA</button>
+    <button class="ipa-tab" onclick="setIpaView('ranking',this)">Ranking de brechas</button>
+  </div>
+
+  <!-- IPA zona switcher dentro de sección -->
+  <div class="sb-zone" style="background:var(--sand);border-radius:10px;margin-bottom:16px;padding:12px 14px">
+    <div class="sb-zone-label" style="color:var(--muted)">Vista IPA (independiente del selector global)</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button class="ipa-tab active" id="ipa-z-btn-c" onclick="setIpaZona('combinado',this)">Combinado</button>
+      <button class="ipa-tab" id="ipa-z-btn-v" onclick="setIpaZona('valleElqui',this)">Valle del Elqui</button>
+      <button class="ipa-tab" id="ipa-z-btn-p" onclick="setIpaZona('pichidangui',this)">Pichidangui–Quilimarí</button>
+    </div>
+  </div>
+
+  <div class="dim-legend">
+    <span class="dim-chip dD1">D1 Alojamiento (A01–A06)</span>
+    <span class="dim-chip dD2">D2 Gastronomía (A07–A11)</span>
+    <span class="dim-chip dD3">D3 Actividades (A12–A14)</span>
+    <span class="dim-chip dD4">D4 Sostenibilidad (A15–A16)</span>
+    <span class="dim-chip dD5">D5 Información (A17–A18)</span>
+  </div>
+
+  <!-- Sub-pestaña scatter -->
+  <div class="ipa-view active" id="ipav-scatter">
+    <div class="chart-card">
+      <h3 id="ipa-scatter-title">Matriz IPA — Combinado (n=196)</h3>
+      <div class="src">Ejes data-centered: cruce en media de medias. Prohibido punto teórico 3.0 (Bacon, 2003).</div>
+      <div id="ipa-scatter-wrap"><canvas id="ch-ipa-scatter"></canvas></div>
+    </div>
+    <div class="quad-cards">
+      <div class="quad-card qI">
+        <h4>I — Concentrarse aquí</h4>
+        <p>Alta importancia · Bajo desempeño. Prioridad máxima de intervención.</p>
+      </div>
+      <div class="quad-card qII">
+        <h4>II — Mantener el buen trabajo</h4>
+        <p>Alta importancia · Alto desempeño. Fortaleza del destino, mantener inversión.</p>
+      </div>
+      <div class="quad-card qIII">
+        <h4>III — Baja prioridad</h4>
+        <p>Baja importancia · Bajo desempeño. No urgente, monitoreo de largo plazo.</p>
+      </div>
+      <div class="quad-card qIV">
+        <h4>IV — Posible desperdicio</h4>
+        <p>Baja importancia · Alto desempeño. Posible sobreinversión relativa.</p>
+      </div>
+    </div>
+    <div class="nota">Las medias de desempeño excluyen observaciones vacías (exclusión por pares), consistente con la instrucción del instrumento de omitir atributos no utilizados. La fiabilidad del instrumento fue verificada mediante alfa de Cronbach (D1–D3) y ρ de Spearman (D4–D5).</div>
+  </div>
+
+  <!-- Sub-pestaña ranking -->
+  <div class="ipa-view" id="ipav-ranking">
+    <div class="chart-card">
+      <h3 id="ipa-ranking-title">Ranking de brechas — Combinado (mayor déficit primero)</h3>
+      <div class="src">Brecha = Desempeño − Importancia. Negativo = déficit de calidad percibida.</div>
+      <div style="overflow-x:auto;margin-top:10px">
+        <table class="gap-table" id="gap-table">
+          <thead><tr><th>#</th><th>Atributo</th><th>Dim</th><th>Cuadrante</th><th>Imp.</th><th>Des.</th><th>Brecha</th><th style="min-width:80px">Visual</th><th>n Des.</th></tr></thead>
+          <tbody id="gap-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="nota">La tabla se ordena de mayor a menor déficit (brecha más negativa primero). Los atributos en cuadrante I (rojo) son la prioridad estratégica. El n de desempeño varía por atributo debido a la exclusión de evaluaciones "No usó".</div>
+  </div>
+</div>
+
+<!-- ══ S7 SOSTENIBILIDAD ═══════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="sec-head">
+    <div class="sec-num">07</div>
+    <div class="sec-titles">
+      <h2>Evaluación de sostenibilidad</h2>
+      <p>Calificación general del destino en prácticas responsables — P26</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-sost-bueno">56%</div>
+      <div class="kpi-label">Califica como "Bueno"</div>
+    </div>
+    <div class="kpi" style="--accent:var(--teal)">
+      <div class="kpi-val" id="kpi-sost-exbuen">69%</div>
+      <div class="kpi-label">Excelente + Bueno</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-sost-def">6%</div>
+      <div class="kpi-label">Califica como "Deficiente"</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-sost-sininfo">5%</div>
+      <div class="kpi-label">Sin información suficiente</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Calificación general oferta sostenible del destino</h3>
+      <div class="src">P26 — escala: Excelente / Bueno / Aceptable / Deficiente / Muy deficiente / Sin información</div>
+      <div class="canvas-wrap tall"><canvas id="ch-sost26"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Importancia sostenibilidad al elegir el destino</h3>
+      <div class="src">P18 — factor de decisión al elegir destino turístico</div>
+      <div class="canvas-wrap tall"><canvas id="ch-sost18b"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">P26 mide la percepción global del destino en cuanto a cuidado ambiental, uso de productos locales y gestión de residuos. Contrasta con los atributos IPA D4 (prácticas de cuidado ambiental e integración cultural) que presentan los mayores déficits en el nivel combinado.</div>
+</div>
+
+<!-- ══ S8 DAP ═══════════════════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="sec-head">
+    <div class="sec-num">08</div>
+    <div class="sec-titles">
+      <h2>Sostenibilidad y Disposición a Pagar</h2>
+      <p>Prácticas responsables y disposición a pagar adicional — P26 (global), P27–P30</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-pref-rest-b">41%</div>
+      <div class="kpi-label">Prefiere restaurante con prácticas responsables</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-pref-aloj-b">44%</div>
+      <div class="kpi-label">Prefiere alojamiento con prácticas responsables</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-dap-rest-paga">64%</div>
+      <div class="kpi-label">Pagaría algo más por restaurante responsable</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-dap-aloj-paga">51%</div>
+      <div class="kpi-label">Pagaría algo más por alojamiento responsable</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Preferencia restaurante — estándar vs responsable</h3>
+      <div class="src">P27</div>
+      <div class="canvas-wrap"><canvas id="ch-pref-rest"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>DAP adicional en restaurante (ref. $15.000/plato)</h3>
+      <div class="src">P28</div>
+      <div class="canvas-wrap"><canvas id="ch-dap-rest"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Preferencia alojamiento — estándar vs responsable</h3>
+      <div class="src">P29</div>
+      <div class="canvas-wrap"><canvas id="ch-pref-aloj"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>DAP adicional en alojamiento (ref. $45.000/noche)</h3>
+      <div class="src">P30</div>
+      <div class="canvas-wrap"><canvas id="ch-dap-aloj"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">Las preguntas de DAP utilizan el método de elección declarada entre un establecimiento estándar y uno con prácticas responsables (ingredientes locales, personal certificado, gestión de residuos, energía renovable). La disposición adicional a pagar se mide sobre precios de referencia explicitados en el instrumento.</div>
+</div>
+
+<!-- ══ S9 INTENCION ════════════════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="sec-head">
+    <div class="sec-num">09</div>
+    <div class="sec-titles">
+      <h2>Intención futura y lealtad</h2>
+      <p>Probabilidad de regreso, recomendación y disposición a gastar más — P31–P33</p>
+    </div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:var(--navy)">
+      <div class="kpi-val" id="kpi-nps">88</div>
+      <div class="kpi-label">NPS proxy (P32)</div>
+      <div class="kpi-sub">Promotores − Detractores × 100 / n</div>
+    </div>
+    <div class="kpi" style="--accent:var(--mint)">
+      <div class="kpi-val" id="kpi-regreso-alt">80%</div>
+      <div class="kpi-label">Probabilidad regreso Alta o Muy alta</div>
+    </div>
+    <div class="kpi" style="--accent:var(--coral)">
+      <div class="kpi-val" id="kpi-recomienda-alt">89%</div>
+      <div class="kpi-label">Probabilidad recomendación Alta o Muy alta</div>
+    </div>
+    <div class="kpi" style="--accent:var(--gold)">
+      <div class="kpi-val" id="kpi-gasto-si">78%</div>
+      <div class="kpi-label">Gastaría más si mayor calidad/sostenibilidad</div>
+    </div>
+  </div>
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Probabilidad de regreso</h3>
+      <div class="src">P31 — próximos dos años</div>
+      <div class="canvas-wrap"><canvas id="ch-regreso"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Probabilidad de recomendación</h3>
+      <div class="src">P32 — base del NPS proxy</div>
+      <div class="canvas-wrap"><canvas id="ch-recomienda"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid g1">
+    <div class="chart-card">
+      <h3>Disposición a gastar más si el destino ofreciera mayor calidad y prácticas responsables</h3>
+      <div class="src">P33 — pregunta hipotética de intención de gasto condicional</div>
+      <div class="canvas-wrap"><canvas id="ch-gasto-mas"></canvas></div>
+    </div>
+  </div>
+  <div class="nota">El NPS proxy se calcula como 100×(Promotores−Detractores)/n, donde Promotores = respuestas Alta+Muy alta en P32 y Detractores = Baja+Muy baja. La escala de 5 puntos no es la escala estándar de 0–10 del NPS clásico, por lo que este valor debe interpretarse como índice de lealtad relativa y no como NPS absoluto comparable con benchmarks de industria.</div>
+</div>
+
+  </div><!-- /main-inner -->
+</div><!-- /main -->
+
+<script>
+
+const DATA = {"combinado": {"n": 196, "ipa": {"attrs": [{"cod": "A01", "lbl": "Higiene y mant. instalaciones", "dim": "D1", "imp": 4.515, "ni": 196, "des": 4.212, "nd": 170, "gap": -0.303, "quad": "II"}, {"cod": "A02", "lbl": "Cal. profesionalismo recepción", "dim": "D1", "imp": 4.321, "ni": 196, "des": 4.032, "nd": 158, "gap": -0.289, "quad": "II"}, {"cod": "A03", "lbl": "Precio-calidad alojamiento", "dim": "D1", "imp": 4.26, "ni": 196, "des": 3.98, "nd": 150, "gap": -0.28, "quad": "II"}, {"cod": "A04", "lbl": "Seguridad del destino", "dim": "D1", "imp": 4.679, "ni": 196, "des": 4.259, "nd": 193, "gap": -0.42, "quad": "II"}, {"cod": "A05", "lbl": "Manejo idiomas extranjeros", "dim": "D1", "imp": 3.459, "ni": 196, "des": 3.389, "nd": 126, "gap": -0.07, "quad": "III"}, {"cod": "A06", "lbl": "Conocim. personal destino", "dim": "D1", "imp": 4.214, "ni": 196, "des": 3.86, "nd": 186, "gap": -0.354, "quad": "III"}, {"cod": "A07", "lbl": "Ingredientes/productos locales", "dim": "D2", "imp": 3.913, "ni": 196, "des": 3.874, "nd": 190, "gap": -0.039, "quad": "IV"}, {"cod": "A08", "lbl": "Cal. técnica preparación alim.", "dim": "D2", "imp": 4.296, "ni": 196, "des": 3.979, "nd": 188, "gap": -0.317, "quad": "II"}, {"cod": "A09", "lbl": "Servicio en mesa (garzones)", "dim": "D2", "imp": 4.408, "ni": 196, "des": 4.225, "nd": 187, "gap": -0.183, "quad": "II"}, {"cod": "A10", "lbl": "Precio-calidad gastronómica", "dim": "D2", "imp": 4.393, "ni": 196, "des": 3.973, "nd": 187, "gap": -0.42, "quad": "II"}, {"cod": "A11", "lbl": "Variedad oferta gastronómica", "dim": "D2", "imp": 4.138, "ni": 196, "des": 3.693, "nd": 189, "gap": -0.445, "quad": "III"}, {"cod": "A12", "lbl": "Disponibilidad tours/actividades", "dim": "D3", "imp": 3.959, "ni": 196, "des": 3.669, "nd": 181, "gap": -0.29, "quad": "III"}, {"cod": "A13", "lbl": "Cal. y prof. guías", "dim": "D3", "imp": 4.107, "ni": 196, "des": 3.97, "nd": 169, "gap": -0.137, "quad": "IV"}, {"cod": "A14", "lbl": "Facilidades cultura/patrimonio", "dim": "D3", "imp": 4.148, "ni": 196, "des": 3.783, "nd": 189, "gap": -0.365, "quad": "III"}, {"cod": "A15", "lbl": "Evidencia cuidado ambiental", "dim": "D4", "imp": 4.342, "ni": 196, "des": 3.691, "nd": 188, "gap": -0.651, "quad": "I"}, {"cod": "A16", "lbl": "Integración cultura local", "dim": "D4", "imp": 4.311, "ni": 196, "des": 3.833, "nd": 192, "gap": -0.478, "quad": "I"}, {"cod": "A17", "lbl": "Señalética y mapas físicos", "dim": "D5", "imp": 4.347, "ni": 196, "des": 3.773, "nd": 194, "gap": -0.574, "quad": "I"}, {"cod": "A18", "lbl": "Información digital actualizada", "dim": "D5", "imp": 4.117, "ni": 196, "des": 3.476, "nd": 187, "gap": -0.641, "quad": "III"}], "mi": 4.218, "md": 3.871}, "nps": 88, "perfil": {"edad": [{"cat": "25 a 34 años", "n": 53, "pct": 27.0}, {"cat": "35 a 44 años", "n": 43, "pct": 21.9}, {"cat": "55 a 64 años", "n": 32, "pct": 16.3}, {"cat": "45 a 54 años", "n": 26, "pct": 13.3}, {"cat": "18 a 24 años", "n": 23, "pct": 11.7}, {"cat": "65 años o más", "n": 19, "pct": 9.7}], "genero": [{"cat": "Femenino", "n": 102, "pct": 52.0}, {"cat": "Masculino", "n": 93, "pct": 47.4}, {"cat": "Otro", "n": 1, "pct": 0.5}], "estudios": [{"cat": "Universitaria completa", "n": 74, "pct": 37.8}, {"cat": "Media completa", "n": 57, "pct": 29.1}, {"cat": "Técnica superior (CFT o IP)", "n": 49, "pct": 25.0}, {"cat": "Básica completa o media incompleta", "n": 8, "pct": 4.1}, {"cat": "Postgrado completo", "n": 7, "pct": 3.6}, {"cat": "Sin estudios o básica incompleta", "n": 1, "pct": 0.5}], "region": [{"cat": "Coquimbo", "n": 64, "pct": 32.7}, {"cat": "Metropolitana", "n": 62, "pct": 31.6}, {"cat": "Valparaíso", "n": 26, "pct": 13.3}, {"cat": "Atacama", "n": 16, "pct": 8.2}, {"cat": "Antofagasta", "n": 11, "pct": 5.6}, {"cat": "O'Higgins", "n": 6, "pct": 3.1}, {"cat": "Aysén", "n": 3, "pct": 1.5}, {"cat": "Maule", "n": 2, "pct": 1.0}, {"cat": "Fuera de Chile", "n": 2, "pct": 1.0}, {"cat": "Biobío", "n": 1, "pct": 0.5}, {"cat": "La Araucanía", "n": 1, "pct": 0.5}, {"cat": "Ñuble", "n": 1, "pct": 0.5}, {"cat": "Los Lagos", "n": 1, "pct": 0.5}], "grupo": [{"cat": "En pareja sin hijos", "n": 60, "pct": 30.6}, {"cat": "Con familia — hijos 12–18 años", "n": 39, "pct": 19.9}, {"cat": "Con familia — hijos <12 años", "n": 39, "pct": 19.9}, {"cat": "Otro", "n": 18, "pct": 9.2}, {"cat": "Con amigos sin familia", "n": 18, "pct": 9.2}, {"cat": "Solo/a", "n": 14, "pct": 7.1}, {"cat": "En grupo organizado o tour", "n": 8, "pct": 4.1}], "laboral": [{"cat": "Trabajador/a dependiente", "n": 91, "pct": 46.4}, {"cat": "Trabajador/a independiente / emprendedor/a", "n": 50, "pct": 25.5}, {"cat": "Jubilado/a o pensionado/a", "n": 22, "pct": 11.2}, {"cat": "Estudiante", "n": 16, "pct": 8.2}, {"cat": "Labores del hogar", "n": 11, "pct": 5.6}, {"cat": "Desempleado/a", "n": 6, "pct": 3.1}], "ingreso": [{"cat": "$1.000.001–$1.500.000", "n": 55, "pct": 28.1}, {"cat": "$500.001–$1.000.000", "n": 50, "pct": 25.5}, {"cat": "$1.500.001–$2.500.000", "n": 42, "pct": 21.4}, {"cat": "Prefiere no indicar", "n": 20, "pct": 10.2}, {"cat": "$2.500.001–$4.000.000", "n": 13, "pct": 6.6}, {"cat": "Menos de $500.000", "n": 12, "pct": 6.1}, {"cat": "Más de $4.000.000", "n": 4, "pct": 2.0}]}, "viaje": {"transporte": [{"cat": "Automóvil propio o familiar/amigo", "n": 128, "pct": 65.3}, {"cat": "Transporte interurbano", "n": 45, "pct": 23.0}, {"cat": "Automóvil arrendado", "n": 12, "pct": 6.1}, {"cat": "Motocicleta", "n": 6, "pct": 3.1}, {"cat": "Otro", "n": 5, "pct": 2.6}], "noches": [{"cat": "2 noches", "n": 56, "pct": 28.6}, {"cat": "3 noches", "n": 50, "pct": 25.5}, {"cat": "No pernocta — visita de un día", "n": 50, "pct": 25.5}, {"cat": "1 noche", "n": 19, "pct": 9.7}, {"cat": "5 o más noches", "n": 13, "pct": 6.6}, {"cat": "4 noches", "n": 8, "pct": 4.1}], "alojamiento": [{"cat": "Casa de familiar o amigo sin costo", "n": 48, "pct": 24.5}, {"cat": "Cabaña turística", "n": 29, "pct": 14.8}, {"cat": "Hostal / residencial", "n": 19, "pct": 9.7}, {"cat": "Casa o departamento privado", "n": 18, "pct": 9.2}, {"cat": "Hotel", "n": 16, "pct": 8.2}, {"cat": "Camping", "n": 12, "pct": 6.1}, {"cat": "Bed & Breakfast / hospedaje familiar", "n": 3, "pct": 1.5}, {"cat": "Glamping (domo/outdoor equipado)", "n": 1, "pct": 0.5}], "reserva": [{"cat": "No aplica — casa de familiar o amigo", "n": 49, "pct": 25.0}, {"cat": "Por plataforma digital (Booking/Airbnb)", "n": 39, "pct": 19.9}, {"cat": "Por teléfono o WhatsApp", "n": 31, "pct": 15.8}, {"cat": "No reservó — llegó directamente", "n": 26, "pct": 13.3}, {"cat": "A través de agencia de viajes", "n": 1, "pct": 0.5}]}, "gasto": {"noche": [{"cat": "No aplica — visita de día / sin costo", "n": 93, "pct": 47.4}, {"cat": "$40.001–$70.000/noche", "n": 32, "pct": 16.3}, {"cat": "$20.001–$40.000/noche", "n": 31, "pct": 15.8}, {"cat": "No sabe / No responde", "n": 15, "pct": 7.7}, {"cat": "$70.001–$120.000/noche", "n": 12, "pct": 6.1}, {"cat": "Menos de $20.000/noche", "n": 12, "pct": 6.1}, {"cat": "Más de $120.000/noche", "n": 1, "pct": 0.5}], "alim": [{"cat": "$25.001–$50.000/día", "n": 81, "pct": 41.3}, {"cat": "$10.001–$25.000/día", "n": 72, "pct": 36.7}, {"cat": "$50.001–$80.000/día", "n": 23, "pct": 11.7}, {"cat": "Menos de $10.000/día", "n": 9, "pct": 4.6}, {"cat": "No sabe / No responde", "n": 8, "pct": 4.1}, {"cat": "Más de $80.000/día", "n": 3, "pct": 1.5}], "act": [{"cat": "$15.001–$40.000", "n": 52, "pct": 26.5}, {"cat": "$40.001–$100.000", "n": 49, "pct": 25.0}, {"cat": "No paga por actividades", "n": 35, "pct": 17.9}, {"cat": "Menos de $15.000", "n": 20, "pct": 10.2}, {"cat": "No sabe / No responde", "n": 18, "pct": 9.2}, {"cat": "$100.001–$200.000", "n": 12, "pct": 6.1}, {"cat": "Más de $200.000", "n": 10, "pct": 5.1}], "prod": [{"cat": "$15.001–$40.000", "n": 63, "pct": 32.1}, {"cat": "Menos de $15.000", "n": 42, "pct": 21.4}, {"cat": "No realizará compras", "n": 35, "pct": 17.9}, {"cat": "$40.001–$100.000", "n": 25, "pct": 12.8}, {"cat": "No sabe / No responde", "n": 15, "pct": 7.7}, {"cat": "$100.001–$200.000", "n": 14, "pct": 7.1}, {"cat": "Más de $200.000", "n": 2, "pct": 1.0}], "media_aloj": 22624, "media_alim": 32566, "media_total": 52130}, "planif": {"primera": [{"cat": "No, 4 o más veces antes", "n": 77, "pct": 39.3}, {"cat": "No, 1–3 veces antes", "n": 60, "pct": 30.6}, {"cat": "Sí, primera vez", "n": 59, "pct": 30.1}], "anticipacion": [{"cat": "Entre una semana y un mes", "n": 92, "pct": 46.9}, {"cat": "Mismo día o días antes", "n": 56, "pct": 28.6}, {"cat": "Entre uno y tres meses", "n": 42, "pct": 21.4}, {"cat": "Más de tres meses de anticipación", "n": 6, "pct": 3.1}], "sostenibilidad": [{"cat": "Importante — considerado, no decisivo", "n": 95, "pct": 48.5}, {"cat": "Muy importante — factor determinante", "n": 52, "pct": 26.5}, {"cat": "No lo consideré", "n": 32, "pct": 16.3}, {"cat": "Poco importante", "n": 17, "pct": 8.7}], "formacion": [{"cat": "Importante — lo valoro, no decisivo", "n": 106, "pct": 54.1}, {"cat": "Muy importante — lo consideraría al elegir", "n": 44, "pct": 22.4}, {"cat": "Poco importante", "n": 38, "pct": 19.4}, {"cat": "Nada importante", "n": 8, "pct": 4.1}], "fuentes": [{"cat": "Familiar o amigo", "n": 91, "pct": 46.4}, {"cat": "Redes sociales", "n": 71, "pct": 36.2}, {"cat": "Plataformas reserva/reseñas", "n": 27, "pct": 13.8}, {"cat": "Búsqueda web general", "n": 18, "pct": 9.2}, {"cat": "Agencia de viajes", "n": 4, "pct": 2.0}, {"cat": "Experiencia propia", "n": 93, "pct": 47.4}]}, "dap": {"pref_rest": [{"cat": "Opción B — con prácticas responsables", "n": 81, "pct": 41.3}, {"cat": "Opción A — estándar", "n": 69, "pct": 35.2}, {"cat": "Me es indiferente", "n": 46, "pct": 23.5}], "dap_rest": [{"cat": "No pagaría más", "n": 70, "pct": 35.7}, {"cat": "$751–$1.500 más (~10%)", "n": 47, "pct": 24.0}, {"cat": "Hasta $750 más (~5%)", "n": 31, "pct": 15.8}, {"cat": "Más de $3.000 más por plato", "n": 30, "pct": 15.3}, {"cat": "$1.501–$3.000 más (~20%)", "n": 18, "pct": 9.2}], "pref_aloj": [{"cat": "Opción B — con prácticas responsables", "n": 86, "pct": 43.9}, {"cat": "Me es indiferente", "n": 61, "pct": 31.1}, {"cat": "Opción A — estándar", "n": 49, "pct": 25.0}], "dap_aloj": [{"cat": "No pagaría más", "n": 96, "pct": 49.0}, {"cat": "Hasta $2.250 más (~5%)", "n": 34, "pct": 17.3}, {"cat": "$2.251–$4.500 más (~10%)", "n": 30, "pct": 15.3}, {"cat": "$4.501–$9.000 más (~20%)", "n": 25, "pct": 12.8}, {"cat": "Más de $9.000 más por noche", "n": 11, "pct": 5.6}], "regreso": [{"cat": "Muy alta", "n": 80, "pct": 40.8}, {"cat": "Alta", "n": 77, "pct": 39.3}, {"cat": "Media", "n": 34, "pct": 17.3}, {"cat": "Baja", "n": 4, "pct": 2.0}, {"cat": "Muy baja", "n": 1, "pct": 0.5}], "recomienda": [{"cat": "Muy alta", "n": 99, "pct": 50.5}, {"cat": "Alta", "n": 75, "pct": 38.3}, {"cat": "Media", "n": 20, "pct": 10.2}, {"cat": "Baja", "n": 2, "pct": 1.0}], "gasto_mas": [{"cat": "Probablemente sí", "n": 107, "pct": 54.6}, {"cat": "Definitivamente sí", "n": 45, "pct": 23.0}, {"cat": "No lo sé", "n": 36, "pct": 18.4}, {"cat": "Probablemente no", "n": 5, "pct": 2.6}, {"cat": "Definitivamente no", "n": 3, "pct": 1.5}]}, "sostenibilidad": [{"cat": "Bueno", "n": 110, "pct": 56.1}, {"cat": "Aceptable", "n": 41, "pct": 20.9}, {"cat": "Excelente", "n": 25, "pct": 12.8}, {"cat": "Deficiente", "n": 11, "pct": 5.6}, {"cat": "Sin información suficiente para evaluar", "n": 9, "pct": 4.6}], "motivo": [{"cat": "Descanso y relax", "n": 81, "pct": 41.3}, {"cat": "Visita a familiar o amigo", "n": 39, "pct": 19.9}, {"cat": "Turismo de naturaleza o aventura", "n": 23, "pct": 11.7}, {"cat": "Turismo de sol y playa", "n": 9, "pct": 4.6}, {"cat": "Gastronomía y productos locales", "n": 8, "pct": 4.1}, {"cat": "Cultura y patrimonio", "n": 7, "pct": 3.6}, {"cat": "Turismo del pisco", "n": 5, "pct": 2.6}, {"cat": "Astroturismo", "n": 4, "pct": 2.0}, {"cat": "Ruta Gabriela Mistral", "n": 4, "pct": 2.0}, {"cat": "Observación de flora y fauna en humedales", "n": 3, "pct": 1.5}, {"cat": "Deportes náuticos", "n": 3, "pct": 1.5}, {"cat": "Pesca artesanal y vida de caleta", "n": 3, "pct": 1.5}, {"cat": "Turismo de bienestar", "n": 3, "pct": 1.5}, {"cat": "Otro", "n": 2, "pct": 1.0}, {"cat": "Patrimonio ferroviario e industrial", "n": 1, "pct": 0.5}, {"cat": "Ruta del Cuarzo y patrimonio minero", "n": 1, "pct": 0.5}], "actividades": [{"cat": "Comer en restaurante", "n": 131, "pct": 66.8}, {"cat": "Compra productos locales", "n": 87, "pct": 44.4}, {"cat": "Senderismo/caminatas", "n": 66, "pct": 33.7}, {"cat": "Fotografía paisaje", "n": 103, "pct": 52.6}, {"cat": "Atractivos culturales", "n": 59, "pct": 30.1}, {"cat": "Baño de playa", "n": 26, "pct": 13.3}, {"cat": "Pesca artesanal/caleta", "n": 11, "pct": 5.6}, {"cat": "Camping borde costero", "n": 1, "pct": 0.5}, {"cat": "Actividades náuticas", "n": 14, "pct": 7.1}, {"cat": "Valle de Quilimarí", "n": 11, "pct": 5.6}, {"cat": "Ruta del Cuarzo", "n": 8, "pct": 4.1}, {"cat": "Bienestar valle interior", "n": 4, "pct": 2.0}, {"cat": "Flora/fauna humedales", "n": 18, "pct": 9.2}, {"cat": "Patrimonio ferroviario", "n": 4, "pct": 2.0}]}, "valleElqui": {"n": 100, "ipa": {"attrs": [{"cod": "A01", "lbl": "Higiene y mant. instalaciones", "dim": "D1", "imp": 4.48, "ni": 100, "des": 4.662, "nd": 74, "gap": 0.182, "quad": "II"}, {"cod": "A02", "lbl": "Cal. profesionalismo recepción", "dim": "D1", "imp": 4.18, "ni": 100, "des": 4.303, "nd": 66, "gap": 0.123, "quad": "II"}, {"cod": "A03", "lbl": "Precio-calidad alojamiento", "dim": "D1", "imp": 4.07, "ni": 100, "des": 4.25, "nd": 68, "gap": 0.18, "quad": "IV"}, {"cod": "A04", "lbl": "Seguridad del destino", "dim": "D1", "imp": 4.74, "ni": 100, "des": 4.454, "nd": 97, "gap": -0.286, "quad": "II"}, {"cod": "A05", "lbl": "Manejo idiomas extranjeros", "dim": "D1", "imp": 3.35, "ni": 100, "des": 3.6, "nd": 50, "gap": 0.25, "quad": "III"}, {"cod": "A06", "lbl": "Conocim. personal destino", "dim": "D1", "imp": 4.16, "ni": 100, "des": 4.053, "nd": 95, "gap": -0.107, "quad": "I"}, {"cod": "A07", "lbl": "Ingredientes/productos locales", "dim": "D2", "imp": 3.64, "ni": 100, "des": 3.838, "nd": 99, "gap": 0.198, "quad": "III"}, {"cod": "A08", "lbl": "Cal. técnica preparación alim.", "dim": "D2", "imp": 4.05, "ni": 100, "des": 4.113, "nd": 97, "gap": 0.063, "quad": "IV"}, {"cod": "A09", "lbl": "Servicio en mesa (garzones)", "dim": "D2", "imp": 4.49, "ni": 100, "des": 4.464, "nd": 97, "gap": -0.026, "quad": "II"}, {"cod": "A10", "lbl": "Precio-calidad gastronómica", "dim": "D2", "imp": 4.28, "ni": 100, "des": 4.103, "nd": 97, "gap": -0.177, "quad": "II"}, {"cod": "A11", "lbl": "Variedad oferta gastronómica", "dim": "D2", "imp": 3.86, "ni": 100, "des": 3.753, "nd": 97, "gap": -0.107, "quad": "III"}, {"cod": "A12", "lbl": "Disponibilidad tours/actividades", "dim": "D3", "imp": 3.87, "ni": 100, "des": 3.755, "nd": 98, "gap": -0.115, "quad": "III"}, {"cod": "A13", "lbl": "Cal. y prof. guías", "dim": "D3", "imp": 4.06, "ni": 100, "des": 4.147, "nd": 95, "gap": 0.087, "quad": "IV"}, {"cod": "A14", "lbl": "Facilidades cultura/patrimonio", "dim": "D3", "imp": 4.11, "ni": 100, "des": 4.092, "nd": 98, "gap": -0.018, "quad": "IV"}, {"cod": "A15", "lbl": "Evidencia cuidado ambiental", "dim": "D4", "imp": 4.43, "ni": 100, "des": 4.131, "nd": 99, "gap": -0.299, "quad": "II"}, {"cod": "A16", "lbl": "Integración cultura local", "dim": "D4", "imp": 4.37, "ni": 100, "des": 4.289, "nd": 97, "gap": -0.081, "quad": "II"}, {"cod": "A17", "lbl": "Señalética y mapas físicos", "dim": "D5", "imp": 4.26, "ni": 100, "des": 3.99, "nd": 98, "gap": -0.27, "quad": "I"}, {"cod": "A18", "lbl": "Información digital actualizada", "dim": "D5", "imp": 4.11, "ni": 100, "des": 3.545, "nd": 99, "gap": -0.565, "quad": "III"}], "mi": 4.139, "md": 4.086}, "nps": 94, "perfil": {"edad": [{"cat": "25 a 34 años", "n": 32, "pct": 32.0}, {"cat": "35 a 44 años", "n": 22, "pct": 22.0}, {"cat": "55 a 64 años", "n": 16, "pct": 16.0}, {"cat": "45 a 54 años", "n": 14, "pct": 14.0}, {"cat": "18 a 24 años", "n": 10, "pct": 10.0}, {"cat": "65 años o más", "n": 6, "pct": 6.0}], "genero": [{"cat": "Femenino", "n": 54, "pct": 54.0}, {"cat": "Masculino", "n": 45, "pct": 45.0}, {"cat": "Otro", "n": 1, "pct": 1.0}], "estudios": [{"cat": "Universitaria completa", "n": 44, "pct": 44.0}, {"cat": "Técnica superior (CFT o IP)", "n": 30, "pct": 30.0}, {"cat": "Media completa", "n": 19, "pct": 19.0}, {"cat": "Postgrado completo", "n": 7, "pct": 7.0}], "region": [{"cat": "Coquimbo", "n": 38, "pct": 38.0}, {"cat": "Metropolitana", "n": 25, "pct": 25.0}, {"cat": "Valparaíso", "n": 13, "pct": 13.0}, {"cat": "Antofagasta", "n": 9, "pct": 9.0}, {"cat": "Atacama", "n": 7, "pct": 7.0}, {"cat": "Fuera de Chile", "n": 2, "pct": 2.0}, {"cat": "O'Higgins", "n": 2, "pct": 2.0}, {"cat": "Biobío", "n": 1, "pct": 1.0}, {"cat": "La Araucanía", "n": 1, "pct": 1.0}, {"cat": "Ñuble", "n": 1, "pct": 1.0}, {"cat": "Los Lagos", "n": 1, "pct": 1.0}], "grupo": [{"cat": "En pareja sin hijos", "n": 36, "pct": 36.0}, {"cat": "Con familia — hijos <12 años", "n": 20, "pct": 20.0}, {"cat": "Con familia — hijos 12–18 años", "n": 15, "pct": 15.0}, {"cat": "Otro", "n": 12, "pct": 12.0}, {"cat": "Con amigos sin familia", "n": 8, "pct": 8.0}, {"cat": "Solo/a", "n": 8, "pct": 8.0}, {"cat": "En grupo organizado o tour", "n": 1, "pct": 1.0}], "laboral": [{"cat": "Trabajador/a dependiente", "n": 47, "pct": 47.0}, {"cat": "Trabajador/a independiente / emprendedor/a", "n": 29, "pct": 29.0}, {"cat": "Estudiante", "n": 10, "pct": 10.0}, {"cat": "Jubilado/a o pensionado/a", "n": 8, "pct": 8.0}, {"cat": "Labores del hogar", "n": 4, "pct": 4.0}, {"cat": "Desempleado/a", "n": 2, "pct": 2.0}], "ingreso": [{"cat": "$1.500.001–$2.500.000", "n": 26, "pct": 26.0}, {"cat": "$1.000.001–$1.500.000", "n": 25, "pct": 25.0}, {"cat": "$500.001–$1.000.000", "n": 19, "pct": 19.0}, {"cat": "Prefiere no indicar", "n": 16, "pct": 16.0}, {"cat": "$2.500.001–$4.000.000", "n": 6, "pct": 6.0}, {"cat": "Más de $4.000.000", "n": 4, "pct": 4.0}, {"cat": "Menos de $500.000", "n": 4, "pct": 4.0}]}, "viaje": {"transporte": [{"cat": "Automóvil propio o familiar/amigo", "n": 72, "pct": 72.0}, {"cat": "Transporte interurbano", "n": 16, "pct": 16.0}, {"cat": "Motocicleta", "n": 6, "pct": 6.0}, {"cat": "Automóvil arrendado", "n": 3, "pct": 3.0}, {"cat": "Otro", "n": 3, "pct": 3.0}], "noches": [{"cat": "No pernocta — visita de un día", "n": 39, "pct": 39.0}, {"cat": "2 noches", "n": 28, "pct": 28.0}, {"cat": "3 noches", "n": 20, "pct": 20.0}, {"cat": "5 o más noches", "n": 9, "pct": 9.0}, {"cat": "1 noche", "n": 3, "pct": 3.0}, {"cat": "4 noches", "n": 1, "pct": 1.0}], "alojamiento": [{"cat": "Casa de familiar o amigo sin costo", "n": 23, "pct": 23.0}, {"cat": "Cabaña turística", "n": 14, "pct": 14.0}, {"cat": "Hotel", "n": 9, "pct": 9.0}, {"cat": "Camping", "n": 7, "pct": 7.0}, {"cat": "Hostal / residencial", "n": 5, "pct": 5.0}, {"cat": "Casa o departamento privado", "n": 2, "pct": 2.0}, {"cat": "Glamping (domo/outdoor equipado)", "n": 1, "pct": 1.0}], "reserva": [{"cat": "No aplica — casa de familiar o amigo", "n": 24, "pct": 24.0}, {"cat": "Por plataforma digital (Booking/Airbnb)", "n": 18, "pct": 18.0}, {"cat": "Por teléfono o WhatsApp", "n": 12, "pct": 12.0}, {"cat": "No reservó — llegó directamente", "n": 6, "pct": 6.0}, {"cat": "A través de agencia de viajes", "n": 1, "pct": 1.0}]}, "gasto": {"noche": [{"cat": "No aplica — visita de día / sin costo", "n": 61, "pct": 61.0}, {"cat": "$20.001–$40.000/noche", "n": 13, "pct": 13.0}, {"cat": "$40.001–$70.000/noche", "n": 10, "pct": 10.0}, {"cat": "Menos de $20.000/noche", "n": 10, "pct": 10.0}, {"cat": "$70.001–$120.000/noche", "n": 3, "pct": 3.0}, {"cat": "No sabe / No responde", "n": 2, "pct": 2.0}, {"cat": "Más de $120.000/noche", "n": 1, "pct": 1.0}], "alim": [{"cat": "$10.001–$25.000/día", "n": 48, "pct": 48.0}, {"cat": "$25.001–$50.000/día", "n": 35, "pct": 35.0}, {"cat": "$50.001–$80.000/día", "n": 8, "pct": 8.0}, {"cat": "Menos de $10.000/día", "n": 6, "pct": 6.0}, {"cat": "Más de $80.000/día", "n": 3, "pct": 3.0}], "act": [{"cat": "$15.001–$40.000", "n": 30, "pct": 30.0}, {"cat": "$40.001–$100.000", "n": 27, "pct": 27.0}, {"cat": "No paga por actividades", "n": 17, "pct": 17.0}, {"cat": "Más de $200.000", "n": 9, "pct": 9.0}, {"cat": "$100.001–$200.000", "n": 8, "pct": 8.0}, {"cat": "Menos de $15.000", "n": 7, "pct": 7.0}, {"cat": "No sabe / No responde", "n": 2, "pct": 2.0}], "prod": [{"cat": "$15.001–$40.000", "n": 35, "pct": 35.0}, {"cat": "No realizará compras", "n": 19, "pct": 19.0}, {"cat": "$40.001–$100.000", "n": 16, "pct": 16.0}, {"cat": "Menos de $15.000", "n": 13, "pct": 13.0}, {"cat": "$100.001–$200.000", "n": 13, "pct": 13.0}, {"cat": "No sabe / No responde", "n": 2, "pct": 2.0}, {"cat": "Más de $200.000", "n": 2, "pct": 2.0}], "media_aloj": 15000, "media_alim": 29875, "media_total": 44575}, "planif": {"primera": [{"cat": "No, 4 o más veces antes", "n": 53, "pct": 53.0}, {"cat": "No, 1–3 veces antes", "n": 25, "pct": 25.0}, {"cat": "Sí, primera vez", "n": 22, "pct": 22.0}], "anticipacion": [{"cat": "Entre una semana y un mes", "n": 42, "pct": 42.0}, {"cat": "Mismo día o días antes", "n": 38, "pct": 38.0}, {"cat": "Entre uno y tres meses", "n": 17, "pct": 17.0}, {"cat": "Más de tres meses de anticipación", "n": 3, "pct": 3.0}], "sostenibilidad": [{"cat": "Importante — considerado, no decisivo", "n": 45, "pct": 45.0}, {"cat": "Muy importante — factor determinante", "n": 26, "pct": 26.0}, {"cat": "No lo consideré", "n": 18, "pct": 18.0}, {"cat": "Poco importante", "n": 11, "pct": 11.0}], "formacion": [{"cat": "Importante — lo valoro, no decisivo", "n": 52, "pct": 52.0}, {"cat": "Poco importante", "n": 30, "pct": 30.0}, {"cat": "Muy importante — lo consideraría al elegir", "n": 14, "pct": 14.0}, {"cat": "Nada importante", "n": 4, "pct": 4.0}], "fuentes": [{"cat": "Familiar o amigo", "n": 45, "pct": 45.0}, {"cat": "Redes sociales", "n": 37, "pct": 37.0}, {"cat": "Plataformas reserva/reseñas", "n": 14, "pct": 14.0}, {"cat": "Búsqueda web general", "n": 3, "pct": 3.0}, {"cat": "Agencia de viajes", "n": 1, "pct": 1.0}, {"cat": "Experiencia propia", "n": 66, "pct": 66.0}]}, "dap": {"pref_rest": [{"cat": "Opción A — estándar", "n": 35, "pct": 35.0}, {"cat": "Opción B — con prácticas responsables", "n": 33, "pct": 33.0}, {"cat": "Me es indiferente", "n": 32, "pct": 32.0}], "dap_rest": [{"cat": "No pagaría más", "n": 41, "pct": 41.0}, {"cat": "$751–$1.500 más (~10%)", "n": 25, "pct": 25.0}, {"cat": "Más de $3.000 más por plato", "n": 18, "pct": 18.0}, {"cat": "$1.501–$3.000 más (~20%)", "n": 9, "pct": 9.0}, {"cat": "Hasta $750 más (~5%)", "n": 7, "pct": 7.0}], "pref_aloj": [{"cat": "Opción B — con prácticas responsables", "n": 47, "pct": 47.0}, {"cat": "Me es indiferente", "n": 31, "pct": 31.0}, {"cat": "Opción A — estándar", "n": 22, "pct": 22.0}], "dap_aloj": [{"cat": "No pagaría más", "n": 41, "pct": 41.0}, {"cat": "$2.251–$4.500 más (~10%)", "n": 23, "pct": 23.0}, {"cat": "Hasta $2.250 más (~5%)", "n": 18, "pct": 18.0}, {"cat": "$4.501–$9.000 más (~20%)", "n": 14, "pct": 14.0}, {"cat": "Más de $9.000 más por noche", "n": 4, "pct": 4.0}], "regreso": [{"cat": "Muy alta", "n": 53, "pct": 53.0}, {"cat": "Alta", "n": 33, "pct": 33.0}, {"cat": "Media", "n": 13, "pct": 13.0}, {"cat": "Baja", "n": 1, "pct": 1.0}], "recomienda": [{"cat": "Muy alta", "n": 70, "pct": 70.0}, {"cat": "Alta", "n": 26, "pct": 26.0}, {"cat": "Baja", "n": 2, "pct": 2.0}, {"cat": "Media", "n": 2, "pct": 2.0}], "gasto_mas": [{"cat": "Probablemente sí", "n": 52, "pct": 52.0}, {"cat": "Definitivamente sí", "n": 26, "pct": 26.0}, {"cat": "No lo sé", "n": 17, "pct": 17.0}, {"cat": "Probablemente no", "n": 3, "pct": 3.0}, {"cat": "Definitivamente no", "n": 2, "pct": 2.0}]}, "sostenibilidad": [{"cat": "Bueno", "n": 65, "pct": 65.0}, {"cat": "Excelente", "n": 19, "pct": 19.0}, {"cat": "Aceptable", "n": 10, "pct": 10.0}, {"cat": "Deficiente", "n": 3, "pct": 3.0}, {"cat": "Sin información suficiente para evaluar", "n": 3, "pct": 3.0}], "motivo": [{"cat": "Descanso y relax", "n": 40, "pct": 40.0}, {"cat": "Visita a familiar o amigo", "n": 23, "pct": 23.0}, {"cat": "Turismo de naturaleza o aventura", "n": 14, "pct": 14.0}, {"cat": "Turismo del pisco", "n": 5, "pct": 5.0}, {"cat": "Cultura y patrimonio", "n": 5, "pct": 5.0}, {"cat": "Astroturismo", "n": 4, "pct": 4.0}, {"cat": "Ruta Gabriela Mistral", "n": 4, "pct": 4.0}, {"cat": "Turismo de bienestar", "n": 3, "pct": 3.0}, {"cat": "Gastronomía y productos locales", "n": 2, "pct": 2.0}], "actividades": [{"cat": "Comer en restaurante", "n": 75, "pct": 75.0}, {"cat": "Compra productos locales", "n": 63, "pct": 63.0}, {"cat": "Senderismo/caminatas", "n": 24, "pct": 24.0}, {"cat": "Fotografía paisaje", "n": 66, "pct": 66.0}, {"cat": "Atractivos culturales", "n": 44, "pct": 44.0}, {"cat": "Observación astronómica", "n": 32, "pct": 32.0}, {"cat": "Pisquera/destilería", "n": 44, "pct": 44.0}, {"cat": "Tour guiado", "n": 13, "pct": 13.0}, {"cat": "Tinajas/spa/bienestar", "n": 18, "pct": 18.0}, {"cat": "Terapias alternativas", "n": 13, "pct": 13.0}, {"cat": "Cabalgatas", "n": 9, "pct": 9.0}, {"cat": "Legado Gabriela Mistral", "n": 47, "pct": 47.0}, {"cat": "Visita viña/cata", "n": 29, "pct": 29.0}]}, "pichidangui": {"n": 96, "ipa": {"attrs": [{"cod": "A01", "lbl": "Higiene y mant. instalaciones", "dim": "D1", "imp": 4.552, "ni": 96, "des": 3.865, "nd": 96, "gap": -0.687, "quad": "II"}, {"cod": "A02", "lbl": "Cal. profesionalismo recepción", "dim": "D1", "imp": 4.469, "ni": 96, "des": 3.837, "nd": 92, "gap": -0.632, "quad": "II"}, {"cod": "A03", "lbl": "Precio-calidad alojamiento", "dim": "D1", "imp": 4.458, "ni": 96, "des": 3.756, "nd": 82, "gap": -0.702, "quad": "II"}, {"cod": "A04", "lbl": "Seguridad del destino", "dim": "D1", "imp": 4.615, "ni": 96, "des": 4.062, "nd": 96, "gap": -0.553, "quad": "II"}, {"cod": "A05", "lbl": "Manejo idiomas extranjeros", "dim": "D1", "imp": 3.573, "ni": 96, "des": 3.25, "nd": 76, "gap": -0.323, "quad": "III"}, {"cod": "A06", "lbl": "Conocim. personal destino", "dim": "D1", "imp": 4.271, "ni": 96, "des": 3.659, "nd": 91, "gap": -0.612, "quad": "III"}, {"cod": "A07", "lbl": "Ingredientes/productos locales", "dim": "D2", "imp": 4.198, "ni": 96, "des": 3.912, "nd": 91, "gap": -0.286, "quad": "IV"}, {"cod": "A08", "lbl": "Cal. técnica preparación alim.", "dim": "D2", "imp": 4.552, "ni": 96, "des": 3.835, "nd": 91, "gap": -0.717, "quad": "II"}, {"cod": "A09", "lbl": "Servicio en mesa (garzones)", "dim": "D2", "imp": 4.323, "ni": 96, "des": 3.967, "nd": 90, "gap": -0.356, "quad": "II"}, {"cod": "A10", "lbl": "Precio-calidad gastronómica", "dim": "D2", "imp": 4.51, "ni": 96, "des": 3.833, "nd": 90, "gap": -0.677, "quad": "II"}, {"cod": "A11", "lbl": "Variedad oferta gastronómica", "dim": "D2", "imp": 4.427, "ni": 96, "des": 3.63, "nd": 92, "gap": -0.797, "quad": "I"}, {"cod": "A12", "lbl": "Disponibilidad tours/actividades", "dim": "D3", "imp": 4.052, "ni": 96, "des": 3.566, "nd": 83, "gap": -0.486, "quad": "III"}, {"cod": "A13", "lbl": "Cal. y prof. guías", "dim": "D3", "imp": 4.156, "ni": 96, "des": 3.743, "nd": 74, "gap": -0.413, "quad": "IV"}, {"cod": "A14", "lbl": "Facilidades cultura/patrimonio", "dim": "D3", "imp": 4.188, "ni": 96, "des": 3.451, "nd": 91, "gap": -0.737, "quad": "III"}, {"cod": "A15", "lbl": "Evidencia cuidado ambiental", "dim": "D4", "imp": 4.25, "ni": 96, "des": 3.202, "nd": 89, "gap": -1.048, "quad": "III"}, {"cod": "A16", "lbl": "Integración cultura local", "dim": "D4", "imp": 4.25, "ni": 96, "des": 3.368, "nd": 95, "gap": -0.882, "quad": "III"}, {"cod": "A17", "lbl": "Señalética y mapas físicos", "dim": "D5", "imp": 4.438, "ni": 96, "des": 3.552, "nd": 96, "gap": -0.886, "quad": "I"}, {"cod": "A18", "lbl": "Información digital actualizada", "dim": "D5", "imp": 4.125, "ni": 96, "des": 3.398, "nd": 88, "gap": -0.727, "quad": "III"}], "mi": 4.3, "md": 3.66}, "nps": 81, "perfil": {"edad": [{"cat": "25 a 34 años", "n": 21, "pct": 21.9}, {"cat": "35 a 44 años", "n": 21, "pct": 21.9}, {"cat": "55 a 64 años", "n": 16, "pct": 16.7}, {"cat": "18 a 24 años", "n": 13, "pct": 13.5}, {"cat": "65 años o más", "n": 13, "pct": 13.5}, {"cat": "45 a 54 años", "n": 12, "pct": 12.5}], "genero": [{"cat": "Femenino", "n": 48, "pct": 50.0}, {"cat": "Masculino", "n": 48, "pct": 50.0}], "estudios": [{"cat": "Media completa", "n": 38, "pct": 39.6}, {"cat": "Universitaria completa", "n": 30, "pct": 31.2}, {"cat": "Técnica superior (CFT o IP)", "n": 19, "pct": 19.8}, {"cat": "Básica completa o media incompleta", "n": 8, "pct": 8.3}, {"cat": "Sin estudios o básica incompleta", "n": 1, "pct": 1.0}], "region": [{"cat": "Metropolitana", "n": 37, "pct": 38.5}, {"cat": "Coquimbo", "n": 26, "pct": 27.1}, {"cat": "Valparaíso", "n": 13, "pct": 13.5}, {"cat": "Atacama", "n": 9, "pct": 9.4}, {"cat": "O'Higgins", "n": 4, "pct": 4.2}, {"cat": "Aysén", "n": 3, "pct": 3.1}, {"cat": "Maule", "n": 2, "pct": 2.1}, {"cat": "Antofagasta", "n": 2, "pct": 2.1}], "grupo": [{"cat": "En pareja sin hijos", "n": 24, "pct": 25.0}, {"cat": "Con familia — hijos 12–18 años", "n": 24, "pct": 25.0}, {"cat": "Con familia — hijos <12 años", "n": 19, "pct": 19.8}, {"cat": "Con amigos sin familia", "n": 10, "pct": 10.4}, {"cat": "En grupo organizado o tour", "n": 7, "pct": 7.3}, {"cat": "Solo/a", "n": 6, "pct": 6.2}, {"cat": "Otro", "n": 6, "pct": 6.2}], "laboral": [{"cat": "Trabajador/a dependiente", "n": 44, "pct": 45.8}, {"cat": "Trabajador/a independiente / emprendedor/a", "n": 21, "pct": 21.9}, {"cat": "Jubilado/a o pensionado/a", "n": 14, "pct": 14.6}, {"cat": "Labores del hogar", "n": 7, "pct": 7.3}, {"cat": "Estudiante", "n": 6, "pct": 6.2}, {"cat": "Desempleado/a", "n": 4, "pct": 4.2}], "ingreso": [{"cat": "$500.001–$1.000.000", "n": 31, "pct": 32.3}, {"cat": "$1.000.001–$1.500.000", "n": 30, "pct": 31.2}, {"cat": "$1.500.001–$2.500.000", "n": 16, "pct": 16.7}, {"cat": "Menos de $500.000", "n": 8, "pct": 8.3}, {"cat": "$2.500.001–$4.000.000", "n": 7, "pct": 7.3}, {"cat": "Prefiere no indicar", "n": 4, "pct": 4.2}]}, "viaje": {"transporte": [{"cat": "Automóvil propio o familiar/amigo", "n": 56, "pct": 58.3}, {"cat": "Transporte interurbano", "n": 29, "pct": 30.2}, {"cat": "Automóvil arrendado", "n": 9, "pct": 9.4}, {"cat": "Otro", "n": 2, "pct": 2.1}], "noches": [{"cat": "3 noches", "n": 30, "pct": 31.2}, {"cat": "2 noches", "n": 28, "pct": 29.2}, {"cat": "1 noche", "n": 16, "pct": 16.7}, {"cat": "No pernocta — visita de un día", "n": 11, "pct": 11.5}, {"cat": "4 noches", "n": 7, "pct": 7.3}, {"cat": "5 o más noches", "n": 4, "pct": 4.2}], "alojamiento": [{"cat": "Casa de familiar o amigo sin costo", "n": 25, "pct": 26.0}, {"cat": "Casa o departamento privado", "n": 16, "pct": 16.7}, {"cat": "Cabaña turística", "n": 15, "pct": 15.6}, {"cat": "Hostal / residencial", "n": 14, "pct": 14.6}, {"cat": "Hotel", "n": 7, "pct": 7.3}, {"cat": "Camping", "n": 5, "pct": 5.2}, {"cat": "Bed & Breakfast / hospedaje familiar", "n": 3, "pct": 3.1}], "reserva": [{"cat": "No aplica — casa de familiar o amigo", "n": 25, "pct": 26.0}, {"cat": "Por plataforma digital (Booking/Airbnb)", "n": 21, "pct": 21.9}, {"cat": "No reservó — llegó directamente", "n": 20, "pct": 20.8}, {"cat": "Por teléfono o WhatsApp", "n": 19, "pct": 19.8}]}, "gasto": {"noche": [{"cat": "No aplica — visita de día / sin costo", "n": 32, "pct": 33.3}, {"cat": "$40.001–$70.000/noche", "n": 22, "pct": 22.9}, {"cat": "$20.001–$40.000/noche", "n": 18, "pct": 18.8}, {"cat": "No sabe / No responde", "n": 13, "pct": 13.5}, {"cat": "$70.001–$120.000/noche", "n": 9, "pct": 9.4}, {"cat": "Menos de $20.000/noche", "n": 2, "pct": 2.1}], "alim": [{"cat": "$25.001–$50.000/día", "n": 46, "pct": 47.9}, {"cat": "$10.001–$25.000/día", "n": 24, "pct": 25.0}, {"cat": "$50.001–$80.000/día", "n": 15, "pct": 15.6}, {"cat": "No sabe / No responde", "n": 8, "pct": 8.3}, {"cat": "Menos de $10.000/día", "n": 3, "pct": 3.1}], "act": [{"cat": "$40.001–$100.000", "n": 22, "pct": 22.9}, {"cat": "$15.001–$40.000", "n": 22, "pct": 22.9}, {"cat": "No paga por actividades", "n": 18, "pct": 18.8}, {"cat": "No sabe / No responde", "n": 16, "pct": 16.7}, {"cat": "Menos de $15.000", "n": 13, "pct": 13.5}, {"cat": "$100.001–$200.000", "n": 4, "pct": 4.2}, {"cat": "Más de $200.000", "n": 1, "pct": 1.0}], "prod": [{"cat": "Menos de $15.000", "n": 29, "pct": 30.2}, {"cat": "$15.001–$40.000", "n": 28, "pct": 29.2}, {"cat": "No realizará compras", "n": 16, "pct": 16.7}, {"cat": "No sabe / No responde", "n": 13, "pct": 13.5}, {"cat": "$40.001–$100.000", "n": 9, "pct": 9.4}, {"cat": "$100.001–$200.000", "n": 1, "pct": 1.0}], "media_aloj": 31627, "media_alim": 35625, "media_total": 60000}, "planif": {"primera": [{"cat": "Sí, primera vez", "n": 37, "pct": 38.5}, {"cat": "No, 1–3 veces antes", "n": 35, "pct": 36.5}, {"cat": "No, 4 o más veces antes", "n": 24, "pct": 25.0}], "anticipacion": [{"cat": "Entre una semana y un mes", "n": 50, "pct": 52.1}, {"cat": "Entre uno y tres meses", "n": 25, "pct": 26.0}, {"cat": "Mismo día o días antes", "n": 18, "pct": 18.8}, {"cat": "Más de tres meses de anticipación", "n": 3, "pct": 3.1}], "sostenibilidad": [{"cat": "Importante — considerado, no decisivo", "n": 50, "pct": 52.1}, {"cat": "Muy importante — factor determinante", "n": 26, "pct": 27.1}, {"cat": "No lo consideré", "n": 14, "pct": 14.6}, {"cat": "Poco importante", "n": 6, "pct": 6.2}], "formacion": [{"cat": "Importante — lo valoro, no decisivo", "n": 54, "pct": 56.2}, {"cat": "Muy importante — lo consideraría al elegir", "n": 30, "pct": 31.2}, {"cat": "Poco importante", "n": 8, "pct": 8.3}, {"cat": "Nada importante", "n": 4, "pct": 4.2}], "fuentes": [{"cat": "Familiar o amigo", "n": 46, "pct": 47.9}, {"cat": "Redes sociales", "n": 34, "pct": 35.4}, {"cat": "Plataformas reserva/reseñas", "n": 13, "pct": 13.5}, {"cat": "Búsqueda web general", "n": 15, "pct": 15.6}, {"cat": "Agencia de viajes", "n": 3, "pct": 3.1}, {"cat": "Experiencia propia", "n": 27, "pct": 28.1}]}, "dap": {"pref_rest": [{"cat": "Opción B — con prácticas responsables", "n": 48, "pct": 50.0}, {"cat": "Opción A — estándar", "n": 34, "pct": 35.4}, {"cat": "Me es indiferente", "n": 14, "pct": 14.6}], "dap_rest": [{"cat": "No pagaría más", "n": 29, "pct": 30.2}, {"cat": "Hasta $750 más (~5%)", "n": 24, "pct": 25.0}, {"cat": "$751–$1.500 más (~10%)", "n": 22, "pct": 22.9}, {"cat": "Más de $3.000 más por plato", "n": 12, "pct": 12.5}, {"cat": "$1.501–$3.000 más (~20%)", "n": 9, "pct": 9.4}], "pref_aloj": [{"cat": "Opción B — con prácticas responsables", "n": 39, "pct": 40.6}, {"cat": "Me es indiferente", "n": 30, "pct": 31.2}, {"cat": "Opción A — estándar", "n": 27, "pct": 28.1}], "dap_aloj": [{"cat": "No pagaría más", "n": 55, "pct": 57.3}, {"cat": "Hasta $2.250 más (~5%)", "n": 16, "pct": 16.7}, {"cat": "$4.501–$9.000 más (~20%)", "n": 11, "pct": 11.5}, {"cat": "$2.251–$4.500 más (~10%)", "n": 7, "pct": 7.3}, {"cat": "Más de $9.000 más por noche", "n": 7, "pct": 7.3}], "regreso": [{"cat": "Alta", "n": 44, "pct": 45.8}, {"cat": "Muy alta", "n": 27, "pct": 28.1}, {"cat": "Media", "n": 21, "pct": 21.9}, {"cat": "Baja", "n": 3, "pct": 3.1}, {"cat": "Muy baja", "n": 1, "pct": 1.0}], "recomienda": [{"cat": "Alta", "n": 49, "pct": 51.0}, {"cat": "Muy alta", "n": 29, "pct": 30.2}, {"cat": "Media", "n": 18, "pct": 18.8}], "gasto_mas": [{"cat": "Probablemente sí", "n": 55, "pct": 57.3}, {"cat": "Definitivamente sí", "n": 19, "pct": 19.8}, {"cat": "No lo sé", "n": 19, "pct": 19.8}, {"cat": "Probablemente no", "n": 2, "pct": 2.1}, {"cat": "Definitivamente no", "n": 1, "pct": 1.0}]}, "sostenibilidad": [{"cat": "Bueno", "n": 45, "pct": 46.9}, {"cat": "Aceptable", "n": 31, "pct": 32.3}, {"cat": "Deficiente", "n": 8, "pct": 8.3}, {"cat": "Excelente", "n": 6, "pct": 6.2}, {"cat": "Sin información suficiente para evaluar", "n": 6, "pct": 6.2}], "motivo": [{"cat": "Descanso y relax", "n": 41, "pct": 42.7}, {"cat": "Visita a familiar o amigo", "n": 16, "pct": 16.7}, {"cat": "Turismo de naturaleza o aventura", "n": 9, "pct": 9.4}, {"cat": "Turismo de sol y playa", "n": 9, "pct": 9.4}, {"cat": "Gastronomía y productos locales", "n": 6, "pct": 6.2}, {"cat": "Observación de flora y fauna en humedales", "n": 3, "pct": 3.1}, {"cat": "Deportes náuticos", "n": 3, "pct": 3.1}, {"cat": "Pesca artesanal y vida de caleta", "n": 3, "pct": 3.1}, {"cat": "Cultura y patrimonio", "n": 2, "pct": 2.1}, {"cat": "Otro", "n": 2, "pct": 2.1}, {"cat": "Patrimonio ferroviario e industrial", "n": 1, "pct": 1.0}, {"cat": "Ruta del Cuarzo y patrimonio minero", "n": 1, "pct": 1.0}], "actividades": [{"cat": "Comer en restaurante", "n": 56, "pct": 58.3}, {"cat": "Compra productos locales", "n": 24, "pct": 25.0}, {"cat": "Senderismo/caminatas", "n": 42, "pct": 43.8}, {"cat": "Fotografía paisaje", "n": 37, "pct": 38.5}, {"cat": "Atractivos culturales", "n": 15, "pct": 15.6}, {"cat": "Baño de playa", "n": 26, "pct": 27.1}, {"cat": "Pesca artesanal/caleta", "n": 11, "pct": 11.5}, {"cat": "Camping borde costero", "n": 1, "pct": 1.0}, {"cat": "Actividades náuticas", "n": 14, "pct": 14.6}, {"cat": "Valle de Quilimarí", "n": 11, "pct": 11.5}, {"cat": "Ruta del Cuarzo", "n": 8, "pct": 8.3}, {"cat": "Bienestar valle interior", "n": 4, "pct": 4.2}, {"cat": "Flora/fauna humedales", "n": 18, "pct": 18.8}, {"cat": "Patrimonio ferroviario", "n": 4, "pct": 4.2}]}, "motivo_ve": [{"cat": "Descanso y relax", "n": 40, "pct": 40.0}, {"cat": "Visita a familiar o amigo", "n": 23, "pct": 23.0}, {"cat": "Turismo de naturaleza o aventura", "n": 14, "pct": 14.0}, {"cat": "Turismo del pisco", "n": 5, "pct": 5.0}, {"cat": "Cultura y patrimonio", "n": 5, "pct": 5.0}, {"cat": "Astroturismo", "n": 4, "pct": 4.0}, {"cat": "Ruta Gabriela Mistral", "n": 4, "pct": 4.0}, {"cat": "Turismo de bienestar", "n": 3, "pct": 3.0}, {"cat": "Gastronomía y productos locales", "n": 2, "pct": 2.0}], "motivo_pq": [{"cat": "Descanso y relax", "n": 41, "pct": 42.7}, {"cat": "Visita a familiar o amigo", "n": 16, "pct": 16.7}, {"cat": "Turismo de naturaleza o aventura", "n": 9, "pct": 9.4}, {"cat": "Turismo de sol y playa", "n": 9, "pct": 9.4}, {"cat": "Gastronomía y productos locales", "n": 6, "pct": 6.2}, {"cat": "Observación de flora y fauna en humedales", "n": 3, "pct": 3.1}, {"cat": "Deportes náuticos", "n": 3, "pct": 3.1}, {"cat": "Pesca artesanal y vida de caleta", "n": 3, "pct": 3.1}, {"cat": "Cultura y patrimonio", "n": 2, "pct": 2.1}, {"cat": "Otro", "n": 2, "pct": 2.1}, {"cat": "Patrimonio ferroviario e industrial", "n": 1, "pct": 1.0}, {"cat": "Ruta del Cuarzo y patrimonio minero", "n": 1, "pct": 1.0}]};
+
+// Extensión DATA con P5/P6/P15/P22/P23
+DATA['combinado']['grupo'] = [{"cat": "En pareja sin hijos", "n": 60, "pct": 30.6}, {"cat": "Con familia — hijos 12–18 años", "n": 39, "pct": 19.9}, {"cat": "Con familia — hijos <12 años", "n": 39, "pct": 19.9}, {"cat": "Otro", "n": 18, "pct": 9.2}, {"cat": "Con amigos sin familia", "n": 18, "pct": 9.2}, {"cat": "Solo/a", "n": 14, "pct": 7.1}, {"cat": "En grupo organizado o tour", "n": 8, "pct": 4.1}];
+DATA['combinado']['acompanantes'] = [{"cat": "1 persona", "n": 59, "pct": 30.1}, {"cat": "2 personas", "n": 44, "pct": 22.4}, {"cat": "3 personas", "n": 38, "pct": 19.4}, {"cat": "5 o más personas", "n": 23, "pct": 11.7}, {"cat": "4 personas", "n": 18, "pct": 9.2}, {"cat": "Viajo solo/a", "n": 14, "pct": 7.1}];
+DATA['combinado']['primera_visita'] = [{"cat": "No, 4 o más veces antes", "n": 77, "pct": 39.3}, {"cat": "No, 1–3 veces antes", "n": 60, "pct": 30.6}, {"cat": "Sí, primera vez", "n": 59, "pct": 30.1}];
+DATA['combinado']['come_establec'] = [{"cat": "Sí", "n": 174, "pct": 88.8}, {"cat": "No — prefiero cocinar o traer comida", "n": 20, "pct": 10.2}, {"cat": "No — visita de un día sin alimentación", "n": 2, "pct": 1.0}];
+DATA['combinado']['tipo_establec'] = [{"cat": "Restaurante con carta y servicio de mesa", "n": 132, "pct": 67.3}, {"cat": "Picada o cocinería local", "n": 82, "pct": 41.8}, {"cat": "Café o pastelería", "n": 64, "pct": 32.7}, {"cat": "Food truck / puesto en feria", "n": 50, "pct": 25.5}, {"cat": "Restaurante del alojamiento", "n": 11, "pct": 5.6}];
+DATA['valleElqui']['grupo'] = [{"cat": "En pareja sin hijos", "n": 36, "pct": 36.0}, {"cat": "Con familia — hijos <12 años", "n": 20, "pct": 20.0}, {"cat": "Con familia — hijos 12–18 años", "n": 15, "pct": 15.0}, {"cat": "Otro", "n": 12, "pct": 12.0}, {"cat": "Con amigos sin familia", "n": 8, "pct": 8.0}, {"cat": "Solo/a", "n": 8, "pct": 8.0}, {"cat": "En grupo organizado o tour", "n": 1, "pct": 1.0}];
+DATA['valleElqui']['acompanantes'] = [{"cat": "1 persona", "n": 38, "pct": 38.0}, {"cat": "2 personas", "n": 21, "pct": 21.0}, {"cat": "3 personas", "n": 16, "pct": 16.0}, {"cat": "Viajo solo/a", "n": 9, "pct": 9.0}, {"cat": "4 personas", "n": 8, "pct": 8.0}, {"cat": "5 o más personas", "n": 8, "pct": 8.0}];
+DATA['valleElqui']['primera_visita'] = [{"cat": "No, 4 o más veces antes", "n": 53, "pct": 53.0}, {"cat": "No, 1–3 veces antes", "n": 25, "pct": 25.0}, {"cat": "Sí, primera vez", "n": 22, "pct": 22.0}];
+DATA['valleElqui']['come_establec'] = [{"cat": "Sí", "n": 91, "pct": 91.0}, {"cat": "No — prefiero cocinar o traer comida", "n": 7, "pct": 7.0}, {"cat": "No — visita de un día sin alimentación", "n": 2, "pct": 2.0}];
+DATA['valleElqui']['tipo_establec'] = [{"cat": "Restaurante con carta y servicio de mesa", "n": 74, "pct": 74.0}, {"cat": "Café o pastelería", "n": 50, "pct": 50.0}, {"cat": "Picada o cocinería local", "n": 48, "pct": 48.0}, {"cat": "Food truck / puesto en feria", "n": 33, "pct": 33.0}, {"cat": "Restaurante del alojamiento", "n": 9, "pct": 9.0}];
+DATA['pichidangui']['grupo'] = [{"cat": "En pareja sin hijos", "n": 24, "pct": 25.0}, {"cat": "Con familia — hijos 12–18 años", "n": 24, "pct": 25.0}, {"cat": "Con familia — hijos <12 años", "n": 19, "pct": 19.8}, {"cat": "Con amigos sin familia", "n": 10, "pct": 10.4}, {"cat": "En grupo organizado o tour", "n": 7, "pct": 7.3}, {"cat": "Solo/a", "n": 6, "pct": 6.2}, {"cat": "Otro", "n": 6, "pct": 6.2}];
+DATA['pichidangui']['acompanantes'] = [{"cat": "2 personas", "n": 23, "pct": 24.0}, {"cat": "3 personas", "n": 22, "pct": 22.9}, {"cat": "1 persona", "n": 21, "pct": 21.9}, {"cat": "5 o más personas", "n": 15, "pct": 15.6}, {"cat": "4 personas", "n": 10, "pct": 10.4}, {"cat": "Viajo solo/a", "n": 5, "pct": 5.2}];
+DATA['pichidangui']['primera_visita'] = [{"cat": "Sí, primera vez", "n": 37, "pct": 38.5}, {"cat": "No, 1–3 veces antes", "n": 35, "pct": 36.5}, {"cat": "No, 4 o más veces antes", "n": 24, "pct": 25.0}];
+DATA['pichidangui']['come_establec'] = [{"cat": "Sí", "n": 83, "pct": 86.5}, {"cat": "No — prefiero cocinar o traer comida", "n": 13, "pct": 13.5}];
+DATA['pichidangui']['tipo_establec'] = [{"cat": "Restaurante con carta y servicio de mesa", "n": 58, "pct": 60.4}, {"cat": "Picada o cocinería local", "n": 34, "pct": 35.4}, {"cat": "Food truck / puesto en feria", "n": 17, "pct": 17.7}, {"cat": "Café o pastelería", "n": 14, "pct": 14.6}, {"cat": "Restaurante del alojamiento", "n": 2, "pct": 2.1}];
+
+const C = {
+  navy:'#1F3864',navy2:'#2c4f8c',coral:'#E8634A',gold:'#C9993A',
+  mint:'#3A9B8C',lav:'#7B6FAD',teal:'#1A6B6B',
+  dim:{D1:'#1F3864',D2:'#C9993A',D3:'#2E7D32',D4:'#880e4f',D5:'#311b92'},
+  quad:{I:'#E8634A',II:'#2E7D32',III:'#9E9E9E',IV:'#C9993A'},
+  palette:['#1F3864','#3A9B8C','#E8634A','#C9993A','#7B6FAD','#1A6B6B','#2c4f8c','#880e4f','#37474F','#6d4c41'],
+};
+
+let zone = 'combinado';
+let ipaZona = 'combinado';
+const charts = {};
+
+const ZONE_LABELS = {
+  combinado:'Combinado (n=196)',
+  valleElqui:'Valle del Elqui (n=100)',
+  pichidangui:'Pichidangui–Quilimarí (n=96)'
+};
+
+function set(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
+
+function topN(arr, n) { return (arr||[]).slice(0, n||10); }
+function pcts(arr, n) { return topN(arr,n).map(function(x){return x.pct;}); }
+function cats(arr, n) { return topN(arr,n).map(function(x){return x.cat;}); }
+
+function makeBar(id, labels, data, opts) {
+  opts = opts || {};
+  const ctx = document.getElementById(id);
+  if (!ctx) return null;
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+  const horiz = opts.horizontal !== false;
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: opts.colors || C.palette.slice(0, data.length),
+        borderRadius: 4,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      indexAxis: horiz ? 'y' : 'x',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var v = horiz ? ctx.parsed.x : ctx.parsed.y;
+              return ' ' + v.toFixed(1) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,.04)' },
+          ticks: { font: { size: 10 }, color: '#555' },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: horiz ? 'rgba(0,0,0,.04)' : 'rgba(0,0,0,.04)' },
+          ticks: { font: { size: 10 }, color: '#333' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+  return charts[id];
+}
+
+function makeDoughnut(id, labels, data, opts) {
+  opts = opts || {};
+  const ctx = document.getElementById(id);
+  if (!ctx) return null;
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+  charts[id] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: opts.colors || C.palette.slice(0, data.length),
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { font: { size: 10 }, boxWidth: 12, padding: 8 }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(c) { return ' ' + c.label + ': ' + c.parsed.toFixed(1) + '%'; }
+          }
+        }
+      }
+    }
+  });
+  return charts[id];
+}
+
+function updateKPIs(d) {
+  var p = d.perfil;
+  set('kpi-n', d.n);
+
+  var fem = (p.genero||[]).find(function(x){return x.cat==='Femenino';});
+  set('kpi-fem', (fem ? fem.pct : 0).toFixed(0) + '%');
+  set('kpi-edadmod', ((p.edad||[])[0] || {cat:'—'}).cat.replace(' años',''));
+  var univ = (p.estudios||[]).find(function(x){return x.cat==='Universitaria completa';});
+  var tec  = (p.estudios||[]).find(function(x){return x.cat.includes('Técnica');});
+  set('kpi-univ', ((univ?univ.pct:0)+(tec?tec.pct:0)).toFixed(0) + '%');
+
+  var auto = (d.viaje.transporte||[]).find(function(x){return x.cat.includes('propio');});
+  set('kpi-auto', (auto?auto.pct:0).toFixed(0)+'%');
+  var grpareja = (p.grupo||[]).find(function(x){return x.cat.includes('pareja');});
+  set('kpi-pareja', (grpareja?grpareja.pct:0).toFixed(0)+'%');
+  var dosn = (d.viaje.noches||[]).find(function(x){return x.cat==='2 noches';});
+  set('kpi-2n', (dosn?dosn.pct:0).toFixed(0)+'%');
+  var casa = (d.viaje.alojamiento||[]).find(function(x){return x.cat.includes('familiar');});
+  set('kpi-sinres', (casa?casa.pct:0).toFixed(0)+'%');
+
+  set('kv-aloj', Number(d.gasto.media_aloj).toLocaleString('es-CL'));
+  set('kv-alim', Number(d.gasto.media_alim).toLocaleString('es-CL'));
+  set('kv-total', Number(d.gasto.media_total).toLocaleString('es-CL'));
+
+  var prim = (d.planif.primera||[]).find(function(x){return x.cat.includes('primera');});
+  set('kpi-primvis', (prim?prim.pct:0).toFixed(0)+'%');
+  var fiel = (d.planif.primera||[]).find(function(x){return x.cat.includes('4');});
+  set('kpi-fielesn', (fiel?fiel.pct:0).toFixed(0)+'%');
+  var semm = (d.planif.anticipacion||[]).find(function(x){return x.cat.includes('semana');});
+  set('kpi-semmes', (semm?semm.pct:0).toFixed(0)+'%');
+  var smi = (d.planif.sostenibilidad||[]).find(function(x){return x.cat.includes('Importante') && !x.cat.includes('Muy');});
+  var smm = (d.planif.sostenibilidad||[]).find(function(x){return x.cat.includes('Muy');});
+  set('kpi-sostimp', ((smi?smi.pct:0)+(smm?smm.pct:0)).toFixed(0)+'%');
+
+  var m1 = (d.motivo||[])[0];
+  set('kpi-motivo1', m1 ? m1.cat.split(' ')[0] : '—');
+  var ar = (d.actividades||[]).find(function(x){return x.cat.includes('restaurante');});
+  set('kpi-actrest', (ar?ar.pct:0).toFixed(0)+'%');
+  var af = (d.actividades||[]).find(function(x){return x.cat.toLowerCase().includes('foto');});
+  set('kpi-actfoto', (af?af.pct:0).toFixed(0)+'%');
+  var ap = (d.actividades||[]).find(function(x){return x.cat.includes('productos');});
+  set('kpi-actprod', (ap?ap.pct:0).toFixed(0)+'%');
+
+  var sb  = (d.sostenibilidad||[]).find(function(x){return x.cat==='Bueno';});
+  var sex = (d.sostenibilidad||[]).find(function(x){return x.cat==='Excelente';});
+  var sdf = (d.sostenibilidad||[]).find(function(x){return x.cat==='Deficiente';});
+  var ssi = (d.sostenibilidad||[]).find(function(x){return x.cat.includes('Sin');});
+  set('kpi-sost-bueno', (sb?sb.pct:0).toFixed(0)+'%');
+  set('kpi-sost-exbuen', ((sb?sb.pct:0)+(sex?sex.pct:0)).toFixed(0)+'%');
+  set('kpi-sost-def', (sdf?sdf.pct:0).toFixed(0)+'%');
+  set('kpi-sost-sininfo', (ssi?ssi.pct:0).toFixed(0)+'%');
+
+  var prb = (d.dap.pref_rest||[]).find(function(x){return x.cat.includes('responsables');});
+  var pab = (d.dap.pref_aloj||[]).find(function(x){return x.cat.includes('responsables');});
+  set('kpi-pref-rest-b', (prb?prb.pct:0).toFixed(0)+'%');
+  set('kpi-pref-aloj-b', (pab?pab.pct:0).toFixed(0)+'%');
+  var drp = (d.dap.dap_rest||[]).filter(function(x){return !x.cat.includes('No pagaría');}).reduce(function(s,x){return s+x.pct;},0);
+  var dap = (d.dap.dap_aloj||[]).filter(function(x){return !x.cat.includes('No pagaría');}).reduce(function(s,x){return s+x.pct;},0);
+  set('kpi-dap-rest-paga', drp.toFixed(0)+'%');
+  set('kpi-dap-aloj-paga', dap.toFixed(0)+'%');
+
+  set('kpi-nps', d.nps);
+  var ra = (d.dap.regreso||[]).filter(function(x){return x.cat.includes('Alta')||x.cat.includes('alta');}).reduce(function(s,x){return s+x.pct;},0);
+  var rca= (d.dap.recomienda||[]).filter(function(x){return x.cat.includes('Alta')||x.cat.includes('alta');}).reduce(function(s,x){return s+x.pct;},0);
+  var gsi= (d.dap.gasto_mas||[]).filter(function(x){return x.cat.toLowerCase().includes('sí');}).reduce(function(s,x){return s+x.pct;},0);
+  set('kpi-regreso-alt', ra.toFixed(0)+'%');
+  set('kpi-recomienda-alt', rca.toFixed(0)+'%');
+  set('kpi-gasto-si', gsi.toFixed(0)+'%');
+}
+
+function renderAll(d) {
+  updateKPIs(d);
+
+  // S1 Perfil
+  makeBar('ch-edad', cats(d.perfil.edad), pcts(d.perfil.edad), {colors: (d.perfil.edad||[]).map(function(){return C.navy2;})});
+  makeDoughnut('ch-genero', cats(d.perfil.genero), pcts(d.perfil.genero), {colors:[C.coral,C.navy,'#9E9E9E','#ccc']});
+  makeBar('ch-estudios', cats(d.perfil.estudios,6), pcts(d.perfil.estudios,6), {colors:(d.perfil.estudios||[]).map(function(){return C.mint;})});
+  makeBar('ch-region', cats(d.perfil.region,6), pcts(d.perfil.region,6), {colors:(d.perfil.region||[]).map(function(){return C.teal;})});
+  makeBar('ch-ingreso', cats(d.perfil.ingreso), pcts(d.perfil.ingreso), {colors:(d.perfil.ingreso||[]).map(function(){return C.lav;})});
+  makeBar('ch-laboral', cats(d.perfil.laboral), pcts(d.perfil.laboral), {colors:(d.perfil.laboral||[]).map(function(){return C.navy;})});
+
+  // S2 Viaje
+  makeDoughnut('ch-transp', cats(d.viaje.transporte), pcts(d.viaje.transporte), {colors:[C.navy,C.mint,C.coral,C.gold,'#9E9E9E']});
+  makeBar('ch-noches', cats(d.viaje.noches,6), pcts(d.viaje.noches,6), {horizontal:false, colors:[C.navy2,C.mint,C.coral,C.gold,C.lav,C.teal]});
+  makeBar('ch-aloj', cats(d.viaje.alojamiento,8), pcts(d.viaje.alojamiento,8), {colors:(d.viaje.alojamiento||[]).map(function(){return C.navy2;})});
+  makeDoughnut('ch-reserva', cats(d.viaje.reserva), pcts(d.viaje.reserva), {colors:[C.gold,C.navy,C.mint,C.coral,'#9E9E9E']});
+  makeBar('ch-grupo',  cats(d.grupo),       pcts(d.grupo),       {colors:(d.grupo||[]).map(function(_,i){return C.palette[i%C.palette.length];})});
+  makeBar('ch-acomp',  cats(d.acompanantes),pcts(d.acompanantes),{horizontal:false, colors:(d.acompanantes||[]).map(function(){return C.navy2;})});
+
+  // S3 Gasto
+  makeBar('ch-gnoche', cats(d.gasto.noche,6), pcts(d.gasto.noche,6), {horizontal:false, colors:[C.navy,C.navy2,C.mint,C.teal,C.coral,C.gold]});
+  makeBar('ch-galim',  cats(d.gasto.alim,5),  pcts(d.gasto.alim,5),  {horizontal:false, colors:[C.mint,C.teal,C.navy,C.coral,C.gold]});
+  makeBar('ch-gact',   cats(d.gasto.act,7),   pcts(d.gasto.act,7),   {horizontal:false, colors:[C.teal,C.mint,C.navy,C.coral,C.gold,C.lav,C.navy2]});
+  makeBar('ch-gprod',  cats(d.gasto.prod,7),  pcts(d.gasto.prod,7),  {horizontal:false, colors:[C.gold,C.navy,C.mint,C.coral,C.lav,C.teal,C.navy2]});
+
+  // S4 Planificación
+  makeDoughnut('ch-primera',  cats(d.primera_visita), pcts(d.primera_visita), {colors:[C.coral,C.navy,C.mint]});
+  makeDoughnut('ch-anticip2', cats(d.planif.anticipacion), pcts(d.planif.anticipacion), {colors:[C.navy,C.mint,C.coral,C.gold]});
+  makeBar('ch-fuentes', cats(d.planif.fuentes), pcts(d.planif.fuentes), {colors:(d.planif.fuentes||[]).map(function(){return C.navy2;})});
+  makeDoughnut('ch-anticip',  cats(d.planif.anticipacion), pcts(d.planif.anticipacion), {colors:[C.navy,C.mint,C.coral,C.gold]});
+  makeDoughnut('ch-sost18',   cats(d.planif.sostenibilidad), pcts(d.planif.sostenibilidad), {colors:[C.navy,C.mint,C.coral,C.gold]});
+  makeDoughnut('ch-form19',   cats(d.planif.formacion), pcts(d.planif.formacion), {colors:[C.navy,C.coral,C.mint,C.gold]});
+
+  // S5 Experiencia — motivo
+  if (zone === 'combinado') {
+    document.getElementById('motivo-grid-dual').style.display = 'grid';
+    document.getElementById('motivo-grid-single').style.display = 'none';
+    makeBar('ch-motvo-ve', cats(DATA.motivo_ve,8), pcts(DATA.motivo_ve,8), {colors:(DATA.motivo_ve||[]).map(function(){return C.mint;})});
+    makeBar('ch-motvo-pq', cats(DATA.motivo_pq,8), pcts(DATA.motivo_pq,8), {colors:(DATA.motivo_pq||[]).map(function(){return C.coral;})});
+  } else {
+    document.getElementById('motivo-grid-dual').style.display = 'none';
+    document.getElementById('motivo-grid-single').style.display = 'grid';
+    set('ch-motivo-title', 'Motivo principal de visita — ' + ZONE_LABELS[zone]);
+    var col = zone === 'valleElqui' ? C.mint : C.coral;
+    makeBar('ch-motivo', cats(d.motivo,8), pcts(d.motivo,8), {colors:(d.motivo||[]).map(function(){return col;})});
+  }
+  var actColors = (d.actividades||[]).map(function(_,i){return C.palette[i % C.palette.length];});
+  makeBar('ch-actividades', (d.actividades||[]).map(function(x){return x.cat.length>32?x.cat.slice(0,32)+'…':x.cat;}),
+          (d.actividades||[]).map(function(x){return x.pct;}), {colors: actColors});
+  makeDoughnut('ch-come22',    cats(d.come_establec),  pcts(d.come_establec),  {colors:[C.mint,C.coral,C.gold]});
+  makeBar('ch-tipoestab', (d.tipo_establec||[]).map(function(x){return x.cat.length>30?x.cat.slice(0,30)+'…':x.cat;}),
+          (d.tipo_establec||[]).map(function(x){return x.pct;}), {colors:(d.tipo_establec||[]).map(function(){return C.teal;})});
+
+  // S7 Sostenibilidad
+  makeDoughnut('ch-sost26',  cats(d.sostenibilidad), pcts(d.sostenibilidad), {colors:[C.mint,C.teal,C.gold,C.coral,'#9E9E9E']});
+  makeDoughnut('ch-sost18b', cats(d.planif.sostenibilidad), pcts(d.planif.sostenibilidad), {colors:[C.navy,C.mint,C.coral,C.gold]});
+
+  // S8 DAP
+  makeDoughnut('ch-pref-rest', cats(d.dap.pref_rest), pcts(d.dap.pref_rest), {colors:[C.mint,C.coral,C.gold]});
+  makeBar('ch-dap-rest',  cats(d.dap.dap_rest), pcts(d.dap.dap_rest), {horizontal:false,
+    colors:(d.dap.dap_rest||[]).map(function(x){return x.cat.includes('No')?C.coral:C.mint;})});
+  makeDoughnut('ch-pref-aloj', cats(d.dap.pref_aloj), pcts(d.dap.pref_aloj), {colors:[C.mint,C.gold,C.coral]});
+  makeBar('ch-dap-aloj',  cats(d.dap.dap_aloj), pcts(d.dap.dap_aloj), {horizontal:false,
+    colors:(d.dap.dap_aloj||[]).map(function(x){return x.cat.includes('No')?C.coral:C.mint;})});
+
+  // S9 Intención
+  makeBar('ch-regreso',    cats(d.dap.regreso),    pcts(d.dap.regreso),    {horizontal:false, colors:[C.mint,C.teal,C.gold,C.coral,'#b71c1c']});
+  makeBar('ch-recomienda', cats(d.dap.recomienda), pcts(d.dap.recomienda), {horizontal:false, colors:[C.mint,C.teal,C.gold,C.coral]});
+  makeBar('ch-gasto-mas',  cats(d.dap.gasto_mas),  pcts(d.dap.gasto_mas),  {horizontal:false, colors:[C.mint,C.teal,C.gold,C.coral,'#b71c1c']});
+
+  // IPA
+  renderIPA();
+}
+
+function renderIPA() {
+  var d = DATA[ipaZona];
+  var attrs = d.ipa.attrs;
+  var mi = d.ipa.mi, md = d.ipa.md;
+
+  var dimColors = [C.dim.D1, C.dim.D2, C.dim.D3, C.dim.D4, C.dim.D5];
+  var dims = ['D1','D2','D3','D4','D5'];
+  var datasets = dims.map(function(dim, di) {
+    var pts = attrs.filter(function(a){return a.dim===dim;}).map(function(a){
+      return {x:a.des, y:a.imp, cod:a.cod, lbl:a.lbl, gap:a.gap, nd:a.nd, ni:a.ni, quad:a.quad};
+    });
+    return {
+      label: dim,
+      data: pts,
+      backgroundColor: dimColors[di] + 'cc',
+      borderColor: dimColors[di],
+      pointRadius: 10,
+      pointHoverRadius: 13,
+      borderWidth: 2
+    };
+  });
+
+  var ctx = document.getElementById('ch-ipa-scatter');
+  if (!ctx) return;
+  if (charts['ch-ipa-scatter']) { charts['ch-ipa-scatter'].destroy(); delete charts['ch-ipa-scatter']; }
+
+  var allImp = attrs.map(function(a){return a.imp;}), allDes = attrs.map(function(a){return a.des;});
+  var xMin = Math.min.apply(null,allDes)-0.18, xMax = Math.max.apply(null,allDes)+0.18;
+  var yMin = Math.min.apply(null,allImp)-0.18, yMax = Math.max.apply(null,allImp)+0.18;
+
+  var quadLabels = {I:'I — Concentrarse',II:'II — Mantener',III:'III — Baja prioridad',IV:'IV — Posible exceso'};
+
+  charts['ch-ipa-scatter'] = new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'top', labels:{font:{size:10},boxWidth:10,padding:8} },
+        tooltip: {
+          callbacks: {
+            title: function(items) { var r=items[0].raw; return r.cod + ' — ' + r.lbl; },
+            label: function(item) {
+              var r = item.raw;
+              return [
+                'Importancia: ' + r.y.toFixed(3) + '  (n=' + r.ni + ')',
+                'Desempeño:   ' + r.x.toFixed(3) + '  (n=' + r.nd + ')',
+                'Brecha: ' + (r.gap>=0?'+':'') + r.gap.toFixed(3),
+                'Cuadrante: ' + (quadLabels[r.quad]||r.quad)
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display:true, text:'Desempeño percibido (media 1–5)', font:{size:11}, color:C.navy },
+          min: xMin, max: xMax,
+          ticks: { font:{size:10}, color:'#555' }, border:{display:false},
+          grid: { color:'rgba(0,0,0,.05)' }
+        },
+        y: {
+          title: { display:true, text:'Importancia atribuida (media 1–5)', font:{size:11}, color:C.navy },
+          min: yMin, max: yMax,
+          ticks: { font:{size:10}, color:'#555' }, border:{display:false},
+          grid: { color:'rgba(0,0,0,.05)' }
+        }
+      }
+    },
+    plugins: [{
+      id: 'ipaOverlay',
+      afterDraw: function(chart) {
+        var c = chart.ctx;
+        var ca = chart.chartArea;
+        var xs = chart.scales.x, ys = chart.scales.y;
+        var xPx = xs.getPixelForValue(md);
+        var yPx = ys.getPixelForValue(mi);
+
+        c.save();
+        // Quadrant shading
+        c.globalAlpha = 0.07;
+        c.fillStyle = '#E8634A'; c.fillRect(ca.left, ca.top, xPx-ca.left, yPx-ca.top);
+        c.fillStyle = '#2E7D32'; c.fillRect(xPx, ca.top, ca.right-xPx, yPx-ca.top);
+        c.fillStyle = '#9E9E9E'; c.fillRect(ca.left, yPx, xPx-ca.left, ca.bottom-yPx);
+        c.fillStyle = '#C9993A'; c.fillRect(xPx, yPx, ca.right-xPx, ca.bottom-yPx);
+        c.globalAlpha = 1;
+
+        // Crosshair lines
+        c.setLineDash([5,4]);
+        c.strokeStyle = 'rgba(150,100,0,.5)';
+        c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(xPx,ca.top); c.lineTo(xPx,ca.bottom); c.stroke();
+        c.beginPath(); c.moveTo(ca.left,yPx); c.lineTo(ca.right,yPx); c.stroke();
+        c.setLineDash([]);
+
+        // Quadrant labels
+        c.font = 'bold 11px DM Sans,sans-serif';
+        c.fillStyle = '#E8634A'; c.textAlign='left'; c.textBaseline='top';
+        c.fillText('I', ca.left+6, ca.top+4);
+        c.fillStyle = '#2E7D32'; c.textAlign='right';
+        c.fillText('II', ca.right-4, ca.top+4);
+        c.fillStyle = '#777'; c.textAlign='left'; c.textBaseline='bottom';
+        c.fillText('III', ca.left+6, ca.bottom-4);
+        c.fillStyle = '#7d5800'; c.textAlign='right';
+        c.fillText('IV', ca.right-4, ca.bottom-4);
+
+        // Point labels (attribute codes)
+        c.font = 'bold 8px DM Sans,sans-serif';
+        c.textAlign = 'center'; c.textBaseline = 'middle';
+        chart.data.datasets.forEach(function(ds) {
+          ds.data.forEach(function(pt) {
+            var px = xs.getPixelForValue(pt.x);
+            var py = ys.getPixelForValue(pt.y);
+            c.fillStyle = '#fff';
+            c.fillText(pt.cod, px, py);
+          });
+        });
+        c.restore();
+      }
+    }]
+  });
+
+  var lbl = ZONE_LABELS[ipaZona];
+  set('ipa-scatter-title', 'Matriz IPA — ' + lbl + ' · Ejes data-centered: Des̄=' + md + ' / Imp̄=' + mi);
+  set('ipa-ranking-title', 'Ranking de brechas IPA — ' + lbl + ' (mayor déficit primero)');
+  renderGapTable(attrs);
+}
+
+function renderGapTable(attrs) {
+  var sorted = attrs.slice().sort(function(a,b){return a.gap-b.gap;});
+  var tbody = document.getElementById('gap-tbody');
+  if (!tbody) return;
+  var maxAbs = Math.max.apply(null, sorted.map(function(a){return Math.abs(a.gap);}));
+  var rows = sorted.map(function(a, i) {
+    var barW = Math.round(Math.abs(a.gap)/maxAbs*80);
+    var gColor = a.gap < 0 ? '#E8634A' : '#2E7D32';
+    var qBg = {I:'#E8634A',II:'#2E7D32',III:'#9E9E9E',IV:'#C9993A'}[a.quad] || '#aaa';
+    var gStr = (a.gap>=0?'+':'') + a.gap.toFixed(3);
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;color:#888">' + (i+1) + '</td>' +
+      '<td style="font-weight:500">' + a.lbl + '</td>' +
+      '<td style="text-align:center"><span class="dim-chip d' + a.dim + '">' + a.dim + '</span></td>' +
+      '<td><span style="display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;color:#fff;background:' + qBg + '">' + a.quad + '</span></td>' +
+      '<td>' + a.imp.toFixed(3) + '</td>' +
+      '<td>' + a.des.toFixed(3) + '</td>' +
+      '<td style="font-weight:700;color:' + gColor + '">' + gStr + '</td>' +
+      '<td><div style="background:' + gColor + ';height:8px;border-radius:4px;width:' + barW + 'px"></div></td>' +
+      '<td style="color:#888">' + a.nd + '</td>' +
+    '</tr>';
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+function setZone(z, btn) {
+  zone = z;
+  document.querySelectorAll('.zone-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('badge-zone').textContent = ZONE_LABELS[z].split(' (')[0];
+  document.getElementById('badge-n').textContent = 'n = ' + DATA[z].n;
+  // Sincronizar zona IPA con zona global
+  ipaZona = z;
+  // Actualizar botones IPA internos
+  var ipaMap = {combinado:'c', valleElqui:'v', pichidangui:'p'};
+  ['c','v','p'].forEach(function(s){
+    var el = document.getElementById('ipa-z-btn-'+s);
+    if (el) el.classList.remove('active');
+  });
+  var activeKey = ipaMap[z];
+  var activeBtn = document.getElementById('ipa-z-btn-'+activeKey);
+  if (activeBtn) activeBtn.classList.add('active');
+  renderAll(DATA[z]);
+}
+
+function setIpaZona(z, btn) {
+  ipaZona = z;
+  ['c','v','p'].forEach(function(s){
+    var el = document.getElementById('ipa-z-btn-'+s);
+    if (el) el.classList.remove('active');
+  });
+  btn.classList.add('active');
+  renderIPA();
+}
+
+function setIpaView(v, btn) {
+  document.querySelectorAll('.ipa-view').forEach(function(el){el.classList.remove('active');});
+  var target = document.getElementById('ipav-'+v);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.ipa-tabs .ipa-tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  if (v === 'scatter') {
+    setTimeout(function(){
+      if (charts['ch-ipa-scatter']) charts['ch-ipa-scatter'].resize();
+    }, 50);
+  }
+}
+
+function scrollSec(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+var sectionTitles = {
+  s1:'Perfil sociodemográfico',s2:'Caracterización del viaje',s3:'Gasto turístico',
+  s4:'Planificación y decisión',s5:'Experiencia en destino',s6:'Calidad percibida IPA',
+  s7:'Sostenibilidad',s8:'Sostenibilidad y DAP',s9:'Intención futura'
+};
+
+// IntersectionObserver for active nav highlight — uses scroll container as root
+var mainEl = document.getElementById('main');
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting && sectionTitles[e.target.id]) {
+      set('tb-title', sectionTitles[e.target.id]);
+    }
+  });
+}, { root: mainEl, threshold: 0.1, rootMargin: '-80px 0px -40% 0px' });
+
+document.querySelectorAll('.section').forEach(function(s){ obs.observe(s); });
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderAll(DATA.combinado);
+
+</script>
+</body>
+</html>

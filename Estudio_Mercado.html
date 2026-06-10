@@ -238,7 +238,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="kpi-label">Universitario o técnico superior</div>
     </div>
   </div>
-  <div class="chart-grid g1">
+  <div class="chart-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px">
     <div class="chart-card">
       <h3>Distribución por tramo etario (P1)</h3>
       <div class="src">P1 — n según zona</div>
@@ -247,7 +247,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="chart-card">
       <h3>Distribución por género (P2)</h3>
       <div class="src">P2</div>
-      <div class="canvas-wrap"><canvas id="ch-genero"></canvas></div>
+      <div class="canvas-wrap" style="height:175px"><canvas id="ch-genero"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
@@ -269,7 +269,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="canvas-wrap"><canvas id="ch-laboral"></canvas></div>
     </div>
   </div>
-  <div class="nota">Muestra intencional de visitantes mayores de 18 años residentes fuera del destino, obtenida mediante encuesta presencial asistida por encuestador. Participación voluntaria y anónima. Para análisis separados por zona, n varía entre 96 y 100.</div>
 </div>
 
 <!-- ══ S2 VIAJE ════════════════════════════════════════════════════════════ -->
@@ -346,8 +345,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="canvas-wrap"><canvas id="ch-reserva"></canvas></div>
     </div>
   </div>
-  <div class="nota">El turismo de excursión (visita de un día) es significativo en ambas zonas, especialmente en Valle del Elqui (39%). El automóvil propio domina el acceso, lo que indica alta dependencia del transporte privado.</div>
-id="s3">
+<div class="section" id="s3">
   <div class="sec-head">
     <div class="sec-num">03</div>
     <div class="sec-titles">
@@ -399,7 +397,6 @@ id="s3">
       <div class="canvas-wrap"><canvas id="ch-gprod"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las medias se calculan usando el punto medio de cada rango de gasto declarado, excluyendo las categorías "No sabe/No responde". El gasto total diario combina alojamiento (prorrateado) y alimentación, constituyendo una estimación conservadora del gasto in situ por turista.</div>
 </div>
 
 <!-- ══ S4 PLANIFICACION ════════════════════════════════════════════════════ -->
@@ -461,7 +458,6 @@ id="s3">
       <div class="canvas-wrap"><canvas id="ch-form19"></canvas></div>
     </div>
   </div>
-  <div class="nota">La recomendación de familiares o amigos y la experiencia propia acumulada son las fuentes de decisión dominantes. Esto subraya la importancia de la satisfacción del visitante actual como motor de demanda futura. La planificación de corto plazo (≤1 mes) predomina, indicando flexibilidad de última hora en la elección del destino.</div>
 </div>
 
 <!-- ══ S5 EXPERIENCIA ══════════════════════════════════════════════════════ -->
@@ -535,7 +531,6 @@ id="s3">
       <div class="canvas-wrap"><canvas id="ch-tipoestab"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las actividades marcadas con asterisco son comunes a ambas ZOIT. El resto son categorías específicas de cada zona. Para el nivel Combinado, se muestran las actividades de Pichidangui–Quilimarí (destino costero con mayor diversidad de actividades al aire libre). Para cada zona por separado, se cargan sus propias actividades.</div>
 </div>
 
 <!-- ══ S6 IPA ══════════════════════════════════════════════════════════════ -->
@@ -596,9 +591,9 @@ id="s3">
         <p>Baja importancia · Alto desempeño. Posible sobreinversión relativa.</p>
       </div>
     </div>
-    <div class="nota">Las medias de desempeño excluyen observaciones vacías (exclusión por pares), consistente con la instrucción del instrumento de omitir atributos no utilizados. La fiabilidad del instrumento fue verificada mediante alfa de Cronbach (D1–D3) y ρ de Spearman (D4–D5). Las líneas discontinuas azules indican los valores 4 de la escala (Importante en importancia / Bueno en desempeño) como referencia contextual; los ejes que definen los cuadrantes son las medias data-centered (Bacon, 2003).</div>
   </div>
 
+      <div class="nota">Las medias de desempeño excluyen observaciones vacías (exclusión por pares), consistente con la instrucción del instrumento de omitir atributos no utilizados. La fiabilidad del instrumento fue verificada mediante alfa de Cronbach (D1–D3) y ρ de Spearman (D4–D5). Las líneas discontinuas azules indican los valores 4 de la escala (Importante en importancia / Bueno en desempeño) como referencia contextual; los ejes que definen los cuadrantes son las medias data-centered (Bacon, 2003).</div>
   <!-- Sub-pestaña ranking -->
   <div class="ipa-view" id="ipav-ranking">
     <div class="chart-card">
@@ -621,10 +616,10 @@ id="s3">
         </table>
       </div>
     </div>
-    <div class="nota">La tabla se ordena de mayor a menor déficit (brecha más negativa primero). Los atributos en cuadrante I (rojo) son la prioridad estratégica. El n de desempeño varía por atributo debido a la exclusión de evaluaciones "No usó".</div>
   </div>
 </div>
 
+      <div class="nota">La tabla se ordena de mayor a menor déficit (brecha más negativa primero). Los atributos en cuadrante I (rojo) son la prioridad estratégica. El n de desempeño varía por atributo debido a la exclusión de evaluaciones "No usó".</div>
 <!-- ══ S7 SOSTENIBILIDAD ═══════════════════════════════════════════════════ -->
 <div class="section" id="s7">
   <div class="sec-head">
@@ -664,7 +659,6 @@ id="s3">
       <div class="canvas-wrap tall"><canvas id="ch-sost18b"></canvas></div>
     </div>
   </div>
-  <div class="nota">P26 mide la percepción global del destino en cuanto a cuidado ambiental, uso de productos locales y gestión de residuos. Contrasta con los atributos IPA D4 (prácticas de cuidado ambiental e integración cultural) que presentan los mayores déficits en el nivel combinado.</div>
 </div>
 
 <!-- ══ S8 DAP ═══════════════════════════════════════════════════════════════ -->
@@ -718,7 +712,6 @@ id="s3">
       <div class="canvas-wrap"><canvas id="ch-dap-aloj"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las preguntas de DAP utilizan el método de elección declarada entre un establecimiento estándar y uno con prácticas responsables (ingredientes locales, personal certificado, gestión de residuos, energía renovable). La disposición adicional a pagar se mide sobre precios de referencia explicitados en el instrumento.</div>
 </div>
 
 <!-- ══ S9 INTENCION ════════════════════════════════════════════════════════ -->
@@ -768,7 +761,6 @@ id="s3">
       <div class="canvas-wrap"><canvas id="ch-gasto-mas"></canvas></div>
     </div>
   </div>
-  <div class="nota">El NPS proxy se calcula como 100×(Promotores−Detractores)/n, donde Promotores = respuestas Alta+Muy alta en P32 y Detractores = Baja+Muy baja. La escala de 5 puntos no es la escala estándar de 0–10 del NPS clásico, por lo que este valor debe interpretarse como índice de lealtad relativa y no como NPS absoluto comparable con benchmarks de industria.</div>
 </div>
 
   </div><!-- /main-inner -->
@@ -981,7 +973,8 @@ function renderAll(d) {
 
   // S1 Perfil
   makeBar('ch-edad', cats(d.perfil.edad), pcts(d.perfil.edad), {colors: (d.perfil.edad||[]).map(function(){return C.navy2;})});
-  makeDoughnut('ch-genero', cats(d.perfil.genero), pcts(d.perfil.genero), {colors:[C.coral,C.navy,'#9E9E9E','#ccc']});
+  var cgChart = makeDoughnut('ch-genero', cats(d.perfil.genero), pcts(d.perfil.genero), {colors:[C.coral,C.navy,'#9E9E9E','#ccc']});
+  if (cgChart) { cgChart.options.plugins.legend.position='bottom'; cgChart.options.plugins.legend.labels.font={size:9}; cgChart.update(); }
   makeBar('ch-estudios', cats(d.perfil.estudios,6), pcts(d.perfil.estudios,6), {colors:(d.perfil.estudios||[]).map(function(){return C.mint;})});
   makeBar('ch-region', cats(d.perfil.region,6), pcts(d.perfil.region,6), {colors:(d.perfil.region||[]).map(function(){return C.teal;})});
   makeBar('ch-ingreso', cats(d.perfil.ingreso), pcts(d.perfil.ingreso), {colors:(d.perfil.ingreso||[]).map(function(){return C.lav;})});

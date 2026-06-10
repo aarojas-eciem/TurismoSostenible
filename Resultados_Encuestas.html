@@ -150,6 +150,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   width:40px;height:40px;background:var(--navy);border-radius:8px;border:none;
   cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
 #hamburger span{width:20px;height:2px;background:#fff;border-radius:2px}
+
+/* ── GAP TABLE SORT ─────────────────────────────────────────── */
+.gap-table th.sortable { cursor:pointer; user-select:none; white-space:nowrap; }
+.gap-table th.sortable:hover { background:#2c4f8c; }
+.sort-icon { margin-left:4px; opacity:.5; font-size:9px; }
+.gap-table th.sort-asc .sort-icon::after  { content:'▲'; opacity:1; }
+.gap-table th.sort-desc .sort-icon::after { content:'▼'; opacity:1; }
+.gap-table th .sort-icon::after { content:'⇅'; }
+
 </style>
 </head>
 <body>
@@ -229,43 +238,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="kpi-label">Universitario o técnico superior</div>
     </div>
   </div>
-  <div class="chart-grid g2">
+  <div class="chart-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px">
     <div class="chart-card">
-      <h3>Distribución por edad</h3>
+      <h3>Distribución por tramo etario (P1)</h3>
       <div class="src">P1 — n según zona</div>
       <div class="canvas-wrap"><canvas id="ch-edad"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Género</h3>
+      <h3>Distribución por género (P2)</h3>
       <div class="src">P2</div>
-      <div class="canvas-wrap"><canvas id="ch-genero"></canvas></div>
+      <div class="canvas-wrap" style="height:175px"><canvas id="ch-genero"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Nivel de estudios</h3>
+      <h3>Nivel de estudios completado (P3)</h3>
       <div class="src">P3</div>
       <div class="canvas-wrap tall"><canvas id="ch-estudios"></canvas></div>
     </div>
-    <div class="chart-card">
-      <h3>Región de procedencia (top 6)</h3>
-      <div class="src">P4</div>
-      <div class="canvas-wrap tall"><canvas id="ch-region"></canvas></div>
-    </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Ingreso mensual del hogar</h3>
+      <h3>Tramo de ingreso mensual del hogar (P35)</h3>
       <div class="src">P35</div>
       <div class="canvas-wrap"><canvas id="ch-ingreso"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Situación laboral</h3>
+      <h3>Situación laboral actual (P34)</h3>
       <div class="src">P34</div>
       <div class="canvas-wrap"><canvas id="ch-laboral"></canvas></div>
     </div>
   </div>
-  <div class="nota">Muestra intencional de visitantes mayores de 18 años residentes fuera del destino, obtenida mediante encuesta presencial asistida por encuestador. Participación voluntaria y anónima. Para análisis separados por zona, n varía entre 96 y 100.</div>
 </div>
 
 <!-- ══ S2 VIAJE ════════════════════════════════════════════════════════════ -->
@@ -295,47 +298,53 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="kpi-label">Casa familiar (sin costo)</div>
     </div>
   </div>
+  
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Medio de transporte</h3>
+      <h3>Región o país de residencia del visitante (P4)</h3>
+      <div class="src">P4 — top regiones según frecuencia</div>
+      <div class="canvas-wrap tall"><canvas id="ch-region"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Compañía de viaje (P5)</h3>
+      <div class="src">P5 — con quién realiza el viaje</div>
+      <div class="canvas-wrap tall"><canvas id="ch-grupo"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid g2">
+    <div class="chart-card">
+      <h3>Número de acompañantes (P6)</h3>
+      <div class="src">P6</div>
+      <div class="canvas-wrap"><canvas id="ch-acomp"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Medio de transporte utilizado para llegar al destino (P7)</h3>
       <div class="src">P7</div>
       <div class="canvas-wrap"><canvas id="ch-transp"></canvas></div>
     </div>
+  </div>
+
+  <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Noches de pernocta</h3>
+      <h3>Noches de pernocta en la zona (P8)</h3>
       <div class="src">P8</div>
       <div class="canvas-wrap"><canvas id="ch-noches"></canvas></div>
     </div>
-  </div>
-  <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Tipo de alojamiento</h3>
+      <h3>Tipo de alojamiento (P9)</h3>
       <div class="src">P9</div>
       <div class="canvas-wrap tall"><canvas id="ch-aloj"></canvas></div>
     </div>
+  </div>
+
+  <div class="chart-grid g1">
     <div class="chart-card">
-      <h3>Canal de reserva</h3>
+      <h3>Canal de reserva de alojamiento (P10)</h3>
       <div class="src">P10</div>
       <div class="canvas-wrap"><canvas id="ch-reserva"></canvas></div>
     </div>
   </div>
-
-  <div class="chart-grid g2">
-    <div class="chart-card">
-      <h3>Compañía de viaje</h3>
-      <div class="src">P5 — con quién realiza el viaje</div>
-      <div class="canvas-wrap tall"><canvas id="ch-grupo"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Número de acompañantes</h3>
-      <div class="src">P6</div>
-      <div class="canvas-wrap"><canvas id="ch-acomp"></canvas></div>
-    </div>
-  </div>
-  <div class="nota">El turismo de excursión (visita de un día) es significativo en ambas zonas, especialmente en Valle del Elqui (39%). El automóvil propio domina el acceso, lo que indica alta dependencia del transporte privado.</div>
-</div>
-
-<!-- ══ S3 GASTO ════════════════════════════════════════════════════════════ -->
 <div class="section" id="s3">
   <div class="sec-head">
     <div class="sec-num">03</div>
@@ -366,29 +375,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Gasto por noche — Alojamiento</h3>
+      <h3>Gasto estimado por noche en alojamiento (P11)</h3>
       <div class="src">P11 — media estimada por punto medio de rango</div>
       <div class="canvas-wrap"><canvas id="ch-gnoche"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Gasto diario — Alimentación</h3>
+      <h3>Gasto estimado diario en alimentación (P12)</h3>
       <div class="src">P12</div>
       <div class="canvas-wrap"><canvas id="ch-galim"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Gasto total — Actividades</h3>
+      <h3>Gasto total estimado en actividades durante el viaje (P13)</h3>
       <div class="src">P13 (gasto total del viaje en actividades)</div>
       <div class="canvas-wrap"><canvas id="ch-gact"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Gasto total — Productos locales</h3>
+      <h3>Gasto total estimado en productos locales y artesanía (P14)</h3>
       <div class="src">P14</div>
       <div class="canvas-wrap"><canvas id="ch-gprod"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las medias se calculan usando el punto medio de cada rango de gasto declarado, excluyendo las categorías "No sabe/No responde". El gasto total diario combina alojamiento (prorrateado) y alimentación, constituyendo una estimación conservadora del gasto in situ por turista.</div>
 </div>
 
 <!-- ══ S4 PLANIFICACION ════════════════════════════════════════════════════ -->
@@ -421,41 +429,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Primera visita vs. visitas previas al destino</h3>
+      <h3>Primera visita al destino o visitas previas (P15)</h3>
       <div class="src">P15 — ¿Es esta su primera visita?</div>
       <div class="canvas-wrap"><canvas id="ch-primera"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Anticipación en la planificación</h3>
+      <h3>Anticipación con que planificó el viaje (P16)</h3>
       <div class="src">P16 — con cuánta anticipación planificó el viaje</div>
       <div class="canvas-wrap"><canvas id="ch-anticip2"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Fuentes de información (multirespuesta)</h3>
+      <h3>Fuentes de información utilizadas para planificar el viaje (P17)</h3>
       <div class="src">P17 — % sobre n total de la zona</div>
       <div class="canvas-wrap tall"><canvas id="ch-fuentes"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Anticipación en la planificación</h3>
-      <div class="src">P16</div>
-      <div class="canvas-wrap"><canvas id="ch-anticip"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Importancia sostenibilidad al elegir destino</h3>
+      <h3>Importancia del entorno natural y prácticas sostenibles al elegir el destino (P18)</h3>
       <div class="src">P18</div>
       <div class="canvas-wrap"><canvas id="ch-sost18"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Importancia formación del personal</h3>
+      <h3>Importancia de la formación certificada del personal de servicios (P19)</h3>
       <div class="src">P19</div>
       <div class="canvas-wrap"><canvas id="ch-form19"></canvas></div>
     </div>
   </div>
-  <div class="nota">La recomendación de familiares o amigos y la experiencia propia acumulada son las fuentes de decisión dominantes. Esto subraya la importancia de la satisfacción del visitante actual como motor de demanda futura. La planificación de corto plazo (≤1 mes) predomina, indicando flexibilidad de última hora en la elección del destino.</div>
 </div>
 
 <!-- ══ S5 EXPERIENCIA ══════════════════════════════════════════════════════ -->
@@ -512,24 +514,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="chart-grid g1">
     <div class="chart-card">
-      <h3>Actividades realizadas o planificadas durante la visita (multirespuesta)</h3>
+      <h3>Actividades realizadas o planificadas durante la visita (P21 — multirespuesta)</h3>
       <div class="src">P21 — actividades según zona activa. Porcentaje sobre n de la zona.</div>
       <div class="canvas-wrap xtall"><canvas id="ch-actividades"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>¿Come o planea comer en establecimientos gastronómicos?</h3>
+      <h3>Uso de establecimientos gastronómicos en el destino (P22)</h3>
       <div class="src">P22</div>
       <div class="canvas-wrap"><canvas id="ch-come22"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Tipo de establecimiento gastronómico visitado (multirespuesta)</h3>
+      <h3>Tipo de establecimiento gastronómico visitado (P23 — multirespuesta)</h3>
       <div class="src">P23 — porcentaje sobre n de la zona</div>
       <div class="canvas-wrap"><canvas id="ch-tipoestab"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las actividades marcadas con asterisco son comunes a ambas ZOIT. El resto son categorías específicas de cada zona. Para el nivel Combinado, se muestran las actividades de Pichidangui–Quilimarí (destino costero con mayor diversidad de actividades al aire libre). Para cada zona por separado, se cargan sus propias actividades.</div>
 </div>
 
 <!-- ══ S6 IPA ══════════════════════════════════════════════════════════════ -->
@@ -590,9 +591,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <p>Baja importancia · Alto desempeño. Posible sobreinversión relativa.</p>
       </div>
     </div>
-    <div class="nota">Las medias de desempeño excluyen observaciones vacías (exclusión por pares), consistente con la instrucción del instrumento de omitir atributos no utilizados. La fiabilidad del instrumento fue verificada mediante alfa de Cronbach (D1–D3) y ρ de Spearman (D4–D5).</div>
   </div>
 
+      <div class="nota">Las medias de desempeño excluyen observaciones vacías (exclusión por pares), consistente con la instrucción del instrumento de omitir atributos no utilizados. La fiabilidad del instrumento fue verificada mediante alfa de Cronbach (D1–D3) y ρ de Spearman (D4–D5). Las líneas discontinuas azules indican los valores 4 de la escala (Importante en importancia / Bueno en desempeño) como referencia contextual; los ejes que definen los cuadrantes son las medias data-centered (Bacon, 2003).</div>
   <!-- Sub-pestaña ranking -->
   <div class="ipa-view" id="ipav-ranking">
     <div class="chart-card">
@@ -600,15 +601,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="src">Brecha = Desempeño − Importancia. Negativo = déficit de calidad percibida.</div>
       <div style="overflow-x:auto;margin-top:10px">
         <table class="gap-table" id="gap-table">
-          <thead><tr><th>#</th><th>Atributo</th><th>Dim</th><th>Cuadrante</th><th>Imp.</th><th>Des.</th><th>Brecha</th><th style="min-width:80px">Visual</th><th>n Des.</th></tr></thead>
+          <thead><tr>
+            <th class="sortable" data-col="rank" data-type="num">#<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="lbl"  data-type="str">Atributo<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="dim"  data-type="str">Dim<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="quad" data-type="str">Cuadrante<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="imp"  data-type="num">Imp.<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="des"  data-type="num">Des.<span class="sort-icon"></span></th>
+            <th class="sortable" data-col="gap"  data-type="num">Brecha<span class="sort-icon"></span></th>
+            <th style="min-width:80px">Visual</th>
+            <th class="sortable" data-col="nd"   data-type="num">n Des.<span class="sort-icon"></span></th>
+          </tr></thead>
           <tbody id="gap-tbody"></tbody>
         </table>
       </div>
     </div>
-    <div class="nota">La tabla se ordena de mayor a menor déficit (brecha más negativa primero). Los atributos en cuadrante I (rojo) son la prioridad estratégica. El n de desempeño varía por atributo debido a la exclusión de evaluaciones "No usó".</div>
   </div>
 </div>
 
+      <div class="nota">La tabla se ordena de mayor a menor déficit (brecha más negativa primero). Los atributos en cuadrante I (rojo) son la prioridad estratégica. El n de desempeño varía por atributo debido a la exclusión de evaluaciones "No usó".</div>
 <!-- ══ S7 SOSTENIBILIDAD ═══════════════════════════════════════════════════ -->
 <div class="section" id="s7">
   <div class="sec-head">
@@ -638,17 +649,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Calificación general oferta sostenible del destino</h3>
+      <h3>Calificación global de la oferta turística sostenible del destino (P26)</h3>
       <div class="src">P26 — escala: Excelente / Bueno / Aceptable / Deficiente / Muy deficiente / Sin información</div>
       <div class="canvas-wrap tall"><canvas id="ch-sost26"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Importancia sostenibilidad al elegir el destino</h3>
+      <h3>Importancia del entorno natural y prácticas sostenibles al elegir el destino (P18)</h3>
       <div class="src">P18 — factor de decisión al elegir destino turístico</div>
       <div class="canvas-wrap tall"><canvas id="ch-sost18b"></canvas></div>
     </div>
   </div>
-  <div class="nota">P26 mide la percepción global del destino en cuanto a cuidado ambiental, uso de productos locales y gestión de residuos. Contrasta con los atributos IPA D4 (prácticas de cuidado ambiental e integración cultural) que presentan los mayores déficits en el nivel combinado.</div>
 </div>
 
 <!-- ══ S8 DAP ═══════════════════════════════════════════════════════════════ -->
@@ -680,29 +690,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Preferencia restaurante — estándar vs responsable</h3>
+      <h3>Preferencia entre restaurante estándar y restaurante con prácticas responsables (P27)</h3>
       <div class="src">P27</div>
       <div class="canvas-wrap"><canvas id="ch-pref-rest"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>DAP adicional en restaurante (ref. $15.000/plato)</h3>
+      <h3>Disposición a pagar adicional en restaurante con prácticas responsables (P28)</h3>
       <div class="src">P28</div>
       <div class="canvas-wrap"><canvas id="ch-dap-rest"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Preferencia alojamiento — estándar vs responsable</h3>
+      <h3>Preferencia entre alojamiento estándar y alojamiento con prácticas responsables (P29)</h3>
       <div class="src">P29</div>
       <div class="canvas-wrap"><canvas id="ch-pref-aloj"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>DAP adicional en alojamiento (ref. $45.000/noche)</h3>
+      <h3>Disposición a pagar adicional por noche en alojamiento con prácticas responsables (P30)</h3>
       <div class="src">P30</div>
       <div class="canvas-wrap"><canvas id="ch-dap-aloj"></canvas></div>
     </div>
   </div>
-  <div class="nota">Las preguntas de DAP utilizan el método de elección declarada entre un establecimiento estándar y uno con prácticas responsables (ingredientes locales, personal certificado, gestión de residuos, energía renovable). La disposición adicional a pagar se mide sobre precios de referencia explicitados en el instrumento.</div>
 </div>
 
 <!-- ══ S9 INTENCION ════════════════════════════════════════════════════════ -->
@@ -735,24 +744,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   </div>
   <div class="chart-grid g2">
     <div class="chart-card">
-      <h3>Probabilidad de regreso</h3>
+      <h3>Probabilidad de regresar al destino en los próximos dos años (P31)</h3>
       <div class="src">P31 — próximos dos años</div>
       <div class="canvas-wrap"><canvas id="ch-regreso"></canvas></div>
     </div>
     <div class="chart-card">
-      <h3>Probabilidad de recomendación</h3>
+      <h3>Probabilidad de recomendar el destino a familiares o amigos (P32)</h3>
       <div class="src">P32 — base del NPS proxy</div>
       <div class="canvas-wrap"><canvas id="ch-recomienda"></canvas></div>
     </div>
   </div>
   <div class="chart-grid g1">
     <div class="chart-card">
-      <h3>Disposición a gastar más si el destino ofreciera mayor calidad y prácticas responsables</h3>
+      <h3>Disposición a gastar más si el destino mejorara en calidad y prácticas responsables (P33)</h3>
       <div class="src">P33 — pregunta hipotética de intención de gasto condicional</div>
       <div class="canvas-wrap"><canvas id="ch-gasto-mas"></canvas></div>
     </div>
   </div>
-  <div class="nota">El NPS proxy se calcula como 100×(Promotores−Detractores)/n, donde Promotores = respuestas Alta+Muy alta en P32 y Detractores = Baja+Muy baja. La escala de 5 puntos no es la escala estándar de 0–10 del NPS clásico, por lo que este valor debe interpretarse como índice de lealtad relativa y no como NPS absoluto comparable con benchmarks de industria.</div>
 </div>
 
   </div><!-- /main-inner -->
@@ -965,7 +973,8 @@ function renderAll(d) {
 
   // S1 Perfil
   makeBar('ch-edad', cats(d.perfil.edad), pcts(d.perfil.edad), {colors: (d.perfil.edad||[]).map(function(){return C.navy2;})});
-  makeDoughnut('ch-genero', cats(d.perfil.genero), pcts(d.perfil.genero), {colors:[C.coral,C.navy,'#9E9E9E','#ccc']});
+  var cgChart = makeDoughnut('ch-genero', cats(d.perfil.genero), pcts(d.perfil.genero), {colors:[C.coral,C.navy,'#9E9E9E','#ccc']});
+  if (cgChart) { cgChart.options.plugins.legend.position='bottom'; cgChart.options.plugins.legend.labels.font={size:9}; cgChart.update(); }
   makeBar('ch-estudios', cats(d.perfil.estudios,6), pcts(d.perfil.estudios,6), {colors:(d.perfil.estudios||[]).map(function(){return C.mint;})});
   makeBar('ch-region', cats(d.perfil.region,6), pcts(d.perfil.region,6), {colors:(d.perfil.region||[]).map(function(){return C.teal;})});
   makeBar('ch-ingreso', cats(d.perfil.ingreso), pcts(d.perfil.ingreso), {colors:(d.perfil.ingreso||[]).map(function(){return C.lav;})});
@@ -1032,6 +1041,7 @@ function renderAll(d) {
 
   // IPA
   renderIPA();
+  setTimeout(function(){initGapSort();},100);
 }
 
 function renderIPA() {
@@ -1140,6 +1150,41 @@ function renderIPA() {
         c.fillText('III', ca.left+6, ca.bottom-4);
         c.fillStyle = '#7d5800'; c.textAlign='right';
         c.fillText('IV', ca.right-4, ca.bottom-4);
+
+        // ── Líneas de referencia de escala (y=4 Importante / x=4 Bueno) ──
+        var x4px = xs.getPixelForValue(4);
+        var y4px = ys.getPixelForValue(4);
+
+        // Solo dibujar si 4 está dentro del rango visible del eje
+        if (x4px >= ca.left && x4px <= ca.right) {
+          c.save();
+          c.setLineDash([3,5]);
+          c.strokeStyle = 'rgba(100,100,180,.35)';
+          c.lineWidth = 1;
+          c.beginPath(); c.moveTo(x4px,ca.top); c.lineTo(x4px,ca.bottom); c.stroke();
+          // Etiqueta eje X
+          c.setLineDash([]);
+          c.font = '9px DM Sans,sans-serif';
+          c.fillStyle = 'rgba(80,80,160,.65)';
+          c.textAlign = 'center'; c.textBaseline = 'top';
+          c.fillText('4 = Bueno', x4px, ca.bottom + 4);
+          c.restore();
+        }
+
+        if (y4px >= ca.top && y4px <= ca.bottom) {
+          c.save();
+          c.setLineDash([3,5]);
+          c.strokeStyle = 'rgba(100,100,180,.35)';
+          c.lineWidth = 1;
+          c.beginPath(); c.moveTo(ca.left,y4px); c.lineTo(ca.right,y4px); c.stroke();
+          // Etiqueta eje Y
+          c.setLineDash([]);
+          c.font = '9px DM Sans,sans-serif';
+          c.fillStyle = 'rgba(80,80,160,.65)';
+          c.textAlign = 'left'; c.textBaseline = 'middle';
+          c.fillText('4 = Importante', ca.left + 3, y4px - 7);
+          c.restore();
+        }
 
         // Point labels (attribute codes)
         c.font = 'bold 8px DM Sans,sans-serif';
@@ -1256,6 +1301,93 @@ document.querySelectorAll('.section').forEach(function(s){ obs.observe(s); });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 renderAll(DATA.combinado);
+
+
+// ── GAP TABLE SORT ──────────────────────────────────────────────────────────
+var gapSortCol   = 'gap';   // columna activa
+var gapSortDir   = 'asc';   // dirección activa
+var gapRowsCache = [];       // cache de rows para re-sort
+
+function initGapSort() {
+  var table = document.getElementById('gap-table');
+  if (!table) return;
+  table.querySelectorAll('th.sortable').forEach(function(th) {
+    th.addEventListener('click', function() {
+      var col = th.dataset.col;
+      if (gapSortCol === col) {
+        gapSortDir = (gapSortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        gapSortCol = col; gapSortDir = 'asc';
+      }
+      // Actualizar clases visuales
+      table.querySelectorAll('th.sortable').forEach(function(t) {
+        t.classList.remove('sort-asc','sort-desc');
+      });
+      th.classList.add('sort-' + gapSortDir);
+      renderGapTableSorted();
+    });
+  });
+}
+
+function renderGapTableSorted() {
+  if (!gapRowsCache.length) return;
+  var rows = gapRowsCache.slice();
+  var col  = gapSortCol;
+  var dir  = gapSortDir;
+  rows.sort(function(a, b) {
+    var va = a[col], vb = b[col];
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return dir === 'asc' ? -1 :  1;
+    if (va > vb) return dir === 'asc' ?  1 : -1;
+    return 0;
+  });
+  buildGapRows(rows);
+}
+
+function buildGapRows(rows) {
+  var tbody = document.getElementById('gap-tbody');
+  if (!tbody) return;
+  var maxAbs = Math.max.apply(null, rows.map(function(a){return Math.abs(a.gap);}));
+  tbody.innerHTML = rows.map(function(a, i) {
+    var barW = Math.round(Math.abs(a.gap)/maxAbs*80);
+    var gColor = a.gap < 0 ? '#E8634A' : '#2E7D32';
+    var qBg = {I:'#E8634A',II:'#2E7D32',III:'#9E9E9E',IV:'#C9993A'}[a.quad] || '#aaa';
+    var gStr = (a.gap>=0?'+':'') + a.gap.toFixed(3);
+    return '<tr>' +
+      '<td style="text-align:center;font-weight:700;color:#888">' + (i+1) + '</td>' +
+      '<td style="font-weight:500">' + a.lbl + '</td>' +
+      '<td style="text-align:center"><span class="dim-chip d' + a.dim + '">' + a.dim + '</span></td>' +
+      '<td><span style="display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:700;color:#fff;background:' + qBg + '">' + a.quad + '</span></td>' +
+      '<td>' + a.imp.toFixed(3) + '</td>' +
+      '<td>' + a.des.toFixed(3) + '</td>' +
+      '<td style="font-weight:700;color:' + gColor + '">' + gStr + '</td>' +
+      '<td><div style="background:' + gColor + ';height:8px;border-radius:4px;width:' + barW + 'px"></div></td>' +
+      '<td style="color:#888">' + a.nd + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function renderGapTable(attrs) {
+  // Guardar datos en cache con rank original (por brecha asc)
+  var sorted = attrs.slice().sort(function(a,b){return a.gap-b.gap;});
+  gapRowsCache = sorted.map(function(a,i){
+    return {rank:i+1, lbl:a.lbl, dim:a.dim, quad:a.quad,
+            imp:a.imp, des:a.des, gap:a.gap, nd:a.nd, cod:a.cod};
+  });
+  gapSortCol = 'gap'; gapSortDir = 'asc';
+  // Limpiar clases sort
+  var table = document.getElementById('gap-table');
+  if (table) {
+    table.querySelectorAll('th.sortable').forEach(function(t){t.classList.remove('sort-asc','sort-desc');});
+    var gapTh = table.querySelector('[data-col="gap"]');
+    if (gapTh) gapTh.classList.add('sort-asc');
+  }
+  buildGapRows(gapRowsCache);
+}
+
+// Inicializar sort al cargar
+document.addEventListener('DOMContentLoaded', function(){ initGapSort(); });
 
 </script>
 </body>

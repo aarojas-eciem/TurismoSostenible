@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChileValora GHT · Análisis Estratégico Región de Coquimbo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1F3864;
+    --navy2: #2C4F8C;
+    --coral: #E8634A;
+    --mint: #3A9B8C;
+    --gold: #C9993A;
+    --lav: #7B6FAD;
+    --teal: #1A6B6B;
+    --sand: #F5F0E8;
+    --bg: #F7F9FC;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --red-alert: #dc2626;
+    --green-ok: #16a34a;
+    --amber: #d97706;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+    color: white;
+    padding: 24px 32px 20px;
+    border-bottom: 3px solid var(--coral);
+  }
+  .header h1 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 13px;
+    opacity: 0.8;
+  }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* TABS */
+  .tabs-bar {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    padding: 0 24px;
+    gap: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .tab-btn {
+    padding: 14px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .tab-btn:hover { color: var(--navy2); }
+  .tab-btn.active {
+    color: var(--navy);
+    border-bottom-color: var(--coral);
+  }
+
+  /* CONTENT */
+  .tab-content { display: none; padding: 24px 28px; }
+  .tab-content.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    text-align: center;
+    border-top: 4px solid var(--navy2);
+  }
+  .kpi.coral { border-top-color: var(--coral); }
+  .kpi.mint { border-top-color: var(--mint); }
+  .kpi.gold { border-top-color: var(--gold); }
+  .kpi.lav { border-top-color: var(--lav); }
+  .kpi.teal { border-top-color: var(--teal); }
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    display: block;
+    line-height: 1;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+    font-weight: 500;
+  }
+
+  /* TABLES */
+  .tbl-wrapper { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  thead tr { background: var(--navy); color: white; }
+  thead th {
+    padding: 9px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  thead th:hover { background: var(--navy2); }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  tbody tr:hover { background: #eef4ff; }
+  tbody td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge-gastro { background: #fef3c7; color: #92400e; }
+  .badge-hotel { background: #dbeafe; color: #1e40af; }
+  .badge-turismo { background: #d1fae5; color: #065f46; }
+  .badge-alerta { background: #fee2e2; color: #991b1b; }
+  .badge-sin { background: #f3f4f6; color: #6b7280; }
+  .badge-con { background: #d1fae5; color: #065f46; }
+  .badge-parcial { background: #fef3c7; color: #92400e; }
+
+  .nivel-dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+  }
+  .n1 { background: #94a3b8; }
+  .n2 { background: var(--mint); }
+  .n3 { background: var(--navy2); }
+  .n4 { background: var(--gold); }
+  .n5 { background: var(--coral); }
+
+  /* FILTER ROW */
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-row select, .filter-row input {
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12.5px;
+    background: white;
+    color: var(--text);
+  }
+  .filter-row label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* CHARTS */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .chart-box {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 18px;
+    border: 1px solid var(--border);
+  }
+  .chart-box h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap-tall { position: relative; height: 340px; }
+
+  /* TRAYECTORIAS */
+  .tray-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+  .tray-node {
+    background: var(--navy2);
+    color: white;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    min-width: 120px;
+    max-width: 160px;
+  }
+  .tray-node.cert { background: var(--coral); }
+  .tray-node.es { background: var(--teal); }
+  .tray-node.nivel { background: var(--mint); font-size: 10px; }
+  .tray-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    padding: 0 4px;
+  }
+  .tray-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* UCL SHARED */
+  .ucl-shared {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .ucl-code { font-family: monospace; font-weight: 700; color: var(--navy2); font-size: 12px; }
+  .ucl-desc { color: var(--text); margin: 3px 0; }
+  .ucl-perfiles { font-size: 11px; color: var(--muted); }
+
+  /* BRECHA BOXES */
+  .brecha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .brecha-box {
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 5px solid var(--coral);
+    background: #fff7f5;
+    font-size: 12.5px;
+  }
+  .brecha-box.oport {
+    border-left-color: var(--mint);
+    background: #f0fdf9;
+  }
+  .brecha-box.alerta {
+    border-left-color: var(--gold);
+    background: #fffbeb;
+  }
+  .brecha-box h5 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--navy);
+  }
+
+  /* NOTA SOURCE */
+  .nota-fuente {
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 14px;
+    padding-top: 8px;
+    font-style: italic;
+  }
+
+  /* ZOIT RELEVANCIA */
+  .zoit-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 700;
+    margin: 1px;
+  }
+  .zoit-elqui { background: #ede9fe; color: #5b21b6; }
+  .zoit-pich { background: #e0f2fe; color: #0369a1; }
+
+  .code-mono { font-family: monospace; font-size: 11.5px; color: var(--navy2); }
+
+  .section-intro {
+    background: #eef4ff;
+    border-left: 4px solid var(--navy2);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--navy);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+
+  /* LEGEND */
+  .legend-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .top-bar {
+    height: 6px;
+    border-radius: 3px;
+    margin-bottom: 2px;
+  }
+
+  .warning-banner {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inst-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--sand);
+    color: var(--navy);
+    margin: 1px;
+  }
+
+  @media (max-width: 700px) {
+    .tabs-bar { padding: 0 8px; }
+    .tab-btn { padding: 12px 10px; font-size: 12px; }
+    .tab-content { padding: 14px 12px; }
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── H6 PUENTE ANALÍTICO ─────────────────────────────────────── */
+  .h6-zona-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .h6-zona-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--navy);
+  }
+  .h6-zona-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .h6-zona-btn:hover:not(.active) { background: var(--sand); }
+
+  .h6-atrib-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .h6-atrib-head {
+    display: grid;
+    grid-template-columns: 48px 1fr 90px 90px 120px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .h6-atrib-head:hover { background: #f8fafc; }
+  .h6-cod {
+    font-family: monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--navy2);
+    background: #eef4ff;
+    border-radius: 4px;
+    padding: 2px 6px;
+    text-align: center;
+  }
+  .h6-nom { font-size: 13px; font-weight: 600; color: var(--text); }
+  .h6-dim { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  .h6-gap-val {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+  }
+  .h6-gap-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .h6-gap-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .h6-gap-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+  .h6-quad-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .qpI  { background: #fee2e2; color: #991b1b; }
+  .qpII { background: #d1fae5; color: #065f46; }
+  .qpIII{ background: #f3f4f6; color: #4b5563; }
+  .qpIV { background: #fef3c7; color: #92400e; }
+
+  .h6-atrib-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 14px 16px 16px;
+    background: #fafbfc;
+  }
+  .h6-atrib-body.open { display: block; }
+
+  .h6-perfiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .h6-perfil-chip {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--navy2);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+  .h6-perfil-chip.sin-art { border-left-color: var(--coral); }
+  .h6-perfil-chip.con-art { border-left-color: var(--mint); }
+  .h6-perfil-nom { font-weight: 700; color: var(--navy); font-size: 12px; margin-bottom: 4px; }
+  .h6-perfil-cod { font-family: monospace; font-size: 10.5px; color: var(--navy2); }
+  .h6-perfil-stats {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .h6-stat {
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .h6-stat-cert { background: #eef4ff; color: var(--navy2); }
+  .h6-stat-art-no  { background: #fee2e2; color: #991b1b; }
+  .h6-stat-art-si  { background: #d1fae5; color: #065f46; }
+  .h6-stat-coq-si  { background: #fef3c7; color: #92400e; }
+  .h6-stat-nivel { background: var(--sand); color: var(--navy); }
+
+  .h6-lectura {
+    background: #eef4ff;
+    border-left: 4px solid var(--navy2);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--navy);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+  .h6-lectura.urgente { border-left-color: var(--coral); background: #fff5f5; }
+  .h6-lectura.fortaleza { border-left-color: var(--mint); background: #f0fdf9; }
+  .h6-lectura.monitorear { border-left-color: var(--gold); background: #fffbeb; }
+
+  .h6-resumen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .h6-resumen-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--navy2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .h6-resumen-card.urgente { border-top-color: var(--coral); }
+  .h6-resumen-card.fortaleza { border-top-color: var(--mint); }
+  .h6-resumen-card.baja { border-top-color: #94a3b8; }
+  .h6-resumen-card.sobreinv { border-top-color: var(--gold); }
+  .h6-resumen-val { font-family: Georgia, serif; font-size: 28px; font-weight: 700; color: var(--navy); }
+  .h6-resumen-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+  .h6-scatter-wrap { position: relative; height: 360px; }
+
+  .h6-dim-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px;
+  }
+  .dD1b { background: #EEF2F8; color: #1F3864; }
+  .dD2b { background: #FFF3E0; color: #7d4200; }
+  .dD3b { background: #E8F5E9; color: #1b5e20; }
+  .dD4b { background: #FCE4EC; color: #880e4f; }
+  .dD5b { background: #EDE7F6; color: #311b92; }
+
+  .h6-toggle-icon { float: right; font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+  .h6-imp-des {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .h6-imp-des span {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .h6-imp-des strong { color: var(--navy); }
+
+  /* ── H7 TRAYECTORIAS ──────────────────────────────────────────── */
+  .h7-tray-section { margin-bottom: 28px; }
+  .h7-tray-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:16px; }
+  .h7-tray-num { font-family:Georgia,serif; font-size:48px; font-weight:700; color:var(--border); line-height:1; flex-shrink:0; }
+  .h7-tray-meta h3 { font-family:Georgia,serif; font-size:17px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+  .h7-tray-meta p { font-size:12px; color:var(--muted); }
+  .h7-chain { display:flex; align-items:stretch; flex-wrap:wrap; gap:0; margin-bottom:14px; }
+  .h7-node { display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:130px; max-width:165px; padding:10px 12px; border-radius:8px; font-size:11.5px; text-align:center; }
+  .h7-node-cod { font-family:monospace; font-size:10px; opacity:0.7; margin-bottom:3px; word-break:break-all; }
+  .h7-node-nom { font-weight:700; line-height:1.3; margin-bottom:4px; }
+  .h7-node-stats { font-size:10px; opacity:0.85; line-height:1.4; }
+  .h7-node.entrada  { background:#eef4ff; border:1.5px solid var(--navy2); color:var(--navy); }
+  .h7-node.medio    { background:#e8f5e9; border:1.5px solid #2e7d32; color:#1b5e20; }
+  .h7-node.avanzado { background:#fff3e0; border:1.5px solid var(--gold); color:#5d3a00; }
+  .h7-node.es       { background:var(--navy); border:1.5px solid var(--navy); color:#fff; }
+  .h7-node.pendiente{ background:#f5f5f5; border:1.5px dashed #9e9e9e; color:#555; }
+  .h7-node.activar  { background:#fce4ec; border:1.5px dashed var(--coral); color:#880e4f; }
+  .h7-arrow { display:flex; align-items:center; padding:0 6px; color:var(--muted); font-size:18px; flex-shrink:0; }
+  .h7-tags { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; }
+  .h7-tag { font-size:11px; padding:3px 9px; border-radius:10px; font-weight:600; }
+  .h7-tag-cert  { background:#eef4ff; color:var(--navy2); }
+  .h7-tag-gap   { background:#fee2e2; color:#991b1b; }
+  .h7-tag-art   { background:#d1fae5; color:#065f46; }
+  .h7-tag-zoit  { background:#ede9fe; color:#5b21b6; }
+  .h7-tag-brecha{ background:#fef3c7; color:#92400e; }
+  .h7-justif { background:var(--sand); border-left:3px solid var(--gold); border-radius:0 6px 6px 0; padding:10px 14px; font-size:12px; color:var(--text); line-height:1.65; margin-bottom:10px; }
+  .h7-brechas-title { font-size:11px; font-weight:700; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em; }
+  .h7-brecha-row { display:flex; align-items:baseline; gap:8px; font-size:11.5px; padding:4px 0; border-bottom:1px solid var(--border); }
+  .h7-brecha-row:last-child { border-bottom:none; }
+  .h7-brecha-tipo { font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; flex-shrink:0; }
+  .bt-existe  { background:#d1fae5; color:#065f46; }
+  .bt-activar { background:#fef3c7; color:#92400e; }
+  .bt-nuevo   { background:#fee2e2; color:#991b1b; }
+  .h7-resumen-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:14px; }
+  .h7-resumen-table th { background:var(--navy); color:#fff; padding:8px 12px; text-align:left; font-size:11px; font-weight:600; }
+  .h7-resumen-table td { padding:8px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .h7-resumen-table tr:nth-child(even) td { background:#f8fafc; }
+  .h7-legend-chain { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; font-size:11px; }
+  .h7-legend-item { display:flex; align-items:center; gap:5px; color:var(--muted); }
+  .h7-legend-swatch { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ChileValora GHT · Análisis Estratégico de Certificaciones y Trayectorias Formativas</h1>
+  <p>Sector Gastronomía, Hotelería y Turismo · Región de Coquimbo · ECIEM–UCN | Componente 2 – Proyecto BIP 40075888-0</p>
+  <div class="header-meta">
+    <span class="header-badge">38 perfiles activos</span>
+    <span class="header-badge">2.132 certificaciones 2002–2026</span>
+    <span class="header-badge">ZOIT Valle del Elqui · ZOIT Pichidangui-Quilimarí</span>
+    <span class="header-badge">Fuente: ChileValora / SERNATUR</span>
+  </div>
+</div>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="showTab('h1')">H1 · Mapa de Perfiles</button>
+  <button class="tab-btn" onclick="showTab('h2')">H2 · Certificaciones</button>
+  <button class="tab-btn" onclick="showTab('h3')">H3 · Articulación ES</button>
+  <button class="tab-btn" onclick="showTab('h4')">H4 · Competencias UCL</button>
+  <button class="tab-btn" onclick="showTab('h5')">H5 · Oportunidades</button>
+  <button class="tab-btn" onclick="showTab('h6')">H6 · Demanda Turística</button>
+  <button class="tab-btn" onclick="showTab('h7')">H7 · Trayectorias Formativas</button>
+</div>
+
+<!-- ==================== HISTORIA 1 ==================== -->
+<div id="h1" class="tab-content active">
+  <div class="section-intro">
+    <strong>¿Qué existe?</strong> Mapa completo de los 38 perfiles ocupacionales activos en ChileValora para el sector GHT. La jerarquía es: Subsector → CIUO-08.CL → Perfil. Los perfiles de Casinos y Juegos de Azar tienen vigencia hasta diciembre de 2026 y están marcados con alerta.
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi coral">
+      <span class="kpi-value">38</span>
+      <div class="kpi-label">Perfiles activos GHT</div>
+    </div>
+    <div class="kpi mint">
+      <span class="kpi-value">21</span>
+      <div class="kpi-label">Gastronomía</div>
+    </div>
+    <div class="kpi">
+      <span class="kpi-value">5</span>
+      <div class="kpi-label">Hotelería</div>
+    </div>
+    <div class="kpi gold">
+      <span class="kpi-value">12</span>
+      <div class="kpi-label">Turismo</div>
+    </div>
+    <div class="kpi lav">
+      <span class="kpi-value">100</span>
+      <div class="kpi-label">UCL totales</div>
+    </div>
+    <div class="kpi teal">
+      <span class="kpi-value">4</span>
+      <div class="kpi-label">Perfiles alerta 2026</div>
+    </div>
+  </div>
+
+  <div class="warning-banner">
+    <strong>Alerta de vigencia:</strong> 4 perfiles del área Casinos y Juegos de Azar (Croupier, Asistente de Máquinas de Azar, Operador CCTV, Mantenedor Electrónico) tienen vigencia hasta el 31/12/2026. Su renovación no está confirmada en los datos disponibles.
+  </div>
+
+  <div class="filter-row">
+    <label>Filtrar:</label>
+    <select id="h1-sub" onchange="renderH1Table()">
+      <option value="">Todos los subsectores</option>
+      <option value="GASTRONOMÍA">Gastronomía</option>
+      <option value="HOTELERÍA">Hotelería</option>
+      <option value="TURISMO">Turismo</option>
+    </select>
+    <select id="h1-nivel" onchange="renderH1Table()">
+      <option value="">Todos los niveles</option>
+      <option value="1">Nivel 1</option>
+      <option value="2">Nivel 2</option>
+      <option value="3">Nivel 3</option>
+      <option value="4">Nivel 4</option>
+      <option value="5">Nivel 5</option>
+    </select>
+    <select id="h1-modal" onchange="renderH1Table()">
+      <option value="">Todas las modalidades</option>
+      <option value="Completa">Completa</option>
+      <option value="Parcial">Parcial</option>
+    </select>
+    <input type="text" id="h1-search" placeholder="Buscar perfil o CIUO…" oninput="renderH1Table()" style="min-width:180px">
+  </div>
+
+  <div class="card">
+    <div class="card-title">Catálogo completo de perfiles GHT</div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortH1(0)">Subsector ↕</th>
+            <th onclick="sortH1(1)">Código Perfil ↕</th>
+            <th onclick="sortH1(2)">Nombre Perfil ↕</th>
+            <th onclick="sortH1(3)">CIUO-08 ↕</th>
+            <th onclick="sortH1(4)">Área Productiva ↕</th>
+            <th onclick="sortH1(5)">Nivel ↕</th>
+            <th onclick="sortH1(6)">Modalidad ↕</th>
+            <th onclick="sortH1(7)">Vigencia ↕</th>
+            <th onclick="sortH1(8)">UCL ↕</th>
+          </tr>
+        </thead>
+        <tbody id="h1-tbody"></tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Fuente: Catálogo ChileValora, Perfiles_y_UCL_Sector_GHT. Datos directos de los archivos entregados. Los perfiles de casinos sin certificaciones en Coquimbo pueden tener actividad nacional no reflejada en esta fuente regional.</p>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h4>Distribución por Subsector</h4>
+      <div class="chart-wrap"><canvas id="c-subsector"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h4>Distribución por Nivel de Cualificación</h4>
+      <div class="chart-wrap"><canvas id="c-niveles"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">CIUO-08.CL con más de un perfil asociado</div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead><tr><th>CIUO-08</th><th>Descripción (inferida del catálogo)</th><th>Perfiles asociados</th><th>Subsectores</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="code-mono">3434</td>
+            <td>Cocineros/Chefs de establecimientos</td>
+            <td><span class="badge badge-gastro">Chef Ejecutivo</span> <span class="badge badge-gastro">Jefe de Partida</span> <span class="badge badge-gastro">Banquetero(a)</span></td>
+            <td>Gastronomía</td>
+          </tr>
+          <tr>
+            <td class="code-mono">4224</td>
+            <td>Recepcionistas y personal afín</td>
+            <td><span class="badge badge-hotel">Recepcionista (P-5510-4224-001)</span> <span class="badge badge-hotel">Gobernanta(e)</span> <span class="badge badge-hotel">Encargado(a) de Recepción</span></td>
+            <td>Hotelería (3 perfiles)</td>
+          </tr>
+          <tr>
+            <td class="code-mono">4321</td>
+            <td>Empleados de registro de materiales</td>
+            <td><span class="badge badge-hotel">Recepcionista (P-4711-4321-001)</span></td>
+            <td>Hotelería (código distinto)</td>
+          </tr>
+          <tr>
+            <td class="code-mono">5120</td>
+            <td>Cocineros</td>
+            <td><span class="badge badge-gastro">Cocinero(a)</span> <span class="badge badge-gastro">Monitor(a) de Comida Rápida</span></td>
+            <td>Gastronomía</td>
+          </tr>
+          <tr>
+            <td class="code-mono">5246</td>
+            <td>Auxiliares de servicios de alimentación</td>
+            <td><span class="badge badge-gastro">Auxiliar Línea Casino</span> <span class="badge badge-gastro">Operador(a) Serv. Alimentación</span></td>
+            <td>Gastronomía</td>
+          </tr>
+          <tr>
+            <td class="code-mono">9412</td>
+            <td>Ayudantes de cocina</td>
+            <td><span class="badge badge-gastro">Ayudante de Cocina</span> <span class="badge badge-gastro">Ayudante de Cocina Institucional</span></td>
+            <td>Gastronomía</td>
+          </tr>
+          <tr>
+            <td class="code-mono">4221</td>
+            <td>Empleados de agencias de viaje</td>
+            <td><span class="badge badge-turismo">Agente de Viajes</span> <span class="badge badge-turismo">Informador(a) Turístico</span> <span class="badge badge-turismo">Jefe(a) Productos Turísticos</span></td>
+            <td>Turismo</td>
+          </tr>
+          <tr>
+            <td class="code-mono">5113</td>
+            <td>Guías de turismo</td>
+            <td><span class="badge badge-turismo">Guía Turismo General</span> <span class="badge badge-turismo">Guía Naturalista</span> <span class="badge badge-turismo">Guía Astroturismo</span></td>
+            <td>Turismo</td>
+          </tr>
+          <tr>
+            <td class="code-mono">4212</td>
+            <td>Operadores de casinos</td>
+            <td><span class="badge badge-alerta">Croupier</span> <span class="badge badge-alerta">Asistente Máquinas de Azar</span></td>
+            <td>Turismo-Casinos</td>
+          </tr>
+          <tr>
+            <td class="code-mono">1412</td>
+            <td>Directores/gerentes restauración</td>
+            <td><span class="badge badge-gastro">Maître</span> <span class="badge badge-gastro">Supervisor(a) Línea Casino</span></td>
+            <td>Gastronomía</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Nota: La coincidencia de CIUO-08 entre perfiles permite identificar potenciales puntos de articulación curricular al interior de un mismo grupo ocupacional.</p>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 2 ==================== -->
+<div id="h2" class="tab-content">
+  <div class="section-intro">
+    <strong>¿Qué pasó en Coquimbo?</strong> Serie temporal 2002–2026. Total auditado: 2.132 certificaciones. Los datos no están desagregados por comuna — este es un límite explícito de la fuente; las cifras corresponden a la totalidad de la Región de Coquimbo.
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi coral">
+      <span class="kpi-value">2.132</span>
+      <div class="kpi-label">Certificaciones totales (2002–2026)</div>
+    </div>
+    <div class="kpi mint">
+      <span class="kpi-value">25</span>
+      <div class="kpi-label">Años con actividad</div>
+    </div>
+    <div class="kpi">
+      <span class="kpi-value">26</span>
+      <div class="kpi-label">Perfiles certificados</div>
+    </div>
+    <div class="kpi gold">
+      <span class="kpi-value">72%</span>
+      <div class="kpi-label">Top 5 perfiles del total</div>
+    </div>
+    <div class="kpi lav">
+      <span class="kpi-value">2015</span>
+      <div class="kpi-label">Año de mayor actividad</div>
+    </div>
+    <div class="kpi teal">
+      <span class="kpi-value">12</span>
+      <div class="kpi-label">Sin certificaciones en Coquimbo</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Evolución temporal de certificaciones 2002–2026</div>
+    <div style="position:relative;height:300px;"><canvas id="c-temporal"></canvas></div>
+    <p class="nota-fuente">Nota: Los datos de 2026 corresponden a certificaciones registradas hasta la fecha de corte disponible (junio 2026). El año 2026 muestra 57 certificaciones (Administrador Gastr. 1, Cocinero 1, Guía Turismo General 55). Elaboración propia en base a estadísticas oficiales de ChileValora.</p>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h4>Top 10 perfiles por volumen total de certificaciones</h4>
+      <div class="chart-wrap-tall"><canvas id="c-top10"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h4>Certificaciones por subsector</h4>
+      <div class="chart-wrap"><canvas id="c-subsector-cert"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabla detallada por perfil — Certificaciones Coquimbo 2002–2026</div>
+    <div class="filter-row">
+      <label>Subsector:</label>
+      <select id="h2-sub" onchange="renderH2Table()">
+        <option value="">Todos</option>
+        <option value="GASTRONOMÍA">Gastronomía</option>
+        <option value="HOTELERÍA">Hotelería</option>
+        <option value="TURISMO">Turismo</option>
+      </select>
+      <input type="text" id="h2-search" placeholder="Buscar perfil…" oninput="renderH2Table()" style="min-width:180px">
+    </div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortH2(0)">Subsector ↕</th>
+            <th onclick="sortH2(1)">Código ↕</th>
+            <th onclick="sortH2(2)">Perfil ↕</th>
+            <th onclick="sortH2(3)">Total ↕</th>
+            <th onclick="sortH2(4)">% del total ↕</th>
+            <th>Barra visual</th>
+            <th onclick="sortH2(6)">Primer año ↕</th>
+            <th onclick="sortH2(7)">Último año ↕</th>
+          </tr>
+        </thead>
+        <tbody id="h2-tbody"></tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Fuente: DATA_CERTIFICACIONES_TURISMO_CHILEVALORA_COQUIMBO. Hoja "TODOS LOS AÑOS". Total verificado: 2.132. Los datos no están desagregados por comuna.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Patrones de activación/contracción por perfil clave</div>
+    <div style="position:relative;height:340px;"><canvas id="c-perfiles-linea"></canvas></div>
+    <p class="nota-fuente">Se muestran los 6 perfiles con mayor volumen histórico. Elaboración propia.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Perfiles sin ninguna certificación registrada en Coquimbo (2002–2026)</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+      <span class="badge badge-gastro">Banquetero(a)</span>
+      <span class="badge badge-gastro">Cajero(a) Comida Rápida*</span>
+      <span class="badge badge-gastro">Chef Ejecutivo</span>
+      <span class="badge badge-gastro">Jefe(a) de Partida</span>
+      <span class="badge badge-gastro">Monitor(a) Comida Rápida</span>
+      <span class="badge badge-gastro">Sup. PAE/PAP</span>
+      <span class="badge badge-hotel">Botones*</span>
+      <span class="badge badge-hotel">Encargado(a) Recepción</span>
+      <span class="badge badge-turismo">Agente de Viajes</span>
+      <span class="badge badge-turismo">Asistente Máquinas de Azar</span>
+      <span class="badge badge-turismo">Ej. Ventas Tour Operador</span>
+      <span class="badge badge-turismo">Guía Naturalista</span>
+      <span class="badge badge-turismo">Guía Astroturismo</span>
+      <span class="badge badge-turismo">Jefe(a) Productos Turísticos</span>
+      <span class="badge badge-turismo">Op. CCTV Casinos</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px;">* Cajero(a) Comida Rápida y Botones tienen registros puntuales (1–4 certificaciones). Los perfiles sin actividad en Coquimbo pueden tener historia nacional no reflejada aquí.</p>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 3 ==================== -->
+<div id="h3" class="tab-content">
+  <div class="section-intro">
+    <strong>¿Qué puentes existen hacia la educación superior?</strong> De los 38 perfiles: 13 tienen articulación activa a nivel nacional (10 solo presencial, 1 presencial+online, 2 con convenio en Región de Coquimbo específicamente). 25 no tienen ningún convenio. <strong>UCN-ECIEM no aparece en ningún convenio ChileValora</strong> — brecha institucional relevante para el proyecto.
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi coral">
+      <span class="kpi-value">13</span>
+      <div class="kpi-label">Con articulación activa</div>
+    </div>
+    <div class="kpi mint">
+      <span class="kpi-value">25</span>
+      <div class="kpi-label">Sin articulación</div>
+    </div>
+    <div class="kpi gold">
+      <span class="kpi-value">7</span>
+      <div class="kpi-label">Con convenio en Coquimbo</div>
+    </div>
+    <div class="kpi">
+      <span class="kpi-value">172</span>
+      <div class="kpi-label">Convenios totales (pres.+online)</div>
+    </div>
+    <div class="kpi lav">
+      <span class="kpi-value">6</span>
+      <div class="kpi-label">Instituciones con convenios</div>
+    </div>
+    <div class="kpi teal">
+      <span class="kpi-value">0</span>
+      <div class="kpi-label">Convenios UCN-ECIEM</div>
+    </div>
+  </div>
+
+  <div class="warning-banner">
+    <strong>Brecha institucional:</strong> UCN-ECIEM no figura en ningún convenio de articulación ChileValora del sector GHT. Esto representa una oportunidad no aprovechada de posicionamiento institucional en el sistema de certificación de competencias laborales.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Estado de articulación por perfil</div>
+    <div class="filter-row">
+      <label>Filtrar:</label>
+      <select id="h3-sub" onchange="renderH3Table()">
+        <option value="">Todos</option>
+        <option value="GASTRONOMÍA">Gastronomía</option>
+        <option value="HOTELERÍA">Hotelería</option>
+        <option value="TURISMO">Turismo</option>
+      </select>
+      <select id="h3-art" onchange="renderH3Table()">
+        <option value="">Toda articulación</option>
+        <option value="con">Con articulación</option>
+        <option value="sin">Sin articulación</option>
+        <option value="coq">Con convenio en Coquimbo</option>
+      </select>
+    </div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortH3(0)">Subsector ↕</th>
+            <th onclick="sortH3(1)">Código ↕</th>
+            <th onclick="sortH3(2)">Perfil ↕</th>
+            <th onclick="sortH3(3)">Nivel ↕</th>
+            <th onclick="sortH3(4)">Articulación ↕</th>
+            <th onclick="sortH3(5)">Conv. Presencial ↕</th>
+            <th onclick="sortH3(6)">Instituciones ↕</th>
+            <th onclick="sortH3(7)">Coquimbo ↕</th>
+            <th onclick="sortH3(8)">Máx. Asign. ↕</th>
+          </tr>
+        </thead>
+        <tbody id="h3-tbody"></tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Fuente: GHT_Perfiles_Articulacion_ES_4. Convenio presencial + online. El máximo de asignaturas convalidables puede variar por carrera e institución.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Detalle de convenios en Región de Coquimbo</div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Código Perfil</th>
+            <th>Perfil</th>
+            <th>Institución</th>
+            <th>Carrera</th>
+            <th>Asign. Convalid.</th>
+            <th>Modalidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code-mono">P-5600-1439-001-V02</td>
+            <td>Administrador(a) Establec. Gastronómicos</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica</td>
+            <td>2</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-3434-003-V01</td>
+            <td>Banquetero(a)</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica</td>
+            <td>3</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-3434-001-V02</td>
+            <td>Chef Ejecutivo</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica</td>
+            <td>2</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-3434-002-V02</td>
+            <td>Jefe(a) de Partida</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica</td>
+            <td>2</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-5246-002-V01</td>
+            <td>Operador(a) Servicios Alimentación</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica / Gastronomía</td>
+            <td>1</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-7512-001-V03</td>
+            <td>Pastelero(a)</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica / Gastronomía</td>
+            <td>2</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5600-1412-003-V02</td>
+            <td>Supervisor(a) Línea Casino</td>
+            <td><span class="inst-tag">INACAP</span></td>
+            <td>Administración Gastronómica / Gastronomía</td>
+            <td>2</td>
+            <td>Presencial</td>
+          </tr>
+          <tr>
+            <td class="code-mono">P-5510-4224-001-V03</td>
+            <td>Recepcionista (Hotelería)</td>
+            <td><span class="inst-tag">CFT Estatal Coquimbo</span></td>
+            <td>Técnico Nivel Superior en Turismo</td>
+            <td>1</td>
+            <td>Presencial</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">INACAP es la institución dominante en la Región de Coquimbo con 7 perfiles articulados. El CFT Estatal Coquimbo aparece solo para el perfil Recepcionista de Hotelería. UCN-ECIEM: 0 convenios.</p>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h4>Estado de articulación (38 perfiles)</h4>
+      <div class="chart-wrap"><canvas id="c-art-estado"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h4>Perfiles con articulación por subsector</h4>
+      <div class="chart-wrap"><canvas id="c-art-sub"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 4 ==================== -->
+<div id="h4" class="tab-content">
+  <div class="section-intro">
+    <strong>¿Qué competencias comparten los perfiles?</strong> Análisis de las 100 UCL del catálogo. Se identifican UCL compartidas textualmente entre perfiles de uno y más subsectores, y grupos temáticos de competencias.
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi coral">
+      <span class="kpi-value">100</span>
+      <div class="kpi-label">UCL totales en el catálogo</div>
+    </div>
+    <div class="kpi mint">
+      <span class="kpi-value">2</span>
+      <div class="kpi-label">UCL compartidas (misma en 2+ perfiles)</div>
+    </div>
+    <div class="kpi">
+      <span class="kpi-value">4</span>
+      <div class="kpi-label">Perfiles con U-5510-4224-009</div>
+    </div>
+    <div class="kpi gold">
+      <span class="kpi-value">3</span>
+      <div class="kpi-label">Subsectores con U-5510-4224-009</div>
+    </div>
+    <div class="kpi lav">
+      <span class="kpi-value">6</span>
+      <div class="kpi-label">Grupos temáticos UCL</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">UCL con presencia textualmente idéntica en más de un perfil</div>
+
+    <div class="ucl-shared">
+      <div class="ucl-code">U-5510-4224-009-V01</div>
+      <div class="ucl-desc">GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS</div>
+      <div class="ucl-perfiles">
+        Aparece en 4 perfiles de 3 subsectores:
+        <span class="badge badge-hotel">Gobernanta(e) (P-5510-4224-002-V03) — Hotelería</span>
+        <span class="badge badge-hotel">Encargado(a) de Recepción (P-5510-4224-003-V01) — Hotelería</span>
+        <span class="badge badge-gastro">Administrador(a) Establec. Gastronómicos (P-5600-1439-001-V02) — Gastronomía</span>
+        <span class="badge badge-gastro">Chef Ejecutivo (P-5600-3434-001-V02) — Gastronomía</span>
+        <br><em style="font-size:11px;color:var(--muted);">También referenciada en el código P-5600-3434-002 (Jefe de Partida)</em>
+      </div>
+    </div>
+
+    <div class="ucl-shared">
+      <div class="ucl-code">U-5510-4224-005-V02</div>
+      <div class="ucl-desc">ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLOS DE ATENCIÓN Y PROCEDIMIENTOS ESTABLECIDOS</div>
+      <div class="ucl-perfiles">
+        Aparece en 2 perfiles de Hotelería:
+        <span class="badge badge-hotel">Recepcionista (P-5510-4224-001-V03)</span>
+        <span class="badge badge-hotel">Encargado(a) de Recepción (P-5510-4224-003-V01)</span>
+      </div>
+    </div>
+
+    <div class="ucl-shared">
+      <div class="ucl-code">U-5510-4224-007-V01</div>
+      <div class="ucl-desc">AUTO GESTIONAR EL SERVICIO AL CLIENTE, SEGÚN LOS PROTOCOLOS Y PROCEDIMIENTOS DE LA EMPRESA</div>
+      <div class="ucl-perfiles">
+        Aparece en 2 perfiles de Gastronomía:
+        <span class="badge badge-gastro">Cajero(a) Local Comida Rápida (P-5600-5230-001-V02)</span>
+        <span class="badge badge-gastro">Operador(a) Servicios Alimentación (P-5600-5246-002-V01)</span>
+      </div>
+    </div>
+
+    <p class="nota-fuente">Evidencia directa de las fuentes entregadas. La UCL U-5510-4224-009-V01 es la de mayor transversalidad, siendo el núcleo de competencia de supervisión/gestión de personas que cruza los niveles 4–5 de varios perfiles.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Catálogo completo de UCL — filtrable por subsector</div>
+    <div class="filter-row">
+      <label>Subsector:</label>
+      <select id="h4-sub" onchange="renderH4Table()">
+        <option value="">Todos</option>
+        <option value="GASTRONOMÍA">Gastronomía</option>
+        <option value="HOTELERÍA">Hotelería</option>
+        <option value="TURISMO">Turismo</option>
+      </select>
+      <input type="text" id="h4-search" placeholder="Buscar código UCL o descripción…" oninput="renderH4Table()" style="min-width:220px">
+    </div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortH4(0)">Subsector ↕</th>
+            <th onclick="sortH4(1)">Cód. Perfil ↕</th>
+            <th onclick="sortH4(2)">Perfil ↕</th>
+            <th onclick="sortH4(3)">Código UCL ↕</th>
+            <th>Descripción UCL</th>
+          </tr>
+        </thead>
+        <tbody id="h4-tbody"></tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Fuente: Perfles_y_UCL_Sector_GHT.md, Hoja 2 (datos UCL detallados). Total: 100 UCL correspondientes a 38 perfiles.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Grupos temáticos de competencias (inferencia razonable)</div>
+    <div class="brecha-grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));">
+
+      <div class="brecha-box oport">
+        <h5>Producción culinaria y seguridad alimentaria</h5>
+        <p>UCL centradas en elaboración, higiene, BPM y normativa sanitaria. Presente en Cocinero(a), Jefe de Partida, Chef Ejecutivo, Ayudante de Cocina, Pastelero(a). Alta densidad en el subsector Gastronomía.</p>
+      </div>
+
+      <div class="brecha-box oport">
+        <h5>Gestión de personas y equipos</h5>
+        <p>La UCL U-5510-4224-009-V01 aparece en 4+ perfiles de 3 subsectores. Constituye un núcleo transversal de nivel 4–5 con potencial de reconocimiento cruzado en currículos.</p>
+      </div>
+
+      <div class="brecha-box oport">
+        <h5>Atención y servicio al cliente/huésped</h5>
+        <p>Competencia transversal en todos los subsectores: Botones, Mucama(o), Recepcionista, Garzón(a), Anfitrión(a), Operador Servicios Alimentación. Base común para diseño de módulo introductorio.</p>
+      </div>
+
+      <div class="brecha-box alerta">
+        <h5>Guiado turístico y patrimonio</h5>
+        <p>Guía de Turismo General, Guía Naturalista, Guía de Astroturismo. UCL específicas de interpretación patrimonial y planificación de experiencias. Alta pertinencia ZOIT Valle del Elqui y Pichidangui.</p>
+      </div>
+
+      <div class="brecha-box alerta">
+        <h5>Casinos y juegos de azar</h5>
+        <p>4 perfiles con vigencia 2026. UCL referenciadas a la SCJ (Superintendencia de Casinos de Juego). Área altamente regulada, sin articulación ES y sin certificaciones históricas en Coquimbo (excepto 14 Croupier en 2025).</p>
+      </div>
+
+      <div class="brecha-box">
+        <h5>Operación turística y agencias</h5>
+        <p>Agente de Viajes, Ejecutivo de Ventas Tour Operador, Jefe de Productos Turísticos. Competencias de asesoría, gestión comercial y seguimiento de servicios turísticos. Sin actividad certificadora en Coquimbo.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 5 ==================== -->
+<div id="h5" class="tab-content">
+  <div class="section-intro">
+    <strong>¿Dónde están las oportunidades y brechas para trayectorias formativas?</strong> Cruce de las cuatro historias: masa certificadora + articulación + vigencia + pertinencia ZOIT. Se diferencian explícitamente evidencias directas, inferencias razonables y recomendaciones preliminares.
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h4>Matriz: masa certificadora vs articulación ES (38 perfiles)</h4>
+      <div class="chart-wrap-tall"><canvas id="c-matriz"></canvas></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;">Eje X: volumen de certificaciones Coquimbo. Eje Y: convenios de articulación presenciales nacionales. Color: subsector. Los perfiles en cuadrante superior-derecho son los de mayor potencial.</p>
+    </div>
+    <div class="chart-box">
+      <h4>Perfil de oportunidad por cuadrante</h4>
+      <div class="chart-wrap-tall"><canvas id="c-cuadrantes"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Clasificación estratégica de los 38 perfiles</div>
+    <div class="filter-row">
+      <label>Filtrar por categoría:</label>
+      <select id="h5-cat" onchange="renderH5Table()">
+        <option value="">Todas</option>
+        <option value="A">A — Masa + Articulación</option>
+        <option value="B">B — Masa sin articulación</option>
+        <option value="C">C — Articulación sin masa Coquimbo</option>
+        <option value="D">D — Sin masa ni articulación</option>
+        <option value="ZOIT">Pertinentes para ZOIT</option>
+      </select>
+    </div>
+    <div class="tbl-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Código</th>
+            <th>Perfil</th>
+            <th>Subsector</th>
+            <th>Cert. Coquimbo</th>
+            <th>Art. Nacional</th>
+            <th>Art. Coquimbo</th>
+            <th>Nivel</th>
+            <th>Pertinencia ZOIT</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="h5-tbody"></tbody>
+      </table>
+    </div>
+    <p class="nota-fuente">Categoría A: alta masa certificadora + articulación activa = trayectoria inmediata factible. B: masa real pero sin puente ES = oportunidad de nuevo convenio. C: perfil articulado sin historia local = activación pendiente. D: sin base ni puente = desarrollo a largo plazo o no priorizar.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Trayectorias formativas propuestas — Perfiles con masa + articulación (Categoría A)</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;"><em>Evidencia directa de los datos. Las cadenas muestran código completo de perfil, nivel, y articulación ES confirmada.</em></p>
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">Trayectoria 1 — Cocina / Gastronomía (eje más robusto del sector)</div>
+      <div class="tray-chain">
+        <div class="tray-node cert"><div>P-5600-5246-001-V02</div><div style="font-size:10px;margin-top:2px;">Aux. Línea Casino</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5600-9412-002-V05</div><div style="font-size:10px;margin-top:2px;">Ayudante de Cocina</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5600-5120-001-V04</div><div style="font-size:10px;margin-top:2px;">Cocinero(a)</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5600-3434-002-V02</div><div style="font-size:10px;margin-top:2px;">Jefe(a) de Partida</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5600-3434-001-V02</div><div style="font-size:10px;margin-top:2px;">Chef Ejecutivo</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node es"><div>INACAP Coquimbo</div><div style="font-size:10px;margin-top:2px;">Adm. Gastronómica</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <span style="font-size:11px;background:#eef4ff;padding:2px 8px;border-radius:4px;">Nivel 1 → 5</span>
+        <span style="font-size:11px;background:#fef3c7;padding:2px 8px;border-radius:4px;">257+286+302 cert. Coquimbo en perfiles de entrada</span>
+        <span style="font-size:11px;background:#d1fae5;padding:2px 8px;border-radius:4px;">Art. INACAP confirmada en Coquimbo para Jefe Partida y Chef</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">Trayectoria 2 — Hotelería</div>
+      <div class="tray-chain">
+        <div class="tray-node cert"><div>P-5510-9112-001-V03</div><div style="font-size:10px;margin-top:2px;">Mucama(o)</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5510-4224-001-V03</div><div style="font-size:10px;margin-top:2px;">Recepcionista</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5510-4224-002-V03</div><div style="font-size:10px;margin-top:2px;">Gobernanta(e)</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-5510-4224-003-V01</div><div style="font-size:10px;margin-top:2px;">Encargado(a) Recepción</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node es"><div>CFT Estatal Coquimbo</div><div style="font-size:10px;margin-top:2px;">Técnico en Turismo</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <span style="font-size:11px;background:#eef4ff;padding:2px 8px;border-radius:4px;">Nivel 2 → 4</span>
+        <span style="font-size:11px;background:#fef3c7;padding:2px 8px;border-radius:4px;">382+194+22 cert. Coquimbo en Mucama y Recepcionistas</span>
+        <span style="font-size:11px;background:#d1fae5;padding:2px 8px;border-radius:4px;">Art. CFT Estatal Coquimbo para Recepcionista</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">Trayectoria 3 — Turismo de naturaleza (alta pertinencia ZOIT Valle del Elqui)</div>
+      <div class="tray-chain">
+        <div class="tray-node cert"><div>P-7912-4221-002-V03</div><div style="font-size:10px;margin-top:2px;">Informador(a) Turístico</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-7912-5113-001-V04</div><div style="font-size:10px;margin-top:2px;">Guía Turismo General</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-7990-5113-001-V01</div><div style="font-size:10px;margin-top:2px;">Guía Naturalista</div></div>
+        <div class="tray-arrow">→</div>
+        <div class="tray-node cert"><div>P-7990-5113-002-V01</div><div style="font-size:10px;margin-top:2px;">Guía Astroturismo</div></div>
+        <div class="tray-arrow">↗</div>
+        <div class="tray-node" style="background:var(--lav);"><div>Sin articulación ES</div><div style="font-size:10px;margin-top:2px;">Oportunidad UCN</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <span style="font-size:11px;background:#eef4ff;padding:2px 8px;border-radius:4px;">Nivel 2 → 3</span>
+        <span style="font-size:11px;background:#fef3c7;padding:2px 8px;border-radius:4px;">161 cert. Guía Turismo General + 39 Informador Turístico en Coquimbo</span>
+        <span style="font-size:11px;background:#fee2e2;padding:2px 8px;border-radius:4px;">Sin articulación ES en ninguna región para Guía Naturalista ni Astroturismo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Síntesis de oportunidades y brechas estratégicas</div>
+    <div class="brecha-grid">
+      <div class="brecha-box oport">
+        <h5>Perfiles con masa + articulación (Tipo A)</h5>
+        <p>Mucama(o), Recepcionista, Administrador(a) Gastr., Banquetero(a), Jefe(a) de Partida, Chef Ejecutivo, Pastelero(a), Supervisor Línea Casino, Operador Serv. Alimentación. Trayectorias inmediatas hacia INACAP y CFT Estatal Coquimbo.</p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Evidencia directa</p>
+      </div>
+      <div class="brecha-box">
+        <h5>Masa sin puente ES (Tipo B) — Mayor oportunidad de nuevos convenios</h5>
+        <p>Garzón(a) (302 cert.), Mucama(o) (382 cert. — Tipo A/B), Cocinero(a) (286 cert.), Ayudante de Cocina (257 cert.). Alta masa certificadora sin articulación formal. <strong>Candidatos prioritarios para convenio UCN-ECIEM.</strong></p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Inferencia razonable a partir de datos</p>
+      </div>
+      <div class="brecha-box alerta">
+        <h5>Pertinentes para ZOIT pero poco activados</h5>
+        <p>Guía de Astroturismo y Guía Naturalista (0 cert. Coquimbo, pertinencia alta para Valle del Elqui). Conductor(a) Transporte Turístico (22 cert., pertinencia ambas ZOIT). Informador(a) Turístico (39 cert., solo en 2017).</p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Inferencia razonable</p>
+      </div>
+      <div class="brecha-box">
+        <h5>Perfiles de Casinos — Alerta vigencia 2026</h5>
+        <p>Croupier (14 cert. en 2025), Asistente Máquinas de Azar, Op. CCTV, Mantenedor Electrónico. Sin articulación ES. Vigencia expira 31/12/2026. Pertinencia local baja para las ZOIT priorizadas.</p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Evidencia directa</p>
+      </div>
+      <div class="brecha-box">
+        <h5>Brecha institucional: UCN-ECIEM</h5>
+        <p>La UCN y su unidad ECIEM no figuran en ningún convenio de articulación ChileValora del sector GHT a nivel nacional ni regional. Esto contrasta con la presencia de INACAP, AIEP, CULINARY, CFT Estatal y otros. <strong>Recomendación preliminar: evaluar adhesión formal al sistema ChileValora como institución articuladora.</strong></p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Evidencia directa + recomendación preliminar</p>
+      </div>
+      <div class="brecha-box oport">
+        <h5>Competencias transversales aprovechables</h5>
+        <p>La UCL U-5510-4224-009-V01 (gestión de personas) es reconocida en 4+ perfiles de 3 subsectores. Permite diseñar un módulo transversal de liderazgo y supervisión para trayectorias de nivel 4–5 que evite duplicación curricular.</p>
+        <p style="margin-top:6px;font-size:11px;color:var(--muted);">Inferencia razonable a partir de datos</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 6 ==================== -->
+<div id="h6" class="tab-content">
+  <div class="section-intro">
+    <strong>Señal de demanda turística y oferta formativa.</strong> Lectura inversa: desde las brechas de calidad percibida por los turistas (Análisis IPA, n=196, P24–P25) hacia los perfiles ChileValora que responden a cada déficit. Por cada atributo se muestra el gap por ZOIT, el perfil ocupacional asociado, el stock certificacional en Coquimbo y el estado de articulación con educación superior. Fuentes: encuesta de mercado BIP 40075888-0 (2026) y catálogo ChileValora.
+  </div>
+
+  <!-- Selector de zona -->
+  <div class="h6-zona-bar">
+    <button class="h6-zona-btn active" onclick="setH6Zona('combinado',this)">Combinado (n=196)</button>
+    <button class="h6-zona-btn" onclick="setH6Zona('valleElqui',this)">Valle del Elqui (n=100)</button>
+    <button class="h6-zona-btn" onclick="setH6Zona('pichidangui',this)">Pichidangui–Quilimarí (n=96)</button>
+  </div>
+
+  <!-- KPIs resumen zona -->
+  <div class="h6-resumen-grid" id="h6-kpis"></div>
+
+  <!-- Leyenda dimensiones -->
+  <div style="margin-bottom:14px;">
+    <span class="h6-dim-tag dD1b">D1 Alojamiento</span>
+    <span class="h6-dim-tag dD2b">D2 Gastronomía</span>
+    <span class="h6-dim-tag dD3b">D3 Actividades y guiado</span>
+    <span class="h6-dim-tag dD4b">D4 Sostenibilidad</span>
+    <span class="h6-dim-tag dD5b">D5 Información</span>
+  </div>
+
+  <!-- Gráfico comparativo de brechas por zona -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">Brechas IPA por atributo — comparativa entre zonas</div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:12px;">Brecha = Desempeño − Importancia. Valores negativos indican déficit. Ejes data-centered (Bacon, 2003). Los colores indican la zona activa.</div>
+    <div class="h6-scatter-wrap"><canvas id="c-h6-brechas"></canvas></div>
+    <p class="nota-fuente">Elaboración propia en base a encuesta de mercado BIP 40075888-0, trabajo de campo 2026. n Combinado=196 / Valle del Elqui=100 / Pichidangui–Quilimarí=96.</p>
+  </div>
+
+  <!-- Cards por atributo -->
+  <div class="card">
+    <div class="card-title" id="h6-cards-title">Lectura atributo por atributo — Combinado (n=196)</div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:14px;">Ordenados por magnitud de brecha, de mayor a menor déficit. Expandir cada atributo para ver los perfiles asociados y la lectura estratégica.</div>
+    <div id="h6-cards-container"></div>
+    <p class="nota-fuente">La asociación atributo-perfil es una inferencia razonable fundamentada en el contenido de las UCL y la descripción de los perfiles. No existe una correspondencia oficial en los documentos fuente.</p>
+  </div>
+</div>
+
+<!-- ==================== HISTORIA 7 ==================== -->
+<div id="h7" class="tab-content">
+  <div class="section-intro">
+    <strong>Trayectorias formativas: del perfil certificado a la educación superior.</strong> Síntesis inferida a partir de los datos de certificaciones (H2), articulación ES (H3), competencias UCL (H4) y señal de demanda turística por ZOIT (H6). Las trayectorias propuestas son inferencias razonables fundamentadas en la evidencia disponible; no constituyen diseño curricular formalizado ni compromiso institucional. Fuentes: catálogo ChileValora, DATA_CERTIFICACIONES_TURISMO_CHILEVALORA_COQUIMBO, encuesta de mercado BIP 40075888-0.
+  </div>
+
+  <!-- Leyenda de nodos -->
+  <div class="h7-legend-chain">
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#eef4ff;border:1.5px solid #2C4F8C;"></div>Perfil entrada (Nivel 1–2, masa certificacional activa)</div>
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#e8f5e9;border:1.5px solid #2e7d32;"></div>Perfil medio (Nivel 3, articulación potencial)</div>
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#fff3e0;border:1.5px solid #C9993A;"></div>Perfil avanzado (Nivel 4–5, con articulación activa)</div>
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#1F3864;border:1.5px solid #1F3864;"></div>Institución ES (convenio activo en Coquimbo)</div>
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#fce4ec;border:1.5px dashed #E8634A;"></div>Perfil a activar (0 cert. en Coquimbo, pertinencia alta)</div>
+    <div class="h7-legend-item"><div class="h7-legend-swatch" style="background:#f5f5f5;border:1.5px dashed #9e9e9e;"></div>Paso pendiente (brecha de convenio o masa)</div>
+  </div>
+
+  <!-- TRAYECTORIA 1 -->
+  <div class="card h7-tray-section">
+    <div class="h7-tray-header">
+      <div class="h7-tray-num">01</div>
+      <div class="h7-tray-meta">
+        <h3>Gastronomía y producción culinaria</h3>
+        <p>Ambas ZOIT · Urgencia alta en Pichidangui-Quilimarí · Dimensiones IPA: D2 (A08, A09, A10, A11)</p>
+      </div>
+    </div>
+
+    <div class="h7-tags">
+      <span class="h7-tag h7-tag-cert">2.132 cert. totales — subsector Gastronomía: 1.269</span>
+      <span class="h7-tag h7-tag-gap">Gap A11 Pichidangui: -0.797 (cuadrante I)</span>
+      <span class="h7-tag h7-tag-gap">Gap A08 Pichidangui: -0.717</span>
+      <span class="h7-tag h7-tag-art">Art. INACAP Coquimbo: Jefe Partida, Chef Ejecutivo, Pastelero</span>
+      <span class="h7-tag h7-tag-zoit">ZOIT Valle del Elqui · ZOIT Pichidangui-Quilimarí</span>
+    </div>
+
+    <div class="h7-chain">
+      <div class="h7-node entrada">
+        <div class="h7-node-cod">P-5600-9412-002-V05</div>
+        <div class="h7-node-nom">Ayudante de Cocina</div>
+        <div class="h7-node-stats">257 cert. Coquimbo<br>Nivel 2 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node medio">
+        <div class="h7-node-cod">P-5600-5120-001-V04</div>
+        <div class="h7-node-nom">Cocinero(a)</div>
+        <div class="h7-node-stats">286 cert. Coquimbo<br>Nivel 3 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node avanzado">
+        <div class="h7-node-cod">P-5600-3434-002-V02</div>
+        <div class="h7-node-nom">Jefe(a) de Partida</div>
+        <div class="h7-node-stats">0 cert. Coquimbo<br>Nivel 4 · Art. INACAP Coq.</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node avanzado">
+        <div class="h7-node-cod">P-5600-3434-001-V02</div>
+        <div class="h7-node-nom">Chef Ejecutivo</div>
+        <div class="h7-node-stats">0 cert. Coquimbo<br>Nivel 5 · Art. INACAP Coq.</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node es">
+        <div class="h7-node-cod">INACAP Coquimbo</div>
+        <div class="h7-node-nom">Adm. Gastronómica</div>
+        <div class="h7-node-stats">Convenio activo<br>2–4 asign. convalidables</div>
+      </div>
+    </div>
+
+    <div class="h7-chain" style="margin-top:8px;">
+      <div class="h7-node entrada">
+        <div class="h7-node-cod">P-5600-5131-001-V03</div>
+        <div class="h7-node-nom">Garzón(a)</div>
+        <div class="h7-node-stats">302 cert. Coquimbo<br>Nivel 2 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node avanzado">
+        <div class="h7-node-cod">P-5600-7512-001-V03</div>
+        <div class="h7-node-nom">Pastelero(a)</div>
+        <div class="h7-node-stats">15 cert. Coquimbo<br>Nivel 4 · Art. INACAP Coq.</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node avanzado">
+        <div class="h7-node-cod">P-5600-1439-001-V02</div>
+        <div class="h7-node-nom">Administrador Establec. Gastron.</div>
+        <div class="h7-node-stats">27 cert. Coquimbo<br>Nivel 5 · Art. INACAP+AIEP</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node es">
+        <div class="h7-node-cod">INACAP / AIEP Coquimbo</div>
+        <div class="h7-node-nom">Adm. Gastronómica</div>
+        <div class="h7-node-stats">Convenio activo<br>hasta 4 asign. convalidables</div>
+      </div>
+    </div>
+
+    <div class="h7-justif">
+      <strong>Justificación inferida:</strong> La cadena Ayudante de Cocina (257 cert.) → Cocinero(a) (286 cert.) → Jefe de Partida → Chef Ejecutivo constituye el eje de mayor masa certificacional del sector en Coquimbo. Los perfiles de entrada y nivel medio tienen actividad certificadora sostenida desde 2002; los perfiles de nivel 4 y 5 tienen articulación formal activa con INACAP en Coquimbo pero acumulan 0 certificaciones locales. La señal de demanda turística respalda la trayectoria: los atributos A08 (calidad técnica culinaria, gap -0.717 en Pichidangui) y A11 (variedad gastronómica, gap -0.797, cuadrante I Pichidangui) son los déficits de mayor urgencia en esa ZOIT y mapean directamente a las UCL de los perfiles de nivel 4–5. La inferencia razonable es que activar la parte alta de esta trayectoria — mediante convenios que atraigan personas ya certificadas en niveles 2–3 hacia la formación de nivel superior — respondería simultáneamente a la demanda turística y a la brecha de capital humano calificado.
+    </div>
+
+    <div class="h7-brechas-title">Brechas identificadas para completar esta trayectoria</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Masa certificacional en Ayudante de Cocina (257) y Cocinero(a) (286) — base para reclutar hacia niveles superiores.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Convenio INACAP Coquimbo para Jefe de Partida, Chef Ejecutivo y Pastelero(a) con asignaturas convalidables.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Jefe de Partida y Chef Ejecutivo: 0 certificaciones en Coquimbo pese a tener articulación activa. Se requiere activar el proceso de certificación en establecimientos de la región.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Garzón(a) (302 cert.): sin articulación ES en ninguna institución a nivel nacional. El perfil con mayor masa del subsector no tiene puente formal hacia educación superior.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-nuevo">Pendiente</span>UCN-ECIEM no figura en ningún convenio ChileValora del subsector Gastronomía. Evaluación de adhesión como institución articuladora constituye una oportunidad institucional directa.</div>
+  </div>
+
+  <!-- TRAYECTORIA 2 -->
+  <div class="card h7-tray-section">
+    <div class="h7-tray-header">
+      <div class="h7-tray-num">02</div>
+      <div class="h7-tray-meta">
+        <h3>Hotelería y hospitalidad</h3>
+        <p>Ambas ZOIT · Urgencia alta en Pichidangui-Quilimarí · Dimensiones IPA: D1 (A01, A02, A03)</p>
+      </div>
+    </div>
+
+    <div class="h7-tags">
+      <span class="h7-tag h7-tag-cert">Subsector Hotelería: 622 cert. Coquimbo</span>
+      <span class="h7-tag h7-tag-gap">Gap A01 Pichidangui: -0.687 · Gap A02: -0.632 · Gap A03: -0.702</span>
+      <span class="h7-tag h7-tag-art">Art. CFT Estatal Coquimbo: Recepcionista (hotelería)</span>
+      <span class="h7-tag h7-tag-zoit">ZOIT Valle del Elqui · ZOIT Pichidangui-Quilimarí</span>
+    </div>
+
+    <div class="h7-chain">
+      <div class="h7-node entrada">
+        <div class="h7-node-cod">P-5510-9112-001-V03</div>
+        <div class="h7-node-nom">Mucama(o)</div>
+        <div class="h7-node-stats">382 cert. Coquimbo<br>Nivel 2 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node medio">
+        <div class="h7-node-cod">P-5510-4224-001-V03</div>
+        <div class="h7-node-nom">Recepcionista</div>
+        <div class="h7-node-stats">194 cert. Coquimbo<br>Nivel 3 · CFT Estatal Coq.</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node avanzado">
+        <div class="h7-node-cod">P-5510-4224-002-V03</div>
+        <div class="h7-node-nom">Gobernanta(e)</div>
+        <div class="h7-node-stats">20 cert. Coquimbo<br>Nivel 4 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node pendiente">
+        <div class="h7-node-cod">P-5510-4224-003-V01</div>
+        <div class="h7-node-nom">Encargado(a) Recepción</div>
+        <div class="h7-node-stats">0 cert. Coquimbo<br>Nivel 4 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node es">
+        <div class="h7-node-cod">CFT Estatal Coquimbo</div>
+        <div class="h7-node-nom">Técnico en Turismo</div>
+        <div class="h7-node-stats">1 asign. convalidable<br>(solo Recepcionista)</div>
+      </div>
+    </div>
+
+    <div class="h7-justif">
+      <strong>Justificación inferida:</strong> Mucama(o) con 382 certificaciones es el perfil de mayor volumen en toda la región GHT. Recepcionista (194 cert.) tiene el único convenio de articulación del CFT Estatal Coquimbo. Sin embargo, la trayectoria tiene una brecha estructural: Gobernanta(e) (20 cert., nivel 4) no tiene articulación ES, y Encargado(a) de Recepción (0 cert., nivel 4) tampoco. La señal de demanda es clara: en Pichidangui, los tres atributos de alojamiento (A01 higiene -0.687, A02 recepción -0.632, A03 precio-calidad -0.702) son déficits críticos con alta importancia declarada. La trayectoria existe en sus eslabones de entrada y medio; faltan los eslabones de nivel 4 con articulación formal. Activar Gobernanta(e) y Encargado(a) de Recepción como perfiles con convenio sería el paso que cierra la cadena hacia ES.
+    </div>
+
+    <div class="h7-brechas-title">Brechas identificadas para completar esta trayectoria</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Mucama(o): 382 certificaciones — mayor masa del sector. Base sólida de entrada a la trayectoria.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Recepcionista: convenio CFT Estatal Coquimbo activo (1 asignatura convalidable). Único eslabón ES confirmado en Hotelería para la región.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Gobernanta(e) (20 cert.): sin articulación ES. La UCL U-5510-4224-009-V01 (gestión de personas, compartida con 4 perfiles) justifica su incorporación en una trayectoria de nivel 4.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Encargado(a) de Recepción: 0 certificaciones en Coquimbo y sin articulación ES. Perfil de nivel 4 con contenido de supervisión que cierra la trayectoria hotelera hacia ES.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-nuevo">Pendiente</span>El convenio CFT Estatal Coquimbo cubre solo 1 asignatura para Recepcionista. Se requiere evaluación de ampliación del acuerdo para cubrir perfiles de nivel 4 de Hotelería.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-nuevo">Pendiente</span>UCN-ECIEM sin convenio en Hotelería. Dado que el subsector concentra 622 certificaciones regionales, es el área con mayor base potencial de estudiantes para un primer convenio institucional.</div>
+  </div>
+
+  <!-- TRAYECTORIA 3 -->
+  <div class="card h7-tray-section">
+    <div class="h7-tray-header">
+      <div class="h7-tray-num">03</div>
+      <div class="h7-tray-meta">
+        <h3>Guiado, patrimonio y turismo de naturaleza</h3>
+        <p>Alta pertinencia ZOIT Valle del Elqui · Dimensiones IPA: D3 (A12–A14), D4 (A15–A16), D5 (A17)</p>
+      </div>
+    </div>
+
+    <div class="h7-tags">
+      <span class="h7-tag h7-tag-cert">Guía Turismo General: 161 cert. · Informador Turístico: 39 cert.</span>
+      <span class="h7-tag h7-tag-gap">Gap A15 combinado: -0.651 (cuadrante I) · Gap A17: -0.574 (cuadrante I)</span>
+      <span class="h7-tag h7-tag-gap">Gap A15 Pichidangui: -1.048 (mayor de toda la matriz)</span>
+      <span class="h7-tag h7-tag-zoit">Alta pertinencia ZOIT Valle del Elqui · Pertinencia media Pichidangui</span>
+      <span class="h7-tag h7-tag-brecha">Guía Naturalista y Guía Astroturismo: 0 cert. en Coquimbo</span>
+    </div>
+
+    <div class="h7-chain">
+      <div class="h7-node entrada">
+        <div class="h7-node-cod">P-7912-4221-002-V03</div>
+        <div class="h7-node-nom">Informador(a) Turístico</div>
+        <div class="h7-node-stats">39 cert. Coquimbo<br>Nivel 2 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node medio">
+        <div class="h7-node-cod">P-7912-5113-001-V04</div>
+        <div class="h7-node-nom">Guía de Turismo General</div>
+        <div class="h7-node-stats">161 cert. Coquimbo<br>Nivel 3 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node activar">
+        <div class="h7-node-cod">P-7990-5113-001-V01</div>
+        <div class="h7-node-nom">Guía Naturalista</div>
+        <div class="h7-node-stats">0 cert. Coquimbo<br>Nivel 3 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node activar">
+        <div class="h7-node-cod">P-7990-5113-002-V01</div>
+        <div class="h7-node-nom">Guía de Astroturismo</div>
+        <div class="h7-node-stats">0 cert. Coquimbo<br>Nivel 3 · Sin art. ES</div>
+      </div>
+      <div class="h7-arrow">→</div>
+      <div class="h7-node pendiente">
+        <div class="h7-node-cod">Sin convenio activo</div>
+        <div class="h7-node-nom">Carrera de Turismo</div>
+        <div class="h7-node-stats">No hay articulación ES<br>para ningún perfil de guiado</div>
+      </div>
+    </div>
+
+    <div class="h7-justif">
+      <strong>Justificación inferida:</strong> Esta es la trayectoria con mayor pertinencia estratégica para el Valle del Elqui y la de mayor brecha sistémica en el catálogo. Guía de Turismo General acumula 161 certificaciones, con un repunte significativo en 2021–2022 (83 cert.) y 2026 (55 cert. a junio). El perfil tiene vigencia hasta 2030. Sin embargo, los perfiles especializados que la demanda turística señala como prioritarios — Guía Naturalista (UCL de interpretación patrimonial U-7990-5113-003-V01) y Guía de Astroturismo (UCL de protección del cielo oscuro U-7990-5113-004-V01) — acumulan 0 certificaciones en Coquimbo pese a ser perfiles con alta pertinencia para el Valle del Elqui. La señal IPA es contundente: A15 (evidencia cuidado ambiental) es el atributo de mayor brecha en el combinado (gap -0.651, cuadrante I) y en Pichidangui alcanza -1.048, el mayor de toda la matriz. A16 (integración cultura local, gap -0.478, cuadrante I) y A17 (señalética, cuadrante I en Valle del Elqui) completan el cuadro. Ninguno de los tres perfiles de guiado tiene articulación ES en ninguna institución a nivel nacional, lo que convierte esta trayectoria en la de mayor oportunidad de diseño curricular nuevo para UCN-ECIEM.
+    </div>
+
+    <div class="h7-brechas-title">Brechas identificadas para completar esta trayectoria</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Guía de Turismo General: 161 cert. con actividad reciente sostenida (2021–2026). Base certificacional activa para la trayectoria.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-existe">Existe</span>Informador(a) Turístico: 39 cert. (2017). Perfil de nivel 2 que funciona como entrada natural hacia el Guía General.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Guía Naturalista (P-7990-5113-001-V01): perfil vigente hasta 2030 con 3 UCL de interpretación patrimonial y sostenibilidad. 0 certificaciones en Coquimbo. Alta pertinencia para Valle del Elqui.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-activar">Activar</span>Guía de Astroturismo (P-7990-5113-002-V01): perfil vigente hasta 2030 con 3 UCL específicas de astronomía cultural y protección del cielo oscuro. 0 certificaciones en Coquimbo. Pertinencia máxima para Valle del Elqui (Vicuña, Paihuano).</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-nuevo">Pendiente</span>Ningún perfil de guiado turístico tiene articulación ES a nivel nacional. Esta trayectoria es la de mayor oportunidad para UCN-ECIEM como primera institución en formalizar un convenio ChileValora para perfiles de guiado.</div>
+    <div class="h7-brecha-row"><span class="h7-brecha-tipo bt-nuevo">Pendiente</span>La señal IPA de demanda (A15, A16, A17 en cuadrante I) no tiene correlato en el sistema de certificación activo. Activar Guía Naturalista y Guía Astroturismo en Coquimbo requiere identificar centros de evaluación habilitados en la región.</div>
+  </div>
+
+  <!-- RESUMEN INTEGRADO -->
+  <div class="card">
+    <div class="card-title">Resumen integrado — Estado de las trayectorias y acciones inferidas</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Clasificación por estado de cada acción necesaria para completar las trayectorias. Inferencia razonable fundamentada en los datos disponibles; no constituye plan de acción formalizado.</div>
+    <table class="h7-resumen-table">
+      <thead>
+        <tr>
+          <th>Estado</th>
+          <th>Acción</th>
+          <th>Trayectoria</th>
+          <th>Respaldo empírico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-existe">Existe y funciona</span></td>
+          <td>Convenio INACAP Coquimbo para Chef Ejecutivo, Jefe de Partida, Pastelero(a) y Administrador Gastronómico</td>
+          <td>T1 Gastronomía</td>
+          <td>Datos directos GHT_Perfiles_Articulacion_ES_4</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-existe">Existe y funciona</span></td>
+          <td>Convenio CFT Estatal Coquimbo para Recepcionista (Hotelería)</td>
+          <td>T2 Hotelería</td>
+          <td>Datos directos GHT_Perfiles_Articulacion_ES_4</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-existe">Existe y funciona</span></td>
+          <td>Masa certificacional en Mucama(o) 382, Cocinero(a) 286, Garzón(a) 302, Ayudante de Cocina 257, Recepcionista 194</td>
+          <td>T1 y T2</td>
+          <td>Datos directos DATA_CERTIFICACIONES</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-activar">Requiere activación</span></td>
+          <td>Certificar en Jefe de Partida y Chef Ejecutivo en establecimientos de Coquimbo (0 cert. pese a articulación activa)</td>
+          <td>T1 Gastronomía</td>
+          <td>Cruce cert. × articulación (H2 + H3)</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-activar">Requiere activación</span></td>
+          <td>Activar proceso de certificación de Guía Naturalista y Guía de Astroturismo en Coquimbo (0 cert., perfiles vigentes hasta 2030)</td>
+          <td>T3 Guiado</td>
+          <td>Cruce cert. × demanda IPA (H2 + H6)</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-activar">Requiere activación</span></td>
+          <td>Reactivar certificación de Informador(a) Turístico (39 cert. solo en 2017, sin actividad posterior)</td>
+          <td>T3 Guiado</td>
+          <td>Serie temporal H2 + gap A17 cuadrante I Valle del Elqui</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-nuevo">Desarrollo nuevo</span></td>
+          <td>UCN-ECIEM: evaluación de adhesión al sistema ChileValora como institución articuladora (0 convenios activos en GHT)</td>
+          <td>T1, T2, T3</td>
+          <td>Ausencia confirmada en GHT_Perfiles_Articulacion_ES_4</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-nuevo">Desarrollo nuevo</span></td>
+          <td>Diseño de convenio para perfiles de guiado (Guía General, Naturalista, Astroturismo) — ninguna institución tiene este acuerdo a nivel nacional</td>
+          <td>T3 Guiado</td>
+          <td>Ausencia total en articulación ES para CIUO-08 5113</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-nuevo">Desarrollo nuevo</span></td>
+          <td>Formalizar articulación para Garzón(a) (302 cert., sin convenio ES en ninguna institución nacional)</td>
+          <td>T1 Gastronomía</td>
+          <td>Mayor masa certificacional sin puente ES en el subsector</td>
+        </tr>
+        <tr>
+          <td><span class="h7-brecha-tipo bt-nuevo">Desarrollo nuevo</span></td>
+          <td>Ampliar convenio hotelería para perfiles nivel 4: Gobernanta(e) y Encargado(a) de Recepción (hoy sin articulación nacional)</td>
+          <td>T2 Hotelería</td>
+          <td>Cruce H3 + gaps A01–A03 Pichidangui</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="nota-fuente">Fuentes cruzadas: Perfles_y_UCL_Sector_GHT.md · DATA_CERTIFICACIONES_TURISMO_CHILEVALORA_COQUIMBO · GHT_Perfiles_Articulacion_ES_4.md · Encuesta de mercado BIP 40075888-0 (2026). Todas las inferencias son razonables a partir de los datos disponibles; ninguna constituye evidencia directa de una acción acordada o formalizada.</p>
+  </div>
+</div>
+
+<script>
+// ==================== H6 DATA ====================
+
+// IPA data extraída directamente del dashboard de turistas (BIP 40075888-0)
+const IPA_DATA = {
+  combinado: {
+    n: 196, mi: 4.218, md: 3.871,
+    attrs: [
+      {cod:'A01',lbl:'Higiene y mantenimiento de instalaciones',dim:'D1',imp:4.515,des:4.212,nd:170,gap:-0.303,quad:'II'},
+      {cod:'A02',lbl:'Calidad y profesionalismo en recepción',dim:'D1',imp:4.321,des:4.032,nd:158,gap:-0.289,quad:'II'},
+      {cod:'A03',lbl:'Precio-calidad del alojamiento',dim:'D1',imp:4.260,des:3.980,nd:150,gap:-0.280,quad:'II'},
+      {cod:'A04',lbl:'Seguridad del destino',dim:'D1',imp:4.679,des:4.259,nd:193,gap:-0.420,quad:'II'},
+      {cod:'A05',lbl:'Manejo de idiomas extranjeros',dim:'D1',imp:3.459,des:3.389,nd:126,gap:-0.070,quad:'III'},
+      {cod:'A06',lbl:'Conocimiento del personal sobre el destino',dim:'D1',imp:4.214,des:3.860,nd:186,gap:-0.354,quad:'III'},
+      {cod:'A07',lbl:'Uso de ingredientes y productos locales',dim:'D2',imp:3.913,des:3.874,nd:190,gap:-0.039,quad:'IV'},
+      {cod:'A08',lbl:'Calidad técnica en preparación de alimentos',dim:'D2',imp:4.296,des:3.979,nd:188,gap:-0.317,quad:'II'},
+      {cod:'A09',lbl:'Servicio en mesa (garzones)',dim:'D2',imp:4.408,des:4.225,nd:187,gap:-0.183,quad:'II'},
+      {cod:'A10',lbl:'Precio-calidad de la oferta gastronómica',dim:'D2',imp:4.393,des:3.973,nd:187,gap:-0.420,quad:'II'},
+      {cod:'A11',lbl:'Variedad de la oferta gastronómica',dim:'D2',imp:4.138,des:3.693,nd:189,gap:-0.445,quad:'III'},
+      {cod:'A12',lbl:'Disponibilidad de tours y actividades',dim:'D3',imp:3.959,des:3.669,nd:181,gap:-0.290,quad:'III'},
+      {cod:'A13',lbl:'Calidad y profesionalismo de guías',dim:'D3',imp:4.107,des:3.970,nd:169,gap:-0.137,quad:'IV'},
+      {cod:'A14',lbl:'Facilidades para cultura y patrimonio',dim:'D3',imp:4.148,des:3.783,nd:189,gap:-0.365,quad:'III'},
+      {cod:'A15',lbl:'Evidencia de cuidado ambiental',dim:'D4',imp:4.342,des:3.691,nd:188,gap:-0.651,quad:'I'},
+      {cod:'A16',lbl:'Integración de la cultura local',dim:'D4',imp:4.311,des:3.833,nd:192,gap:-0.478,quad:'I'},
+      {cod:'A17',lbl:'Señalética y mapas físicos',dim:'D5',imp:4.347,des:3.773,nd:194,gap:-0.574,quad:'I'},
+      {cod:'A18',lbl:'Información digital actualizada',dim:'D5',imp:4.117,des:3.476,nd:187,gap:-0.641,quad:'III'},
+    ]
+  },
+  valleElqui: {
+    n: 100, mi: 4.139, md: 4.086,
+    attrs: [
+      {cod:'A01',lbl:'Higiene y mantenimiento de instalaciones',dim:'D1',imp:4.480,des:4.662,nd:74,gap:0.182,quad:'II'},
+      {cod:'A02',lbl:'Calidad y profesionalismo en recepción',dim:'D1',imp:4.180,des:4.303,nd:66,gap:0.123,quad:'II'},
+      {cod:'A03',lbl:'Precio-calidad del alojamiento',dim:'D1',imp:4.070,des:4.250,nd:68,gap:0.180,quad:'IV'},
+      {cod:'A04',lbl:'Seguridad del destino',dim:'D1',imp:4.740,des:4.454,nd:97,gap:-0.286,quad:'II'},
+      {cod:'A05',lbl:'Manejo de idiomas extranjeros',dim:'D1',imp:3.350,des:3.600,nd:50,gap:0.250,quad:'III'},
+      {cod:'A06',lbl:'Conocimiento del personal sobre el destino',dim:'D1',imp:4.160,des:4.053,nd:95,gap:-0.107,quad:'I'},
+      {cod:'A07',lbl:'Uso de ingredientes y productos locales',dim:'D2',imp:3.640,des:3.838,nd:99,gap:0.198,quad:'III'},
+      {cod:'A08',lbl:'Calidad técnica en preparación de alimentos',dim:'D2',imp:4.050,des:4.113,nd:97,gap:0.063,quad:'IV'},
+      {cod:'A09',lbl:'Servicio en mesa (garzones)',dim:'D2',imp:4.490,des:4.464,nd:97,gap:-0.026,quad:'II'},
+      {cod:'A10',lbl:'Precio-calidad de la oferta gastronómica',dim:'D2',imp:4.280,des:4.103,nd:97,gap:-0.177,quad:'II'},
+      {cod:'A11',lbl:'Variedad de la oferta gastronómica',dim:'D2',imp:3.860,des:3.753,nd:97,gap:-0.107,quad:'III'},
+      {cod:'A12',lbl:'Disponibilidad de tours y actividades',dim:'D3',imp:3.870,des:3.755,nd:98,gap:-0.115,quad:'III'},
+      {cod:'A13',lbl:'Calidad y profesionalismo de guías',dim:'D3',imp:4.060,des:4.147,nd:95,gap:0.087,quad:'IV'},
+      {cod:'A14',lbl:'Facilidades para cultura y patrimonio',dim:'D3',imp:4.110,des:4.092,nd:98,gap:-0.018,quad:'IV'},
+      {cod:'A15',lbl:'Evidencia de cuidado ambiental',dim:'D4',imp:4.430,des:4.131,nd:99,gap:-0.299,quad:'II'},
+      {cod:'A16',lbl:'Integración de la cultura local',dim:'D4',imp:4.370,des:4.289,nd:97,gap:-0.081,quad:'II'},
+      {cod:'A17',lbl:'Señalética y mapas físicos',dim:'D5',imp:4.260,des:3.990,nd:98,gap:-0.270,quad:'I'},
+      {cod:'A18',lbl:'Información digital actualizada',dim:'D5',imp:4.110,des:3.545,nd:99,gap:-0.565,quad:'III'},
+    ]
+  },
+  pichidangui: {
+    n: 96, mi: 4.300, md: 3.660,
+    attrs: [
+      {cod:'A01',lbl:'Higiene y mantenimiento de instalaciones',dim:'D1',imp:4.552,des:3.865,nd:96,gap:-0.687,quad:'II'},
+      {cod:'A02',lbl:'Calidad y profesionalismo en recepción',dim:'D1',imp:4.469,des:3.837,nd:92,gap:-0.632,quad:'II'},
+      {cod:'A03',lbl:'Precio-calidad del alojamiento',dim:'D1',imp:4.458,des:3.756,nd:82,gap:-0.702,quad:'II'},
+      {cod:'A04',lbl:'Seguridad del destino',dim:'D1',imp:4.615,des:4.062,nd:96,gap:-0.553,quad:'II'},
+      {cod:'A05',lbl:'Manejo de idiomas extranjeros',dim:'D1',imp:3.573,des:3.250,nd:76,gap:-0.323,quad:'III'},
+      {cod:'A06',lbl:'Conocimiento del personal sobre el destino',dim:'D1',imp:4.271,des:3.659,nd:91,gap:-0.612,quad:'III'},
+      {cod:'A07',lbl:'Uso de ingredientes y productos locales',dim:'D2',imp:4.198,des:3.912,nd:91,gap:-0.286,quad:'IV'},
+      {cod:'A08',lbl:'Calidad técnica en preparación de alimentos',dim:'D2',imp:4.552,des:3.835,nd:91,gap:-0.717,quad:'II'},
+      {cod:'A09',lbl:'Servicio en mesa (garzones)',dim:'D2',imp:4.323,des:3.967,nd:90,gap:-0.356,quad:'II'},
+      {cod:'A10',lbl:'Precio-calidad de la oferta gastronómica',dim:'D2',imp:4.510,des:3.833,nd:90,gap:-0.677,quad:'II'},
+      {cod:'A11',lbl:'Variedad de la oferta gastronómica',dim:'D2',imp:4.427,des:3.630,nd:92,gap:-0.797,quad:'I'},
+      {cod:'A12',lbl:'Disponibilidad de tours y actividades',dim:'D3',imp:4.052,des:3.566,nd:83,gap:-0.486,quad:'III'},
+      {cod:'A13',lbl:'Calidad y profesionalismo de guías',dim:'D3',imp:4.156,des:3.743,nd:74,gap:-0.413,quad:'IV'},
+      {cod:'A14',lbl:'Facilidades para cultura y patrimonio',dim:'D3',imp:4.188,des:3.451,nd:91,gap:-0.737,quad:'III'},
+      {cod:'A15',lbl:'Evidencia de cuidado ambiental',dim:'D4',imp:4.250,des:3.202,nd:89,gap:-1.048,quad:'III'},
+      {cod:'A16',lbl:'Integración de la cultura local',dim:'D4',imp:4.250,des:3.368,nd:95,gap:-0.882,quad:'III'},
+      {cod:'A17',lbl:'Señalética y mapas físicos',dim:'D5',imp:4.438,des:3.552,nd:96,gap:-0.886,quad:'I'},
+      {cod:'A18',lbl:'Información digital actualizada',dim:'D5',imp:4.125,des:3.398,nd:88,gap:-0.727,quad:'III'},
+    ]
+  }
+};
+
+// Mapeo atributo → perfiles ChileValora
+// Inferencia razonable fundamentada en UCL y descripción de perfiles
+const ATRIB_PERFILES = {
+  A01: [
+    {cod:'P-5510-9112-001-V03', nom:'Mucama(o)', cert:382, art:'Sin articulación', artCoq:false, nivel:2, sub:'HOTELERÍA'},
+    {cod:'P-5510-4224-002-V03', nom:'Gobernanta(e)', cert:20, art:'Sin articulación', artCoq:false, nivel:4, sub:'HOTELERÍA'},
+  ],
+  A02: [
+    {cod:'P-5510-4224-001-V03', nom:'Recepcionista (Hotelería)', cert:194, art:'Solo Presencial', artCoq:true, nivel:3, sub:'HOTELERÍA'},
+    {cod:'P-4711-4321-001',     nom:'Recepcionista (P-4711)', cert:22,  art:'Sin articulación', artCoq:false, nivel:3, sub:'HOTELERÍA'},
+    {cod:'P-5510-5111-001-V03', nom:'Botones', cert:4, art:'Sin articulación', artCoq:false, nivel:2, sub:'HOTELERÍA'},
+  ],
+  A03: [
+    {cod:'P-5510-4224-001-V03', nom:'Recepcionista (Hotelería)', cert:194, art:'Solo Presencial', artCoq:true, nivel:3, sub:'HOTELERÍA'},
+    {cod:'P-5510-4224-003-V01', nom:'Encargado(a) de Recepción', cert:0, art:'Sin articulación', artCoq:false, nivel:4, sub:'HOTELERÍA'},
+  ],
+  A04: [
+    {cod:'P-5510-4224-001-V03', nom:'Recepcionista (Hotelería)', cert:194, art:'Solo Presencial', artCoq:true, nivel:3, sub:'HOTELERÍA'},
+    {cod:'P-7912-8322-001-V03', nom:'Conductor(a) Transporte Turístico', cert:22, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+  ],
+  A05: [
+    {cod:'P-5510-4224-001-V03', nom:'Recepcionista (Hotelería)', cert:194, art:'Solo Presencial', artCoq:true, nivel:3, sub:'HOTELERÍA'},
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+  ],
+  A06: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-001-V01', nom:'Guía Naturalista', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-002-V01', nom:'Guía de Astroturismo', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7912-4221-002-V03', nom:'Informador(a) Turístico', cert:39, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+  ],
+  A07: [
+    {cod:'P-5600-5120-001-V04', nom:'Cocinero(a)', cert:286, art:'Sin articulación', artCoq:false, nivel:3, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-3434-001-V02', nom:'Chef Ejecutivo', cert:0, art:'Solo Presencial', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-3434-002-V02', nom:'Jefe(a) de Partida', cert:0, art:'Solo Presencial', artCoq:true, nivel:4, sub:'GASTRONOMÍA'},
+  ],
+  A08: [
+    {cod:'P-5600-5120-001-V04', nom:'Cocinero(a)', cert:286, art:'Sin articulación', artCoq:false, nivel:3, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-9412-002-V05', nom:'Ayudante de Cocina', cert:257, art:'Sin articulación', artCoq:false, nivel:3, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-7512-001-V03', nom:'Pastelero(a)', cert:15, art:'Solo Presencial', artCoq:true, nivel:4, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-3434-001-V02', nom:'Chef Ejecutivo', cert:0, art:'Solo Presencial', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+  ],
+  A09: [
+    {cod:'P-5600-5131-001-V03', nom:'Garzón(a)', cert:302, art:'Sin articulación', artCoq:false, nivel:2, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-1412-001-V03', nom:'Maître', cert:1, art:'Sin articulación', artCoq:false, nivel:4, sub:'GASTRONOMÍA'},
+  ],
+  A10: [
+    {cod:'P-5600-5131-001-V03', nom:'Garzón(a)', cert:302, art:'Sin articulación', artCoq:false, nivel:2, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-5120-001-V04', nom:'Cocinero(a)', cert:286, art:'Sin articulación', artCoq:false, nivel:3, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-1439-001-V02', nom:'Administrador(a) Establec. Gastronómicos', cert:27, art:'Presencial + Online', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+  ],
+  A11: [
+    {cod:'P-5600-5120-001-V04', nom:'Cocinero(a)', cert:286, art:'Sin articulación', artCoq:false, nivel:3, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-3434-001-V02', nom:'Chef Ejecutivo', cert:0, art:'Solo Presencial', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-3434-003-V01', nom:'Banquetero(a)', cert:0, art:'Solo Presencial', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+    {cod:'P-5600-7512-001-V03', nom:'Pastelero(a)', cert:15, art:'Solo Presencial', artCoq:true, nivel:4, sub:'GASTRONOMÍA'},
+  ],
+  A12: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7912-4221-001-V04', nom:'Agente de Viajes', cert:0, art:'Solo Presencial', artCoq:false, nivel:4, sub:'TURISMO'},
+    {cod:'P-7912-8322-001-V03', nom:'Conductor(a) Transporte Turístico', cert:22, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+  ],
+  A13: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-001-V01', nom:'Guía Naturalista', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-002-V01', nom:'Guía de Astroturismo', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+  ],
+  A14: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7912-4221-002-V03', nom:'Informador(a) Turístico', cert:39, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+    {cod:'P-7990-5113-001-V01', nom:'Guía Naturalista', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+  ],
+  A15: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-001-V01', nom:'Guía Naturalista', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7990-5113-002-V01', nom:'Guía de Astroturismo', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-5600-1439-001-V02', nom:'Administrador(a) Establec. Gastronómicos', cert:27, art:'Presencial + Online', artCoq:true, nivel:5, sub:'GASTRONOMÍA'},
+  ],
+  A16: [
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7912-4221-002-V03', nom:'Informador(a) Turístico', cert:39, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+    {cod:'P-7990-5113-001-V01', nom:'Guía Naturalista', cert:0, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+  ],
+  A17: [
+    {cod:'P-7912-4221-002-V03', nom:'Informador(a) Turístico', cert:39, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+    {cod:'P-7912-5113-001-V04', nom:'Guía de Turismo General', cert:161, art:'Sin articulación', artCoq:false, nivel:3, sub:'TURISMO'},
+    {cod:'P-7912-8322-001-V03', nom:'Conductor(a) Transporte Turístico', cert:22, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+  ],
+  A18: [
+    {cod:'P-7912-4221-002-V03', nom:'Informador(a) Turístico', cert:39, art:'Sin articulación', artCoq:false, nivel:2, sub:'TURISMO'},
+    {cod:'P-7912-4221-001-V04', nom:'Agente de Viajes', cert:0, art:'Solo Presencial', artCoq:false, nivel:4, sub:'TURISMO'},
+    {cod:'P-7912-4221-003-V02', nom:'Jefe(a) de Productos Turísticos', cert:0, art:'Solo Presencial', artCoq:false, nivel:4, sub:'TURISMO'},
+  ],
+};
+
+// Lecturas estratégicas por atributo (zona-específicas cuando hay diferencia relevante)
+const LECTURAS = {
+  A01: {
+    combinado:   {tipo:'urgente',   txt:'Mucama(o) concentra 382 certificaciones en Coquimbo, la mayor masa del sector, pero no tiene articulación con educación superior. Gobernanta(e) tiene 20 certificaciones y tampoco tiene convenio. La percepción de déficit en higiene de instalaciones (gap −0.30) convive con el perfil de mayor stock certificacional del sistema. La certificación existe; el puente formativo hacia niveles superiores no.'},
+    valleElqui:  {tipo:'fortaleza', txt:'En Valle del Elqui este atributo está en cuadrante II con gap positivo (+0.18): los turistas perciben que el desempeño supera su expectativa de importancia. No requiere intervención prioritaria en esta zona.'},
+    pichidangui: {tipo:'urgente',   txt:'Pichidangui registra gap −0.687, el más alto de la dimensión Alojamiento en esta zona. Con 382 certificaciones de Mucama(o) en la región sin articulación ES, hay masa real para una trayectoria formativa que aún no existe. Prioridad de intervención alta.'},
+  },
+  A02: {
+    combinado:   {tipo:'urgente',   txt:'Recepcionista (P-5510) acumula 194 certificaciones en Coquimbo, es el tercer perfil de Hotelería por volumen, y tiene el único convenio del CFT Estatal Coquimbo. Sin embargo, el perfil alternativo (P-4711-4321-001) con 22 certificaciones no tiene articulación. El gap −0.289 indica que el profesionalismo en recepción es percibido como insuficiente pese a ser el perfil con mayor masa certificada de la dimensión.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui muestra gap positivo (+0.12): el profesionalismo en recepción supera expectativas. El stock certificacional de Recepcionista tiene correlato con una experiencia satisfactoria.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.632 en Pichidangui, segundo mayor de D1. El bajo desempeño percibido en recepción (des=3.837) es consistente con menor oferta formal de alojamiento en Los Vilos y escasa presencia de formación certificada en establecimientos de la zona.'},
+  },
+  A03: {
+    combinado:   {tipo:'urgente',   txt:'La relación precio-calidad del alojamiento es una señal directa de gestión, más que de un perfil único. Encargado(a) de Recepción (0 certificaciones en Coquimbo) es el perfil de nivel 4 que debería anclar esa competencia de gestión tarifaria y estándar de servicio. Sin masa certificadora local ni articulación, es una brecha de formación directa.'},
+    valleElqui:  {tipo:'fortaleza', txt:'En Valle del Elqui este atributo está en cuadrante IV (gap +0.18): los turistas consideran que el precio-calidad supera lo que esperaban. Posible señal de sobreinversión relativa o expectativas bajas de entrada.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.702, el mayor de D1 en Pichidangui. La combinación de alta importancia (4.46) y bajo desempeño percibido (3.76) en precio-calidad alojamiento requiere intervención en competencias de gestión hotelera, específicamente a nivel de perfil Encargado(a) de Recepción, hoy sin masa certificacional local.'},
+  },
+  A04: {
+    combinado:   {tipo:'monitorear', txt:'Seguridad del destino es el atributo de mayor importancia declarada (imp=4.68) en el combinado, con gap −0.42. Los perfiles asociados son transversales: Recepcionista (para información de seguridad) y Conductor Transporte Turístico (22 cert., protocolos de seguridad vial). No hay un perfil ChileValora GHT específico de seguridad turística; la brecha tiene componentes de infraestructura fuera del alcance del capital humano certificable.'},
+    valleElqui:  {tipo:'monitorear', txt:'Valle del Elqui muestra gap −0.286. Alta importancia declarada (4.74) con desempeño aceptable (4.45). La zona tiene indicadores de satisfacción general más altos; la brecha de seguridad es menor que en Pichidangui.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.553 en Pichidangui. Aunque no hay perfiles específicos de seguridad en el catálogo GHT, Conductor de Transporte Turístico (22 cert. en Coquimbo) es el perfil con más UCL directamente vinculadas a protocolos de seguridad en ruta. Sin articulación ES y con baja actividad certificacional en Los Vilos.'},
+  },
+  A05: {
+    combinado:   {tipo:'monitorear', txt:'Manejo de idiomas extranjeros tiene la importancia más baja de D1 (3.46) y el gap más pequeño (−0.07). Los perfiles Recepcionista y Guía de Turismo General tienen UCL de atención a turistas, pero ninguno tiene idiomas como competencia certificable explícita en el catálogo. La brecha es real pero no es el foco prioritario del sistema de certificación actual.'},
+    valleElqui:  {tipo:'monitorear', txt:'En Valle del Elqui el gap es positivo (+0.25, cuadrante III): el manejo de idiomas supera expectativas bajas. Zona de visitantes predominantemente nacionales (solo 2% extranjeros en la muestra).'},
+    pichidangui: {tipo:'monitorear', txt:'Gap −0.323, mayor que en Elqui. La afluencia de turistas de la Región Metropolitana (38.5%) con eventual turismo receptivo no justifica aún priorización alta. Monitorear si cambia el perfil del visitante.'},
+  },
+  A06: {
+    combinado:   {tipo:'urgente',   txt:'Conocimiento del personal sobre el destino concentra la mayor brecha de capital humano directamente abordable por ChileValora. Guía de Turismo General (161 cert.), Informador Turístico (39 cert.) y los dos perfiles de guía especializada (0 cert. en Coquimbo) son los perfiles directos. Ninguno tiene articulación ES. El gap −0.354 en el combinado esconde diferencias importantes entre zonas.'},
+    valleElqui:  {tipo:'urgente',   txt:'Cuadrante I en Valle del Elqui (gap −0.107): alta importancia, bajo desempeño. Dada la relevancia del astroturismo, la ruta Gabriela Mistral y el turismo del pisco en esta zona, los perfiles Guía Naturalista y Guía de Astroturismo (ambos con 0 certificaciones en Coquimbo) son la brecha más directa. Alta pertinencia ZOIT.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.612, el más alto de D1 en Pichidangui. El turista de Los Vilos percibe que el personal no conoce el territorio. Con 0 certificaciones de Guía Naturalista e Informador Turístico solo activado en 2017, hay un déficit estructural de capital humano especializado en esta zona.'},
+  },
+  A07: {
+    combinado:   {tipo:'fortaleza', txt:'Uso de ingredientes y productos locales está en cuadrante IV (gap −0.04): baja importancia relativa, desempeño aceptable. Cocinero(a) con 286 certificaciones tiene UCL específicas de producción culinaria con insumos locales. No requiere intervención prioritaria en el combinado.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui muestra gap positivo (+0.198, cuadrante III): los turistas perciben que el uso de productos locales supera sus expectativas. La identidad gastronómica local (pisco, papaya, productos del valle) es una fortaleza reconocida.'},
+    pichidangui: {tipo:'monitorear', txt:'Gap −0.286 en Pichidangui, cuadrante IV. Hay margen de mejora sin urgencia inmediata. Con 286 certificaciones de Cocinero(a) en la región y sin articulación ES, la competencia técnica existe pero su profundización en identidad territorial requiere perfiles de nivel superior (Chef Ejecutivo, Jefe de Partida) hoy sin masa local.'},
+  },
+  A08: {
+    combinado:   {tipo:'urgente',   txt:'Calidad técnica en preparación de alimentos (gap −0.317) con alta importancia (4.30). Cocinero(a) tiene 286 certificaciones pero sin articulación ES. Ayudante de Cocina tiene 257 certificaciones, también sin articulación. El stock certificacional es real; la trayectoria hacia calificaciones superiores (Jefe de Partida, Chef Ejecutivo) con articulación INACAP existe pero sin masa local que la alimente.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui en cuadrante IV (gap +0.063): la calidad culinaria percibida supera levemente la expectativa. El cluster gastronómico del Valle (viñas, restaurantes de cocina regional) tiene soporte en capital humano que la certificación no captura completamente.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.717, segundo más alto de D2 en Pichidangui y uno de los mayores de toda la matriz. Con 286 certificaciones de Cocinero(a) en la región sin articulación ES y 0 certificaciones de Chef Ejecutivo en Coquimbo, hay una cadena de competencias culinarias que existe en el catálogo pero no se activa en el territorio.'},
+  },
+  A09: {
+    combinado:   {tipo:'monitorear', txt:'Servicio en mesa (gap −0.183) es el atributo gastronómico con menor brecha. Garzón(a) con 302 certificaciones es el segundo perfil de mayor volumen en la región. Sin articulación ES. El déficit percibido es menor que en otros atributos, pero la ausencia de trayectoria formativa para Garzón(a) sigue siendo una brecha estructural.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui en cuadrante II (gap −0.026): el servicio en mesa casi empata importancia y desempeño. Las 302 certificaciones regionales de Garzón(a) tienen correlato con experiencia percibida positiva. Mantener el nivel.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.356 en Pichidangui. Garzón(a) sin articulación ES en ninguna institución a nivel nacional. Con 302 certificaciones en la región pero concentradas históricamente en el período 2010–2017, hay riesgo de descapitalización si no se generan nuevas cohortes de formación.'},
+  },
+  A10: {
+    combinado:   {tipo:'urgente',   txt:'Precio-calidad gastronómica (gap −0.420) tiene alta importancia (4.39) y es percibida como deficitaria. La competencia de gestión de costos y propuesta de valor gastronómica está en Administrador(a) de Establecimientos Gastronómicos (27 cert., el único perfil del subsector con articulación en Coquimbo) y en Chef Ejecutivo (0 cert. locales, articulación INACAP activa). Hay puente formativo pero no hay masa local que lo use.'},
+    valleElqui:  {tipo:'monitorear', txt:'Valle del Elqui en cuadrante II (gap −0.177): brecha menor. Administrador Gastronómico con 27 certificaciones en la región (concentradas en 2015 y 2018) tiene articulación con INACAP Coquimbo. Es el perfil que mejor ancla esta competencia de gestión comercial.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.677 en Pichidangui. Alta importancia (4.51) con bajo desempeño (3.83). La oferta gastronómica de Los Vilos no percibe señal de valor por parte del turista. Con 0 certificaciones de perfil de gestión gastronómica en la zona y el único convenio regional en INACAP, la brecha de capital humano de nivel 4–5 es determinante.'},
+  },
+  A11: {
+    combinado:   {tipo:'urgente',   txt:'Variedad de la oferta gastronómica (gap −0.445) es el atributo más deficitario de D2. Chef Ejecutivo y Banquetero(a) tienen articulación con INACAP Coquimbo pero 0 certificaciones locales. Pastelero(a) con 15 certificaciones tiene convenio activo. El problema no es la ausencia de perfiles en el catálogo sino la ausencia de masa certificadora local en los niveles que expanden la oferta culinaria.'},
+    valleElqui:  {tipo:'monitorear', txt:'Valle del Elqui en cuadrante III (gap −0.107): baja importancia relativa, brecha pequeña. La diversidad gastronómica del Valle (cocina de autor, productores locales) mitiga la percepción de déficit.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.797, el mayor de toda la matriz en Pichidangui y el más alto de la zona en cualquier dimensión. Cuadrante I: alta importancia (4.43), bajo desempeño (3.63). La monotonía de la oferta gastronómica de Los Vilos es la principal prioridad de intervención en capital humano según la demanda turística. Requiere activar la trayectoria Cocinero(a) → Chef Ejecutivo con articulación INACAP.'},
+  },
+  A12: {
+    combinado:   {tipo:'monitorear', txt:'Disponibilidad de tours y actividades (gap −0.290) involucra a Guía de Turismo General (161 cert., sin articulación ES), Agente de Viajes (0 cert.) y Conductor Transporte Turístico (22 cert.). La oferta de experiencias guiadas es percibida como escasa. El catálogo tiene los perfiles; falta masa certificacional y articulación.'},
+    valleElqui:  {tipo:'monitorear', txt:'Valle del Elqui en cuadrante III (gap −0.115): la disponibilidad de tours no es la prioridad. Con 161 certificaciones de Guía de Turismo General en la región, hay capital humano base. La activación de Guía Naturalista y Guía de Astroturismo (0 cert.) ampliaría la oferta diferenciada que el valle requiere.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.486 en Pichidangui. La escasez de oferta activa de tours es percibida con importancia 4.05. Con 22 certificaciones de Conductor Transporte Turístico (22 cert., 17 concentradas en 2020) y 0 certificaciones de perfiles de guiado en Los Vilos, hay una oportunidad directa de activar formación.'},
+  },
+  A13: {
+    combinado:   {tipo:'monitorear', txt:'Calidad y profesionalismo de guías (gap −0.137) está en cuadrante IV. La percepción de los guías es relativamente favorable. Guía de Turismo General tiene 161 certificaciones históricas. Guía Naturalista y Guía de Astroturismo (0 cert.) representan la especialización pendiente. Sin articulación ES en ninguno de los tres perfiles de guiado.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui en cuadrante IV (gap +0.087): los turistas perciben que los guías superan sus expectativas. Con 161 certificaciones de Guía de Turismo General concentradas en 2021–2022 (83 cert.) y 2026 (55 cert.), hay una cohorte activa reciente que se refleja en la percepción positiva.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.413 en Pichidangui. La calidad de guías en Los Vilos es percibida como insuficiente con importancia alta (4.16). Sin registros de certificación de Guía de Turismo General específicamente en Los Vilos (los datos no desagregan por comuna) y 0 certif. de perfiles especializados, es una brecha de capital humano directa.'},
+  },
+  A14: {
+    combinado:   {tipo:'urgente',   txt:'Facilidades para cultura y patrimonio (gap −0.365) involucra a Guía de Turismo General, Informador Turístico y Guía Naturalista. Los tres tienen déficit de masa certificacional activa o articulación ES. La interpretación patrimonial es una UCL específica de los perfiles de guiado (U-7990-5113-003-V01) hoy sin activación en Coquimbo.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui en cuadrante IV (gap −0.018): casi en equilibrio. El patrimonio del Valle (Gabriela Mistral, pisqueras, observatorios) tiene cobertura razonable. La activación de Guía Naturalista anclaría la interpretación del entorno natural que hoy cubre de forma incompleta el Guía General.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.737 en Pichidangui, tercer mayor de la zona. Las facilidades para cultura y patrimonio (caletas, Ruta del Cuarzo, patrimonio ferroviario) son percibidas como muy deficitarias. Informador Turístico tuvo actividad solo en 2017 (39 cert.) y no hay guías especializados certificados. Oportunidad directa de diseño formativo.'},
+  },
+  A15: {
+    combinado:   {tipo:'urgente',   txt:'Evidencia de cuidado ambiental es el atributo de mayor brecha en el combinado (gap −0.651, cuadrante I). Alta importancia (4.34) con desempeño claramente insuficiente (3.69). Los perfiles Guía Naturalista y Guía de Astroturismo tienen UCL específicas de sostenibilidad y protección del entorno, pero suman 0 certificaciones en Coquimbo. La demanda del turista en sostenibilidad no tiene correlato en la oferta formativa certificada.'},
+    valleElqui:  {tipo:'monitorear', txt:'Valle del Elqui en cuadrante II (gap −0.299): brecha presente pero desempeño en zona aceptable. La zona tiene mayor conciencia ambiental percibida. Activar Guía Naturalista para anclar la UCL de sostenibilidad en el guiado sería el siguiente paso formativo coherente.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −1.048 en Pichidangui, el mayor de toda la matriz en cualquier zona. La evidencia de cuidado ambiental es el problema más agudo según los turistas. Con 0 certificaciones de perfiles de guiado sostenible y sin articulación ES, esta brecha no puede resolverse solo con el catálogo actual sin activar las nuevas rutas de certificación.'},
+  },
+  A16: {
+    combinado:   {tipo:'urgente',   txt:'Integración de la cultura local (gap −0.478, cuadrante I) es la segunda brecha crítica del combinado. Guía de Turismo General, Informador Turístico y Guía Naturalista son los perfiles que anclan esta competencia. El gap revela que la experiencia cultural percibida como auténtica no está siendo gestionada desde el capital humano certificado.'},
+    valleElqui:  {tipo:'fortaleza', txt:'Valle del Elqui en cuadrante II (gap −0.081): la integración cultural es percibida como fortaleza relativa. El Valle tiene identidad cultural densa (Gabriela Mistral, pisqueras, astroturismo). El déficit es pequeño; mantener el nivel con activación de Guía Naturalista para profundizar la dimensión territorial.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.882 en Pichidangui, segundo mayor de la zona. La cultura local de Los Vilos (caletas, pesca artesanal, humedales) no está siendo mediada por capital humano formado. Con 39 certificaciones de Informador Turístico solo en 2017 y 0 guías especializados, la brecha de intermediación cultural es estructural.'},
+  },
+  A17: {
+    combinado:   {tipo:'urgente',   txt:'Señalética y mapas físicos (gap −0.574, cuadrante I) es la segunda brecha crítica de toda la matriz en el combinado. No hay un perfil ChileValora específico de señalética, pero Informador Turístico (39 cert.) y Conductor Transporte Turístico (22 cert.) tienen UCL de gestión de información territorial. La brecha tiene componentes de infraestructura, pero la mediación humana es parte del déficit.'},
+    valleElqui:  {tipo:'urgente',   txt:'Valle del Elqui en cuadrante I (gap −0.270): el único atributo en cuadrante I de esta zona. La señalética del Valle es percibida como insuficiente con alta importancia. Informador Turístico es el perfil más directo, con 39 certificaciones solo en 2017. Sin articulación ES y sin actividad reciente, es la primera prioridad de intervención en capital humano para el Valle.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.886 en Pichidangui (cuadrante I), segundo mayor déficit de la zona. Pichidangui–Quilimarí carece de señalética turística adecuada según los visitantes. La brecha de capital humano en información territorial es directa: 0 certificaciones de Informador Turístico en el período reciente y sin convenio ES para activar el perfil.'},
+  },
+  A18: {
+    combinado:   {tipo:'urgente',   txt:'Información digital actualizada (gap −0.641) es la tercera brecha mayor del combinado aunque en cuadrante III (baja importancia relativa). Agente de Viajes y Jefe de Productos Turísticos tienen UCL de gestión de contenidos digitales, pero ambos suman 0 certificaciones en Coquimbo. El único con articulación en Coquimbo indirectamente es el CFT Estatal. La brecha digital del destino no tiene un perfil ChileValora que la aborde de forma directa y activa en la región.'},
+    valleElqui:  {tipo:'urgente',   txt:'Valle del Elqui en cuadrante III (gap −0.565): segunda brecha mayor de la zona. A pesar de la baja importancia relativa, el gap es el más pronunciado del Valle. Informador Turístico (39 cert., solo 2017) y Agente de Viajes (0 cert.) son los perfiles más relevantes. Sin activación reciente ni articulación local, la información digital del Valle depende hoy de iniciativas externas al sistema de certificación.'},
+    pichidangui: {tipo:'urgente',   txt:'Gap −0.727 en Pichidangui. La ausencia de información digital actualizada sobre Los Vilos es percibida con mayor intensidad que en el Valle. Con 0 certificaciones de perfiles de información y comercialización turística en la zona, esta brecha requiere priorización en el diseño de trayectorias formativas orientadas al turismo costero.'},
+  },
+};
+
+// ==================== H6 FUNCTIONS ====================
+let h6Zona = 'combinado';
+let h6ChartInstance = null;
+
+function setH6Zona(zona, btn) {
+  h6Zona = zona;
+  document.querySelectorAll('.h6-zona-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderH6();
+}
+
+function renderH6() {
+  renderH6KPIs();
+  renderH6Chart();
+  renderH6Cards();
+}
+
+function renderH6KPIs() {
+  const d = IPA_DATA[h6Zona];
+  const attrs = d.attrs;
+  const nI     = attrs.filter(a => a.quad === 'I').length;
+  const nII    = attrs.filter(a => a.quad === 'II').length;
+  const maxGap = [...attrs].sort((a,b) => a.gap - b.gap)[0];
+  const totalCertAsoc = Object.values(ATRIB_PERFILES).flat()
+    .reduce((seen, p) => { if(!seen.codes.has(p.cod)){seen.codes.add(p.cod);seen.tot+=p.cert;} return seen; }, {codes:new Set(),tot:0}).tot;
+
+  const zonaLbl = {combinado:'Combinado',valleElqui:'Valle del Elqui',pichidangui:'Pichidangui–Quilimarí'}[h6Zona];
+
+  document.getElementById('h6-kpis').innerHTML = `
+    <div class="h6-resumen-card urgente">
+      <div class="h6-resumen-val">${nI}</div>
+      <div class="h6-resumen-lbl">Atributos en cuadrante I<br>(Concentrarse aquí)</div>
+    </div>
+    <div class="h6-resumen-card fortaleza">
+      <div class="h6-resumen-val">${nII}</div>
+      <div class="h6-resumen-lbl">Atributos en cuadrante II<br>(Mantener el buen trabajo)</div>
+    </div>
+    <div class="h6-resumen-card urgente">
+      <div class="h6-resumen-val">${maxGap.gap.toFixed(3)}</div>
+      <div class="h6-resumen-lbl">Mayor déficit: ${maxGap.cod}<br>${maxGap.lbl.substring(0,28)}…</div>
+    </div>
+    <div class="h6-resumen-card">
+      <div class="h6-resumen-val">${d.md.toFixed(3)}</div>
+      <div class="h6-resumen-lbl">Media desempeño zona<br>(eje data-centered)</div>
+    </div>
+    <div class="h6-resumen-card">
+      <div class="h6-resumen-val">2.132</div>
+      <div class="h6-resumen-lbl">Certificaciones GHT<br>Coquimbo 2002–2026</div>
+    </div>
+    <div class="h6-resumen-card fortaleza">
+      <div class="h6-resumen-val">${d.n}</div>
+      <div class="h6-resumen-lbl">Encuestados válidos<br>${zonaLbl}</div>
+    </div>
+  `;
+  document.getElementById('h6-cards-title').textContent =
+    'Lectura atributo por atributo — ' + zonaLbl + ' (n=' + d.n + ')';
+}
+
+function renderH6Chart() {
+  const ctx = document.getElementById('c-h6-brechas');
+  if (!ctx) return;
+  if (h6ChartInstance) { h6ChartInstance.destroy(); h6ChartInstance = null; }
+
+  const labels = IPA_DATA.combinado.attrs.map(a => a.cod);
+  const gC = IPA_DATA.combinado.attrs.map(a => a.gap);
+  const gV = IPA_DATA.valleElqui.attrs.map(a => a.gap);
+  const gP = IPA_DATA.pichidangui.attrs.map(a => a.gap);
+
+  const activeAlpha = 1, passiveAlpha = 0.25;
+  const opacity = (zone, alpha) => zone === h6Zona ? alpha : passiveAlpha;
+
+  h6ChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Combinado',
+          data: gC,
+          backgroundColor: gC.map(v => `rgba(31,56,100,${opacity('combinado', v < 0 ? 0.7 : 0.4)})`),
+          borderColor: `rgba(31,56,100,${opacity('combinado',1)})`,
+          borderWidth: 1,
+          borderRadius: 3,
+          order: h6Zona === 'combinado' ? 0 : 2,
+        },
+        {
+          label: 'Valle del Elqui',
+          data: gV,
+          backgroundColor: gV.map(v => `rgba(58,155,140,${opacity('valleElqui', v < 0 ? 0.7 : 0.4)})`),
+          borderColor: `rgba(58,155,140,${opacity('valleElqui',1)})`,
+          borderWidth: 1,
+          borderRadius: 3,
+          order: h6Zona === 'valleElqui' ? 0 : 2,
+        },
+        {
+          label: 'Pichidangui–Quilimarí',
+          data: gP,
+          backgroundColor: gP.map(v => `rgba(232,99,74,${opacity('pichidangui', v < 0 ? 0.7 : 0.4)})`),
+          borderColor: `rgba(232,99,74,${opacity('pichidangui',1)})`,
+          borderWidth: 1,
+          borderRadius: 3,
+          order: h6Zona === 'pichidangui' ? 0 : 2,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            title: ctx => {
+              const cod = ctx[0].label;
+              const a = IPA_DATA.combinado.attrs.find(x => x.cod === cod);
+              return `${cod} — ${a ? a.lbl : ''}`;
+            },
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(3)}`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 11 } } },
+        y: {
+          beginAtZero: false,
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: { font: { size: 11 } },
+          title: { display: true, text: 'Brecha (Desempeño − Importancia)', font: { size: 11 } }
+        }
+      }
+    }
+  });
+}
+
+function renderH6Cards() {
+  const d = IPA_DATA[h6Zona];
+  const sorted = [...d.attrs].sort((a, b) => a.gap - b.gap);
+  const dimCls = { D1:'dD1b', D2:'dD2b', D3:'dD3b', D4:'dD4b', D5:'dD5b' };
+  const dimLbl = { D1:'Alojamiento', D2:'Gastronomía', D3:'Actividades', D4:'Sostenibilidad', D5:'Información' };
+  const quadCls = { I:'qpI', II:'qpII', III:'qpIII', IV:'qpIV' };
+  const quadLbl = { I:'I — Concentrarse aquí', II:'II — Mantener', III:'III — Baja prioridad', IV:'IV — Sobreinversión' };
+  const maxAbsGap = Math.max(...sorted.map(a => Math.abs(a.gap)));
+
+  const container = document.getElementById('h6-cards-container');
+  container.innerHTML = sorted.map(a => {
+    const perfiles = ATRIB_PERFILES[a.cod] || [];
+    const lectura  = (LECTURAS[a.cod] || {})[h6Zona] || {};
+    const gapColor = a.gap < -0.5 ? '#dc2626' : a.gap < -0.2 ? '#d97706' : a.gap >= 0 ? '#16a34a' : '#6b7280';
+    const barW = Math.round((Math.abs(a.gap) / maxAbsGap) * 100);
+    const barColor = a.gap < -0.5 ? '#dc2626' : a.gap < -0.2 ? '#d97706' : a.gap >= 0 ? '#16a34a' : '#94a3b8';
+
+    const perfilesHTML = perfiles.map(p => {
+      const artClass = p.art === 'Sin articulación' ? 'sin-art' : 'con-art';
+      const certLbl = p.cert > 0 ? `${p.cert} cert. Coquimbo` : 'Sin cert. en Coquimbo';
+      const artBadge = p.art === 'Sin articulación'
+        ? '<span class="h6-stat h6-stat-art-no">Sin articulación ES</span>'
+        : `<span class="h6-stat h6-stat-art-si">${p.art}</span>`;
+      const coqBadge = p.artCoq
+        ? '<span class="h6-stat h6-stat-coq-si">Convenio en Coquimbo</span>'
+        : '';
+      return `
+        <div class="h6-perfil-chip ${artClass}">
+          <div class="h6-perfil-nom">${p.nom}</div>
+          <div class="h6-perfil-cod">${p.cod}</div>
+          <div class="h6-perfil-stats">
+            <span class="h6-stat h6-stat-cert">${certLbl}</span>
+            <span class="h6-stat h6-stat-nivel">Nivel ${p.nivel}</span>
+            ${artBadge}
+            ${coqBadge}
+          </div>
+        </div>`;
+    }).join('');
+
+    const lecturaClass = lectura.tipo === 'urgente' ? 'urgente' : lectura.tipo === 'fortaleza' ? 'fortaleza' : 'monitorear';
+    const lecturaTitulo = lectura.tipo === 'urgente' ? 'Prioridad de intervención' : lectura.tipo === 'fortaleza' ? 'Fortaleza — mantener' : 'Monitoreo — no urgente';
+
+    return `
+    <div class="h6-atrib-card">
+      <div class="h6-atrib-head" onclick="toggleH6Card('body-${a.cod}', this)">
+        <div class="h6-cod">${a.cod}</div>
+        <div>
+          <div class="h6-nom">${a.lbl}</div>
+          <div class="h6-dim"><span class="h6-dim-tag ${dimCls[a.dim]}">${dimLbl[a.dim]}</span></div>
+        </div>
+        <div class="h6-gap-val" style="color:${gapColor}">${a.gap >= 0 ? '+' : ''}${a.gap.toFixed(3)}</div>
+        <div>
+          <div class="h6-gap-bar-wrap">
+            <div class="h6-gap-bar-bg">
+              <div class="h6-gap-bar-fill" style="width:${barW}%;background:${barColor}"></div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;text-align:center">Imp: ${a.imp.toFixed(2)} / Des: ${a.des.toFixed(2)}</div>
+        </div>
+        <div><span class="h6-quad-pill ${quadCls[a.quad]}">${quadLbl[a.quad]}</span>
+        <span class="h6-toggle-icon" id="icon-${a.cod}">+ ver detalle</span></div>
+      </div>
+      <div class="h6-atrib-body" id="body-${a.cod}">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;">Perfiles ChileValora asociados (inferencia razonable):</div>
+        <div class="h6-perfiles-grid">${perfilesHTML || '<span style="color:var(--muted);font-size:12px;">Sin perfil ChileValora de correspondencia directa en el catálogo GHT.</span>'}</div>
+        <div class="h6-lectura ${lecturaClass}">
+          <strong>${lecturaTitulo}:</strong> ${lectura.txt || 'Sin lectura disponible para esta combinación.'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleH6Card(bodyId, headEl) {
+  const body = document.getElementById(bodyId);
+  const cod  = bodyId.replace('body-', '');
+  const icon = document.getElementById('icon-' + cod);
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    if (icon) icon.textContent = '+ ver detalle';
+  } else {
+    body.classList.add('open');
+    if (icon) icon.textContent = '− cerrar';
+  }
+}
+
+// ===== DATA =====
+const PERFILES = [
+  // GASTRONOMÍA
+  {sub:"GASTRONOMÍA",cod:"P-5600-1439-001-V02",nom:"Administrador(a) de Establecimientos Gastronómicos",ciuo:"1439",area:"NO DEFINIDA",nivel:5,modal:"Completa",vig:"31/12/2029",ucl:4},
+  {sub:"GASTRONOMÍA",cod:"P-7912-4224-001-V03",nom:"Anfitrión(a)",ciuo:"4224",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2028",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5246-001-V02",nom:"Auxiliar de Línea de Servicios de Casino",ciuo:"5246",area:"NO DEFINIDA",nivel:1,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-9412-002-V05",nom:"Ayudante de Cocina",ciuo:"9412",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2030",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-9412-001-V04",nom:"Ayudante de Cocina Institucional",ciuo:"9412",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2030",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-3434-003-V01",nom:"Banquetero(a)",ciuo:"3434",area:"NO DEFINIDA",nivel:5,modal:"Completa",vig:"31/12/2027",ucl:8},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5132-001-V03",nom:"Bartender",ciuo:"5132",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5230-001-V02",nom:"Cajero(a) de Local de Comida Rápida",ciuo:"5230",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2027",ucl:3},
+  {sub:"GASTRONOMÍA",cod:"P-5600-3434-001-V02",nom:"Chef Ejecutivo",ciuo:"3434",area:"NO DEFINIDA",nivel:5,modal:"Completa",vig:"31/12/2029",ucl:4},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5120-001-V04",nom:"Cocinero(a)",ciuo:"5120",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2030",ucl:3},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5111-001-V03",nom:"Copero(a) (Steward)",ciuo:"5111",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-9411-001-V03",nom:"Despachador(a) de Comida Rápida",ciuo:"9411",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2027",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5131-001-V03",nom:"Garzón(a)",ciuo:"5131",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2030",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-3434-002-V02",nom:"Jefe(a) de Partida",ciuo:"3434",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2027",ucl:3},
+  {sub:"GASTRONOMÍA",cod:"P-5600-1412-001-V03",nom:"Maître",ciuo:"1412",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5629-9412-001-V02",nom:"Manipulador(a) PAE/PAP",ciuo:"9412",area:"ALIMENTACIÓN ESCOLAR",nivel:3,modal:"Parcial",vig:"31/12/2030",ucl:4},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5120-005-V02",nom:"Monitor(a) de Comida Rápida",ciuo:"5120",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2027",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5600-5246-002-V01",nom:"Operador(a) de Servicios de Alimentación",ciuo:"5246",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2027",ucl:4},
+  {sub:"GASTRONOMÍA",cod:"P-5600-7512-001-V03",nom:"Pastelero(a)",ciuo:"7512",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"GASTRONOMÍA",cod:"P-5629-5120-001-V02",nom:"Supervisor(a) PAE/PAP",ciuo:"5120",area:"ALIMENTACIÓN ESCOLAR",nivel:4,modal:"Completa",vig:"31/12/2030",ucl:3},
+  {sub:"GASTRONOMÍA",cod:"P-5600-1412-003-V02",nom:"Supervisor(a) de Línea de Servicios de Casino",ciuo:"1412",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2028",ucl:2},
+  // HOTELERÍA
+  {sub:"HOTELERÍA",cod:"P-5510-5111-001-V03",nom:"Botones",ciuo:"5111",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2028",ucl:2},
+  {sub:"HOTELERÍA",cod:"P-5510-4224-003-V01",nom:"Encargado(a) de Recepción",ciuo:"4224",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2027",ucl:3},
+  {sub:"HOTELERÍA",cod:"P-5510-4224-002-V03",nom:"Gobernanta(e)",ciuo:"4224",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2029",ucl:3},
+  {sub:"HOTELERÍA",cod:"P-5510-9112-001-V03",nom:"Mucama(o)",ciuo:"9112",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2029",ucl:2},
+  {sub:"HOTELERÍA",cod:"P-5510-4224-001-V03",nom:"Recepcionista",ciuo:"4224",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2029",ucl:2},
+  // nota: también existe P-4711-4321-001 en el dataset cert como perfil distinto
+  // TURISMO
+  {sub:"TURISMO",cod:"P-7912-4221-001-V04",nom:"Agente de Viajes",ciuo:"4221",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2027",ucl:3},
+  {sub:"TURISMO",cod:"P-9200-4212-002-V01",nom:"Asistente de Máquinas de Azar",ciuo:"4212",area:"CASINOS",nivel:2,modal:"Parcial",vig:"31/12/2026",ucl:2,alerta:true},
+  {sub:"TURISMO",cod:"P-7912-8322-001-V03",nom:"Conductor(a) de Transporte Turístico",ciuo:"8322",area:"ASISTENCIA A TURISTAS",nivel:2,modal:"Completa",vig:"31/12/2028",ucl:2},
+  {sub:"TURISMO",cod:"P-9200-4212-001-V01",nom:"Croupier",ciuo:"4212",area:"CASINOS",nivel:2,modal:"Parcial",vig:"31/12/2026",ucl:2,alerta:true},
+  {sub:"TURISMO",cod:"P-7912-5249-004-V02",nom:"Ejecutivo(a) de Ventas Tour Operador",ciuo:"5249",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2027",ucl:2},
+  {sub:"TURISMO",cod:"P-7990-5113-002-V01",nom:"Guía de Astroturismo",ciuo:"5113",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2030",ucl:3},
+  {sub:"TURISMO",cod:"P-7912-5113-001-V04",nom:"Guía de Turismo General",ciuo:"5113",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2030",ucl:2},
+  {sub:"TURISMO",cod:"P-7990-5113-001-V01",nom:"Guía Naturalista",ciuo:"5113",area:"NO DEFINIDA",nivel:3,modal:"Completa",vig:"31/12/2030",ucl:3},
+  {sub:"TURISMO",cod:"P-7912-4221-002-V03",nom:"Informador(a) Turístico",ciuo:"4221",area:"NO DEFINIDA",nivel:2,modal:"Completa",vig:"31/12/2030",ucl:2},
+  {sub:"TURISMO",cod:"P-9200-7421-001-V01",nom:"Mantenedor(a) Electrónico de Máquinas de Azar",ciuo:"7421",area:"CASINOS",nivel:2,modal:"Parcial",vig:"31/12/2026",ucl:2,alerta:true},
+  {sub:"TURISMO",cod:"P-9200-5414-001-V01",nom:"Operador(a) CCTV en Casinos de Juego",ciuo:"5414",area:"CASINOS",nivel:2,modal:"Parcial",vig:"31/12/2026",ucl:2,alerta:true},
+  {sub:"TURISMO",cod:"P-7912-4221-003-V02",nom:"Jefe(a) de Productos Turísticos",ciuo:"4221",area:"NO DEFINIDA",nivel:4,modal:"Completa",vig:"31/12/2027",ucl:3},
+];
+
+// CERT DATA — de Hoja TODOS LOS AÑOS
+const CERT = [
+  {cod:"P-5600-1439-001-V02",nom:"Administrador(a) Establec. Gastronómicos",sub:"GASTRONOMÍA",total:27},
+  {cod:"P-7912-4224-001-V03",nom:"Anfitrión(a)",sub:"GASTRONOMÍA",total:4},
+  {cod:"P-5600-5246-001-V02",nom:"Auxiliar Línea Servicios Casino",sub:"GASTRONOMÍA",total:34},
+  {cod:"P-5600-9412-002-V05",nom:"Ayudante de Cocina",sub:"GASTRONOMÍA",total:257},
+  {cod:"P-5600-9412-001-V04",nom:"Ayudante de Cocina Institucional",sub:"GASTRONOMÍA",total:170},
+  {cod:"P-5600-5132-001-V03",nom:"Bartender",sub:"GASTRONOMÍA",total:38},
+  {cod:"P-5510-5111-001-V03",nom:"Botones",sub:"HOTELERÍA",total:4},
+  {cod:"P-5600-5230-001-V02",nom:"Cajero(a) Comida Rápida",sub:"GASTRONOMÍA",total:1},
+  {cod:"P-5600-5120-001-V04",nom:"Cocinero(a)",sub:"GASTRONOMÍA",total:286},
+  {cod:"P-7912-8322-001-V03",nom:"Conductor(a) Transporte Turístico",sub:"TURISMO",total:22},
+  {cod:"P-5600-5111-001-V03",nom:"Copero(a) (Steward)",sub:"GASTRONOMÍA",total:7},
+  {cod:"P-9200-4212-001-V01",nom:"Croupier",sub:"TURISMO",total:14},
+  {cod:"P-5600-9411-001-V03",nom:"Despachador(a) Comida Rápida",sub:"GASTRONOMÍA",total:2},
+  {cod:"P-5600-5131-001-V03",nom:"Garzón(a)",sub:"GASTRONOMÍA",total:302},
+  {cod:"P-5510-4224-002-V03",nom:"Gobernanta(e)",sub:"HOTELERÍA",total:20},
+  {cod:"P-7912-5113-001-V04",nom:"Guía de Turismo General",sub:"TURISMO",total:161},
+  {cod:"P-7912-4221-002-V03",nom:"Informador(a) Turístico",sub:"TURISMO",total:39},
+  {cod:"P-5600-1412-001-V03",nom:"Maître",sub:"GASTRONOMÍA",total:1},
+  {cod:"P-5629-9412-001-V02",nom:"Manipulador(a) PAE/PAP",sub:"GASTRONOMÍA",total:96},
+  {cod:"P-9200-7421-001-V01",nom:"Mantenedor(a) Electrónico Máq. Azar",sub:"TURISMO",total:5},
+  {cod:"P-5510-9112-001-V03",nom:"Mucama(o)",sub:"HOTELERÍA",total:382},
+  {cod:"P-5600-5246-002-V01",nom:"Operador(a) Servicios Alimentación",sub:"GASTRONOMÍA",total:27},
+  {cod:"P-5600-7512-001-V03",nom:"Pastelero(a)",sub:"GASTRONOMÍA",total:15},
+  {cod:"P-4711-4321-001",nom:"Recepcionista (P-4711-4321-001)",sub:"HOTELERÍA",total:22},
+  {cod:"P-5510-4224-001-V03",nom:"Recepcionista (P-5510-4224-001)",sub:"HOTELERÍA",total:194},
+  {cod:"P-5600-1412-003-V02",nom:"Supervisor(a) Línea Servicios Casino",sub:"GASTRONOMÍA",total:2},
+];
+
+// SERIES ANUALES
+const SERIES_ANUAL = {
+  2002: {total:15},2003:{total:7},2004:{total:24},2005:{total:5},
+  2006:{total:73},2007:{total:30},2008:{total:2},2009:{total:38},
+  2010:{total:76},2011:{total:103},2012:{total:42},2013:{total:70},
+  2014:{total:61},2015:{total:437},2016:{total:197},2017:{total:304},
+  2018:{total:36},2019:{total:25},2020:{total:53},2021:{total:125},
+  2022:{total:116},2023:{total:134},2024:{total:7},2025:{total:62},2026:{total:57}
+};
+
+// SERIE POR PERFIL CLAVE
+const SERIE_PERFILES_CLAVE = {
+  "Mucama(o)": {2004:23,2006:7,2007:11,2009:5,2010:20,2011:21,2012:1,2013:19,2014:21,2015:65,2016:33,2017:67,2020:21,2023:65,2025:3},
+  "Garzón(a)": {2002:2,2003:3,2006:15,2007:1,2008:1,2009:10,2010:28,2011:41,2012:1,2013:8,2014:25,2015:70,2016:41,2017:16,2018:8,2022:23,2025:9},
+  "Cocinero(a)": {2002:7,2003:3,2006:11,2007:10,2008:1,2009:11,2010:20,2012:11,2013:11,2014:4,2015:54,2016:15,2017:84,2018:4,2021:10,2022:19,2023:8,2025:2,2026:1},
+  "Ayudante Cocina": {2002:5,2003:1,2006:30,2007:3,2009:2,2010:6,2011:13,2012:9,2013:2,2015:82,2016:27,2017:51,2018:13,2022:4,2023:7,2025:2},
+  "Recep.(P-5510)": {2011:1,2014:13,2015:55,2016:39,2017:12,2020:10,2023:54,2025:10},
+  "Guía Tur.Gral.": {2005:2,2015:12,2016:1,2017:4,2021:21,2022:62,2024:4,2026:55},
+};
+
+// ARTICULACION
+const ART = [
+  {cod:"P-5600-1439-001-V02",nom:"Administrador(a) Establec. Gastronómicos",sub:"GASTRONOMÍA",nivel:5,est:"Presencial + Online",conv_pres:19,inst:"INACAP,AIEP,CULINARY,CFT Estatal Santiago,U. Playa Ancha",coq:true,max_asign:4},
+  {cod:"P-7912-4221-001-V04",nom:"Agente de Viajes",sub:"TURISMO",nivel:4,est:"Presencial + Online",conv_pres:9,inst:"IP Santo Tomás,AIEP,CFT Estatal Magallanes",coq:false,max_asign:2},
+  {cod:"P-5600-5246-001-V02",nom:"Auxiliar Línea Casino",sub:"GASTRONOMÍA",nivel:1,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-9412-002-V05",nom:"Ayudante de Cocina",sub:"GASTRONOMÍA",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-9412-001-V04",nom:"Ayudante de Cocina Institucional",sub:"GASTRONOMÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-5230-001-V02",nom:"Cajero(a) Comida Rápida",sub:"GASTRONOMÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-5120-001-V04",nom:"Cocinero(a)",sub:"GASTRONOMÍA",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-5111-001-V03",nom:"Copero(a) (Steward)",sub:"GASTRONOMÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-9411-001-V03",nom:"Despachador(a) Comida Rápida",sub:"GASTRONOMÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-5131-001-V03",nom:"Garzón(a)",sub:"GASTRONOMÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5629-9412-001-V02",nom:"Manipulador(a) PAE/PAP",sub:"GASTRONOMÍA",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-1412-001-V03",nom:"Maître",sub:"GASTRONOMÍA",nivel:4,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5600-5120-005-V02",nom:"Monitor(a) Comida Rápida",sub:"GASTRONOMÍA",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5629-5120-001-V02",nom:"Supervisor(a) PAE/PAP",sub:"GASTRONOMÍA",nivel:4,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5510-5111-001-V03",nom:"Botones",sub:"HOTELERÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5510-4224-003-V01",nom:"Encargado(a) de Recepción",sub:"HOTELERÍA",nivel:4,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5510-4224-002-V03",nom:"Gobernanta(e)",sub:"HOTELERÍA",nivel:4,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-5510-9112-001-V03",nom:"Mucama(o)",sub:"HOTELERÍA",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-9200-4212-002-V01",nom:"Asistente Máquinas de Azar",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7912-8322-001-V03",nom:"Conductor(a) Transporte Turístico",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-9200-4212-001-V01",nom:"Croupier",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7990-5113-002-V01",nom:"Guía de Astroturismo",sub:"TURISMO",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7912-5113-001-V04",nom:"Guía de Turismo General",sub:"TURISMO",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7990-5113-001-V01",nom:"Guía Naturalista",sub:"TURISMO",nivel:3,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7912-4221-002-V03",nom:"Informador(a) Turístico",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-9200-7421-001-V01",nom:"Mantenedor(a) Electrónico Máq. Azar",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-9200-5414-001-V01",nom:"Operador(a) CCTV Casinos",sub:"TURISMO",nivel:2,est:"Sin articulación",conv_pres:0,inst:"",coq:false,max_asign:0},
+  {cod:"P-7912-4224-001-V03",nom:"Anfitrión(a)",sub:"GASTRONOMÍA",nivel:2,est:"Solo Presencial",conv_pres:6,inst:"CULINARY",coq:false,max_asign:2},
+  {cod:"P-5600-3434-003-V01",nom:"Banquetero(a)",sub:"GASTRONOMÍA",nivel:5,est:"Solo Presencial",conv_pres:13,inst:"INACAP,AIEP,CULINARY",coq:true,max_asign:4},
+  {cod:"P-5600-5132-001-V03",nom:"Bartender",sub:"GASTRONOMÍA",nivel:3,est:"Solo Presencial",conv_pres:4,inst:"AIEP",coq:false,max_asign:1},
+  {cod:"P-5600-3434-001-V02",nom:"Chef Ejecutivo",sub:"GASTRONOMÍA",nivel:5,est:"Solo Presencial",conv_pres:15,inst:"INACAP,AIEP,CULINARY",coq:true,max_asign:4},
+  {cod:"P-5600-3434-002-V02",nom:"Jefe(a) de Partida",sub:"GASTRONOMÍA",nivel:4,est:"Solo Presencial",conv_pres:11,inst:"INACAP,AIEP",coq:true,max_asign:2},
+  {cod:"P-5600-5246-002-V01",nom:"Operador(a) Servicios Alimentación",sub:"GASTRONOMÍA",nivel:2,est:"Solo Presencial",conv_pres:24,inst:"INACAP",coq:true,max_asign:1},
+  {cod:"P-5600-7512-001-V03",nom:"Pastelero(a)",sub:"GASTRONOMÍA",nivel:4,est:"Solo Presencial",conv_pres:32,inst:"INACAP,AIEP,CULINARY",coq:true,max_asign:2},
+  {cod:"P-5600-1412-003-V02",nom:"Supervisor(a) Línea Casino",sub:"GASTRONOMÍA",nivel:4,est:"Solo Presencial",conv_pres:28,inst:"INACAP,AIEP",coq:true,max_asign:2},
+  {cod:"P-5510-4224-001-V03",nom:"Recepcionista (Hotelería)",sub:"HOTELERÍA",nivel:3,est:"Solo Presencial",conv_pres:1,inst:"CFT Estatal Coquimbo",coq:true,max_asign:1},
+  {cod:"P-7912-5249-004-V02",nom:"Ejecutivo(a) Ventas Tour Operador",sub:"TURISMO",nivel:3,est:"Solo Presencial",conv_pres:1,inst:"CFT Estatal Magallanes",coq:false,max_asign:1},
+  {cod:"P-7912-4221-003-V02",nom:"Jefe(a) de Productos Turísticos",sub:"TURISMO",nivel:4,est:"Solo Presencial",conv_pres:4,inst:"IP Santo Tomás",coq:false,max_asign:1},
+];
+
+// UCL DATA
+const UCL_DATA = [
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1412-001-V03",nom_p:"Maître",cod_ucl:"U-5600-1412-005-V02",desc:"GESTIONAR ACTIVIDADES Y/O FUNCIONES REALIZADAS POR EL PERSONAL A CARGO, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1412-003-V02",nom_p:"Supervisor(a) Línea Casino",cod_ucl:"U-5600-1412-006-V02",desc:"DIRIGIR LAS TAREAS DEL CASINO DE ALIMENTACIÓN, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVAS APLICABLES VIGENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1412-003-V02",nom_p:"Supervisor(a) Línea Casino",cod_ucl:"U-5600-1412-009-V01",desc:"SUPERVISAR LA PREPARACIÓN DEL ÁREA DE COMEDOR Y LA ENTREGA DEL SERVICIO DE ALIMENTACIÓN DEL CASINO"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1439-001-V02",nom_p:"Administrador(a) Establec. Gastronómicos",cod_ucl:"U-5600-1439-003-V02",desc:"ADMINISTRAR EL ESTABLECIMIENTO GASTRONÓMICO, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS, Y NORMATIVA APLICABLE VIGENTE"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1439-001-V02",nom_p:"Administrador(a) Establec. Gastronómicos",cod_ucl:"U-5600-1439-006-V01",desc:"ADMINISTRAR EL PRESUPUESTO DEL ESTABLECIMIENTO GASTRONÓMICO, DE ACUERDO A LINEAMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1439-001-V02",nom_p:"Administrador(a) Establec. Gastronómicos",cod_ucl:"U-5600-1439-007-V01",desc:"ASEGURAR SATISFACCIÓN DE CLIENTES, DE ACUERDO A LINEAMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-1439-001-V02",nom_p:"Administrador(a) Establec. Gastronómicos",cod_ucl:"U-5510-4224-009-V01",desc:"GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-001-V02",nom_p:"Chef Ejecutivo",cod_ucl:"U-5510-4224-009-V01",desc:"GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-001-V02",nom_p:"Chef Ejecutivo",cod_ucl:"U-5600-3434-014-V01",desc:"SUPERVISAR LA PLANIFICACIÓN GASTRONÓMICA, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-001-V02",nom_p:"Chef Ejecutivo",cod_ucl:"U-5600-3434-015-V01",desc:"SUPERVISAR INVENTARIO DE MATERIAS PRIMAS Y EQUIPAMIENTO DE COCINA, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS DEL SECTOR"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-001-V02",nom_p:"Chef Ejecutivo",cod_ucl:"U-5600-3434-016-V01",desc:"CONFECCIONAR MENÚS Y CARTAS DE PREPARACIONES CULINARIAS, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS DEL SECTOR"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-002-V02",nom_p:"Jefe(a) de Partida",cod_ucl:"U-5510-4224-009-V01",desc:"GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-002-V02",nom_p:"Jefe(a) de Partida",cod_ucl:"U-5600-3434-003-V02",desc:"DIRIGIR LAS TAREAS DEL ÁREA DE COCINA, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVAS APLICABLES VIGENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-002-V02",nom_p:"Jefe(a) de Partida",cod_ucl:"U-5600-3434-017-V01",desc:"ADMINISTRAR INVENTARIO ASOCIADO A LA PRODUCCIÓN GASTRONÓMICA, SEGÚN LINEAMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-002-V01",desc:"GESTIONAR LA APLICACIÓN DE SISTEMAS DE TRAZABILIDAD INTERNA DEL SERVICIO Y DE LAS MATERIAS PRIMAS E INSUMOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-008-V01",desc:"VENDER UN SERVICIO DE BANQUETERÍA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-009-V01",desc:"PLANIFICAR UN EVENTO DE BANQUETERÍA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-010-V01",desc:"ORGANIZAR LA PREPARACIÓN DE UN EVENTO DE BANQUETERÍA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-011-V01",desc:"SUPERVISAR Y CONTROLAR LA ATENCIÓN DEL EVENTO"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-3434-012-V01",desc:"PROGRAMAR LA LIMPIEZA DEL LUGAR"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-5120-017-V02",desc:"MANTENER UNIFORME Y PRESENTACIÓN PERSONAL, DE ACUERDO A LOS ESTÁNDARES ESTABLECIDOS POR EL SECTOR PRODUCTIVO"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-3434-003-V01",nom_p:"Banquetero(a)",cod_ucl:"U-5600-5120-018-V02",desc:"APLICAR NORMAS DE HIGIENE, SEGURIDAD ALIMENTARIA Y PREVENCIÓN DE RIESGOS EN COCINA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5111-001-V03",nom_p:"Copero(a) (Steward)",cod_ucl:"U-5600-5111-001-V03",desc:"LIMPIAR E HIGIENIZAR ESPACIOS E IMPLEMENTOS DE COCINA, DE ACUERDO CON NORMATIVAS DE LA AUTORIDAD SANITARIA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5111-001-V03",nom_p:"Copero(a) (Steward)",cod_ucl:"U-5600-5111-002-V03",desc:"ORGANIZAR EL MENAJE E IMPLEMENTOS DE COCINA, DE ACUERDO CON SISTEMA INTERNO Y NORMATIVAS DE LA AUTORIDAD SANITARIA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5120-001-V04",nom_p:"Cocinero(a)",cod_ucl:"U-5600-5120-007-V03",desc:"ORGANIZAR LA PRODUCCIÓN CULINARIA, DE ACUERDO A PLANES Y REQUERIMIENTOS DEL SERVICIO, RECETAS ESTANDARIZADAS, PROTOCOLOS DE HIGIENE Y SEGURIDAD ALIMENTARIA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5120-001-V04",nom_p:"Cocinero(a)",cod_ucl:"U-5600-5120-015-V04",desc:"EJECUTAR PREPARACIONES CULINARIAS COMPLEJAS, DE ACUERDO CON TÉCNICAS GASTRONÓMICAS AVANZADAS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5120-001-V04",nom_p:"Cocinero(a)",cod_ucl:"U-5600-5120-022-V01",desc:"SUPERVISAR LA HIGIENE Y LA SEGURIDAD EN LA COCINA, DE ACUERDO CON PROTOCOLOS DE HIGIENE Y SEGURIDAD ALIMENTARIA, BPM"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5120-005-V02",nom_p:"Monitor(a) Comida Rápida",cod_ucl:"U-5600-5120-021-V01",desc:"ASISTIR AL CLIENTE EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLO DE SERVICIO Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5120-005-V02",nom_p:"Monitor(a) Comida Rápida",cod_ucl:"U-5600-5120-019-V02",desc:"GESTIONAR LA PLANIFICACIÓN DE FUNCIONES Y CAPACITACIONES DEL EQUIPO A CARGO, SEGÚN PROTOCOLOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5131-001-V03",nom_p:"Garzón(a)",cod_ucl:"U-5600-5131-001-V02",desc:"ATENDER AL COMENSAL DURANTE SU ESTADÍA, DE ACUERDO CON PROTOCOLOS DE ATENCIÓN, NECESIDADES ESPECIALES DE LOS COMENSALES, ESTÁNDARES DE CALIDAD, ATENCIÓN INCLUSIVA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5131-001-V03",nom_p:"Garzón(a)",cod_ucl:"U-5600-5131-003-V01",desc:"PREPARAR EL SERVICIO, DE ACUERDO CON PROTOCOLOS DEL ESTABLECIMIENTO, MISE EN PLACE, REUNIONES DE EQUIPO"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5132-001-V03",nom_p:"Bartender",cod_ucl:"U-5600-5132-001-V02",desc:"ORGANIZAR LA PLAZA DE TRABAJO Y LOS REQUERIMIENTOS DE MATERIAS PRIMAS PARA LA ELABORACIÓN DE BEBESTIBLES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5132-001-V03",nom_p:"Bartender",cod_ucl:"U-5600-5132-002-V02",desc:"PREPARAR BEBESTIBLES, DE ACUERDO A FICHAS TÉCNICAS Y NORMATIVAS APLICABLES VIGENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5230-001-V02",nom_p:"Cajero(a) Comida Rápida",cod_ucl:"U-5510-4224-007-V01",desc:"AUTO GESTIONAR EL SERVICIO AL CLIENTE, SEGÚN LOS PROTOCOLOS Y PROCEDIMIENTOS DE LA EMPRESA ⭐ COMPARTIDA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5230-001-V02",nom_p:"Cajero(a) Comida Rápida",cod_ucl:"U-5600-5230-001-V02",desc:"REALIZAR PROCESO DE CAJA, SEGÚN LOS PROTOCOLOS Y PROCEDIMIENTOS DE LA EMPRESA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5230-001-V02",nom_p:"Cajero(a) Comida Rápida",cod_ucl:"U-5600-5230-002-V01",desc:"OFRECER, VENDER Y REGISTRAR PRODUCTOS SOLICITADOS POR EL CLIENTE"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-001-V02",nom_p:"Auxiliar Línea Casino",cod_ucl:"U-5600-5246-001-V02",desc:"ATENDER AL CLIENTE, SEGÚN LOS PROTOCOLOS, PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVAS DE LA AUTORIDAD SANITARIA Y DE HIGIENE"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-001-V02",nom_p:"Auxiliar Línea Casino",cod_ucl:"U-5600-5246-008-V01",desc:"EJECUTAR EL SERVICIO DE LÍNEA DE CASINO, DE ACUERDO CON PROTOCOLOS, PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVAS DE LA AUTORIDAD SANITARIA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-002-V01",nom_p:"Operador(a) Serv. Alimentación",cod_ucl:"U-5510-4224-007-V01",desc:"AUTO GESTIONAR EL SERVICIO AL CLIENTE, SEGÚN LOS PROTOCOLOS Y PROCEDIMIENTOS DE LA EMPRESA ⭐ COMPARTIDA"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-002-V01",nom_p:"Operador(a) Serv. Alimentación",cod_ucl:"U-5600-5246-005-V01",desc:"REALIZAR LA ENTREGA DE LOS ALIMENTOS SEGÚN PAUTAS DE HIGIENE Y SEGURIDAD, PROCEDIMIENTOS DEL CASINO"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-002-V01",nom_p:"Operador(a) Serv. Alimentación",cod_ucl:"U-5600-5246-006-V01",desc:"RECEPCIONAR, ALMACENAR Y ROTULAR LAS MATERIAS PRIMAS, SEGÚN NORMAS DE HIGIENE Y SEGURIDAD"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-5246-002-V01",nom_p:"Operador(a) Serv. Alimentación",cod_ucl:"U-5600-5246-007-V01",desc:"TRANSFORMAR LAS MATERIAS PRIMAS PARA EL TURNO SEGÚN LA PAUTA DE ALIMENTACIÓN, NORMAS DE HIGIENE Y PRINCIPIOS DE ALIMENTACIÓN SALUDABLE"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-7512-001-V03",nom_p:"Pastelero(a)",cod_ucl:"U-5600-7512-002-V02",desc:"DIRIGIR LAS TAREAS VINCULADAS A LA PRODUCCIÓN PASTELERA, DE ACUERDO A PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVAS APLICABLES VIGENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-7512-001-V03",nom_p:"Pastelero(a)",cod_ucl:"U-5600-7512-001-V03",desc:"REALIZAR ELABORACIÓN, DECORACIÓN Y MONTAJE DE PRODUCTOS DE PASTELERÍA, DE ACUERDO A FICHAS TÉCNICAS Y NORMATIVAS APLICABLES VIGENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9411-001-V03",nom_p:"Despachador(a) Comida Rápida",cod_ucl:"U-5600-9411-001-V03",desc:"GESTIONAR ENTREGA DE PEDIDOS A CLIENTES, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9411-001-V03",nom_p:"Despachador(a) Comida Rápida",cod_ucl:"U-5600-9411-002-V01",desc:"PREPARAR LA PLAZA DE TRABAJO Y LOS REQUERIMIENTOS DE PEDIDOS PARA LA ATENCIÓN A LOS CLIENTES"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9412-001-V04",nom_p:"Ayudante Cocina Institucional",cod_ucl:"U-5600-9412-003-V02",desc:"PREELABORAR ALIMENTOS E INSUMOS EN COCINA INSTITUCIONAL, DE ACUERDO CON PROCEDIMIENTOS DE SOLICITUD Y ENTREGA, MÉTODO PEPS, PROTOCOLOS DE TRAZABILIDAD"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9412-001-V04",nom_p:"Ayudante Cocina Institucional",cod_ucl:"U-5600-9412-007-V01",desc:"EJECUTAR PROCESOS TÉRMICOS BÁSICOS EN COCINA INSTITUCIONAL, DE ACUERDO CON RECETARIOS, PARÁMETROS CRÍTICOS HACCP"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9412-002-V05",nom_p:"Ayudante de Cocina",cod_ucl:"U-5600-5120-014-V05",desc:"PREPARAR INSUMOS CULINARIOS, DE ACUERDO CON TÉCNICAS BÁSICAS DE COCINA, CRITERIOS DE CALIDAD, PLANES Y REQUERIMIENTOS DEL SERVICIO, PROTOCOLOS DE HIGIENIZACIÓN"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5600-9412-002-V05",nom_p:"Ayudante de Cocina",cod_ucl:"U-5600-9412-001-V05",desc:"ELABORAR PREPARACIONES CULINARIAS BÁSICAS, DE ACUERDO CON RECETAS ESTANDARIZADAS, INSTRUCCIONES DEL COCINERO RESPONSABLE, FICHAS TÉCNICAS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-7912-4224-001-V03",nom_p:"Anfitrión(a)",cod_ucl:"U-7912-4224-001-V03",desc:"ATENDER AL CLIENTE DURANTE SU ESTADÍA EN EL ESTABLECIMIENTO GASTRONÓMICO, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-7912-4224-001-V03",nom_p:"Anfitrión(a)",cod_ucl:"U-7912-4224-002-V02",desc:"GESTIONAR RESERVAS Y REQUERIMIENTOS DE LOS CLIENTES, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5629-9412-001-V02",nom_p:"Manipulador(a) PAE/PAP",cod_ucl:"U-5629-9412-001",desc:"UCL específicas del Programa de Alimentación Escolar (PAE/PAP) — 4 UCL totales, códigos específicos del área"},
+  {sub:"GASTRONOMÍA",cod_p:"P-5629-5120-001-V02",nom_p:"Supervisor(a) PAE/PAP",cod_ucl:"U-5629-5120-001",desc:"UCL de supervisión del PAE/PAP — 3 UCL totales, área de alimentación escolar"},
+  // HOTELERÍA
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-001-V03",nom_p:"Recepcionista",cod_ucl:"U-5510-4224-004-V02",desc:"GESTIONAR EL INGRESO Y SALIDA DEL HUÉSPED DEL ESTABLECIMIENTO DE ALOJAMIENTO TURÍSTICO, SEGÚN NORMATIVA APLICABLE Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-001-V03",nom_p:"Recepcionista",cod_ucl:"U-5510-4224-005-V02",desc:"ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLOS DE ATENCIÓN Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-002-V03",nom_p:"Gobernanta(e)",cod_ucl:"U-5510-4224-008-V01",desc:"GESTIONAR ADQUISICIÓN Y CONTROL DE MATERIALES DEL ÁREA, DE ACUERDO A PRESUPUESTO Y LINEAMIENTOS COMERCIALES ESTABLECIDOS"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-002-V03",nom_p:"Gobernanta(e)",cod_ucl:"U-5510-4224-009-V01",desc:"GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-002-V03",nom_p:"Gobernanta(e)",cod_ucl:"U-5510-4224-002-V03",desc:"ADMINISTRAR LAS TAREAS ASOCIADAS A LA LIMPIEZA Y ORDEN DEL ESTABLECIMIENTO DE ALOJAMIENTO TURÍSTICO"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-003-V01",nom_p:"Encargado(a) de Recepción",cod_ucl:"U-5510-4224-009-V01",desc:"GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-003-V01",nom_p:"Encargado(a) de Recepción",cod_ucl:"U-5510-4224-005-V02",desc:"ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLOS DE ATENCIÓN Y PROCEDIMIENTOS ESTABLECIDOS ⭐ COMPARTIDA"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-4224-003-V01",nom_p:"Encargado(a) de Recepción",cod_ucl:"U-5510-4224-010-V01",desc:"ADMINISTRAR LAS TAREAS DEL ÁREA A CARGO, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-5111-001-V03",nom_p:"Botones",cod_ucl:"U-5510-5111-002-V02",desc:"ASISTIR AL HUÉSPED EN EL TRASLADO DE EQUIPAJE Y LA ENTREGA DE INFORMACIÓN DURANTE SU ESTADÍA EN EL ESTABLECIMIENTO"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-5111-001-V03",nom_p:"Botones",cod_ucl:"U-5510-5111-003-V01",desc:"APOYAR EN LAS LABORES DEL ÁREA DE RECEPCIÓN Y CONSERJERÍA, DE ACUERDO A PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-9112-001-V03",nom_p:"Mucama(o)",cod_ucl:"U-5510-9112-001-V03",desc:"EFECTUAR ORDEN Y LIMPIEZA DE LAS UNIDADES DE ALOJAMIENTO TURÍSTICO DEL RECINTO, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"HOTELERÍA",cod_p:"P-5510-9112-001-V03",nom_p:"Mucama(o)",cod_ucl:"U-5510-9112-003-V01",desc:"ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLO DE SERVICIO Y PROCEDIMIENTOS ESTABLECIDOS"},
+  // TURISMO
+  {sub:"TURISMO",cod_p:"P-7912-4221-001-V04",nom_p:"Agente de Viajes",cod_ucl:"U-7912-4221-001-V04",desc:"ASESORAR A PASAJEROS EN LA ADQUISICIÓN DE PRODUCTOS, SERVICIOS Y/O PAQUETES TURÍSTICOS, SEGÚN LA EXPERIENCIA DE VIAJE REQUERIDA"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-001-V04",nom_p:"Agente de Viajes",cod_ucl:"U-7912-4221-002-V04",desc:"GESTIONAR COMERCIALIZACIÓN DE PRODUCTOS, SERVICIOS O PAQUETES TURÍSTICOS, SEGÚN PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-001-V04",nom_p:"Agente de Viajes",cod_ucl:"U-7912-4221-007-V02",desc:"REALIZAR SEGUIMIENTO DEL SERVICIO ENTREGADO AL PASAJERO, DE ACUERDO A PROCEDIMIENTOS Y PROTOCOLOS ESTABLECIDOS"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-002-V03",nom_p:"Informador(a) Turístico",cod_ucl:"U-7912-4221-003-V03",desc:"ENTREGAR ASESORÍA E INFORMACIÓN TURÍSTICA A LAS PERSONAS USUARIAS, DE ACUERDO CON REQUERIMIENTOS RECIBIDOS, ESTÁNDARES DE CALIDAD DE ATENCIÓN"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-002-V03",nom_p:"Informador(a) Turístico",cod_ucl:"U-7912-4221-004-V03",desc:"EJECUTAR LABORES ADMINISTRATIVAS, SEGÚN PROCEDIMIENTOS INSTITUCIONALES ESTABLECIDOS Y NORMATIVA VIGENTE APLICABLE"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-003-V02",nom_p:"Jefe(a) Productos Turísticos",cod_ucl:"U-7912-4221-008-V02",desc:"IDENTIFICAR PROVEEDORES DE PRODUCTOS, PAQUETES O SERVICIOS TURÍSTICOS, DE ACUERDO CON LINEAMIENTOS ESTABLECIDOS Y NORMATIVA VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-003-V02",nom_p:"Jefe(a) Productos Turísticos",cod_ucl:"U-7912-4221-009-V02",desc:"ELABORAR PRODUCTOS, PAQUETES O SERVICIOS TURÍSTICOS, DE ACUERDO CON LINEAMIENTOS ESTABLECIDOS Y NORMATIVA VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7912-4221-003-V02",nom_p:"Jefe(a) Productos Turísticos",cod_ucl:"U-7912-4221-010-V02",desc:"PROMOVER INTERNAMENTE PRODUCTOS, PAQUETES O SERVICIOS TURÍSTICOS, DE ACUERDO CON LINEAMIENTOS ESTABLECIDOS Y NORMATIVA VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7912-5113-001-V04",nom_p:"Guía de Turismo General",cod_ucl:"U-7912-5113-001-V03",desc:"EJECUTAR SERVICIOS DE GUIADO TURÍSTICO GENERAL, DE ACUERDO CON ITINERARIO, ESTÁNDARES DE SERVICIO, PROTOCOLOS DE SEGURIDAD"},
+  {sub:"TURISMO",cod_p:"P-7912-5113-001-V04",nom_p:"Guía de Turismo General",cod_ucl:"U-7912-5113-005-V02",desc:"PLANIFICAR SERVICIOS DE GUIADO TURÍSTICO GENERAL, DE ACUERDO CON REQUERIMIENTOS DEL PROGRAMA, EVALUACIÓN DE RIESGOS"},
+  {sub:"TURISMO",cod_p:"P-7912-5249-004-V02",nom_p:"Ejecutivo(a) Ventas Tour Op.",cod_ucl:"U-7912-5249-001-V01",desc:"GESTIONAR SOLICITUD DE PROGRAMAS TURÍSTICOS SEGÚN TARIFARIOS, SERVICIOS DISPONIBLES Y PROVEEDORES"},
+  {sub:"TURISMO",cod_p:"P-7912-5249-004-V02",nom_p:"Ejecutivo(a) Ventas Tour Op.",cod_ucl:"U-7912-5249-002-V01",desc:"TRAMITAR PROCESO DE COBRANZA AL CLIENTE, SEGÚN PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7912-8322-001-V03",nom_p:"Conductor(a) Transporte Turístico",cod_ucl:"U-7912-8322-001-V03",desc:"REALIZAR EL SERVICIO DE TRANSPORTE TURÍSTICO, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"},
+  {sub:"TURISMO",cod_p:"P-7912-8322-001-V03",nom_p:"Conductor(a) Transporte Turístico",cod_ucl:"U-7912-8322-004-V01",desc:"PREPARAR EL SERVICIO DE TRANSPORTE TURÍSTICO, DE ACUERDO CON PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS, Y NORMATIVA VIGENTE"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-001-V01",nom_p:"Guía Naturalista",cod_ucl:"U-7990-5113-001-V01",desc:"PLANIFICAR LA EXPERIENCIA TURÍSTICA NATURALISTA, DE ACUERDO CON REQUERIMIENTOS DEL SERVICIO, PERFIL DEL GRUPO, CONDICIONES DEL ENTORNO, ACCESIBILIDAD, SOSTENIBILIDAD"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-001-V01",nom_p:"Guía Naturalista",cod_ucl:"U-7990-5113-002-V01",desc:"CONDUCIR EL RECORRIDO TURÍSTICO NATURALISTA, DE ACUERDO CON ITINERARIO APROBADO, PROCEDIMIENTOS DE SEGURIDAD, LINEAMIENTOS DE HOSPITALIDAD"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-001-V01",nom_p:"Guía Naturalista",cod_ucl:"U-7990-5113-003-V01",desc:"INTERPRETAR EL PATRIMONIO NATURAL Y CULTURAL DEL TERRITORIO, DE ACUERDO CON FUENTES VERIFICADAS, PERTINENCIA SOCIOCULTURAL, OBJETIVOS DE APRENDIZAJE"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-002-V01",nom_p:"Guía de Astroturismo",cod_ucl:"U-7990-5113-004-V01",desc:"PLANIFICAR LA EXPERIENCIA TURÍSTICA ASTRONÓMICA, DE ACUERDO CON CONDICIONES ASTRONÓMICAS Y METEOROLÓGICAS, REQUERIMIENTOS DEL SERVICIO, PROTECCIÓN DEL CIELO OSCURO"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-002-V01",nom_p:"Guía de Astroturismo",cod_ucl:"U-7990-5113-005-V01",desc:"CONDUCIR LA ACTIVIDAD EN TERRENO NOCTURNO, DE ACUERDO CON ITINERARIO APROBADO, PROCEDIMIENTOS DE SEGURIDAD, CRITERIOS DE ACCESIBILIDAD, HOSPITALIDAD"},
+  {sub:"TURISMO",cod_p:"P-7990-5113-002-V01",nom_p:"Guía de Astroturismo",cod_ucl:"U-7990-5113-006-V01",desc:"INTERPRETAR EL CIELO Y EL PATRIMONIO ASTRONÓMICO-CULTURAL, DE ACUERDO CON FUENTES VERIFICADAS, PERTINENCIA SOCIOCULTURAL, CONDUCTA RESPONSABLE"},
+  {sub:"TURISMO",cod_p:"P-9200-4212-001-V01",nom_p:"Croupier",cod_ucl:"U-9200-4212-001-V01",desc:"ADMINISTRAR MESAS DE JUEGO EN CASINOS, DE ACUERDO A PROTOCOLO DE ATENCIÓN AL CLIENTE, TIPO DE JUEGO Y REGLAMENTO DE LA SCJ"},
+  {sub:"TURISMO",cod_p:"P-9200-4212-001-V01",nom_p:"Croupier",cod_ucl:"U-9200-4212-002-V01",desc:"CONDUCIR JUEGOS DE AZAR EN CASINOS, DE ACUERDO A PROTOCOLO DE ATENCIÓN AL CLIENTE, PROTOCOLOS DE SEGURIDAD DE JUEGOS, TIPO DE JUEGO Y REGLAMENTO DE LA SCJ"},
+  {sub:"TURISMO",cod_p:"P-9200-4212-002-V01",nom_p:"Asistente Máquinas de Azar",cod_ucl:"U-9200-4212-003-V01",desc:"ORIENTAR A LAS Y LOS CLIENTES EN SALA DE MÁQUINAS DE AZAR, DE ACUERDO A ESTÁNDAR TÉCNICO, PROTOCOLO DE ATENCIÓN AL CLIENTE, PROTOCOLO DE SEGURIDAD DE JUEGO"},
+  {sub:"TURISMO",cod_p:"P-9200-4212-002-V01",nom_p:"Asistente Máquinas de Azar",cod_ucl:"U-9200-4212-004-V01",desc:"RESOLVER REQUERIMIENTOS DE LAS Y LOS CLIENTES Y EL ESTADO OPERATIVO DE LAS MÁQUINAS DE AZAR, DE ACUERDO A ESTÁNDAR TÉCNICO Y PROTOCOLO DE SEGURIDAD DE JUEGO"},
+  {sub:"TURISMO",cod_p:"P-9200-5414-001-V01",nom_p:"Operador(a) CCTV Casinos",cod_ucl:"U-9200-5414-001-V01",desc:"SUPERVISAR MESAS DE JUEGOS DE AZAR, DE ACUERDO A TIPO DE JUEGO DE AZAR, PROTOCOLOS DE ATENCIÓN AL CLIENTE Y PROCEDIMIENTO DE JUEGO APROBADO POR LA SCJ"},
+  {sub:"TURISMO",cod_p:"P-9200-5414-001-V01",nom_p:"Operador(a) CCTV Casinos",cod_ucl:"U-9200-5414-002-V01",desc:"SUPERVISAR CONDICIONES DE SEGURIDAD EN CASINOS DE JUEGOS DE AZAR, DE ACUERDO A COORDINACIÓN CON EQUIPO DE SEGURIDAD Y PROTOCOLOS DE SEGURIDAD"},
+  {sub:"TURISMO",cod_p:"P-9200-7421-001-V01",nom_p:"Mantenedor(a) Electrónico Máq.Azar",cod_ucl:"U-9200-7421-001-V01",desc:"REALIZAR MANTENIMIENTO PREVENTIVO DE MÁQUINAS DE AZAR EN CASINOS DE JUEGO, DE ACUERDO A PLAN DE MANTENIMIENTO PREVENTIVO Y PROCEDIMIENTOS APROBADOS POR LA SCJ"},
+  {sub:"TURISMO",cod_p:"P-9200-7421-001-V01",nom_p:"Mantenedor(a) Electrónico Máq.Azar",cod_ucl:"U-9200-7421-002-V01",desc:"REALIZAR MANTENIMIENTO CORRECTIVO DE MÁQUINAS DE AZAR EN CASINOS DE JUEGO, DE ACUERDO A ESTÁNDAR TÉCNICO DE COMPONENTES Y ESTÁNDAR DE PREVENCIÓN DE RIESGOS"},
+];
+
+// PERTINENCIA ZOIT
+const ZOIT_MAP = {
+  "P-7912-5113-001-V04": ["elqui","pich"],
+  "P-7990-5113-001-V01": ["elqui"],
+  "P-7990-5113-002-V01": ["elqui"],
+  "P-7912-4221-002-V03": ["elqui","pich"],
+  "P-7912-8322-001-V03": ["elqui","pich"],
+  "P-5510-9112-001-V03": ["pich"],
+  "P-5510-4224-001-V03": ["pich","elqui"],
+  "P-5510-4224-002-V03": ["pich","elqui"],
+  "P-5600-5131-001-V03": ["elqui","pich"],
+  "P-5600-5120-001-V04": ["elqui","pich"],
+  "P-5600-3434-001-V02": ["elqui","pich"],
+  "P-5600-1439-001-V02": ["elqui","pich"],
+};
+
+// ===== SORTING STATE =====
+let h1SortCol=-1,h1SortDir=1;
+let h2SortCol=-1,h2SortDir=1;
+let h3SortCol=-1,h3SortDir=1;
+let h4SortCol=-1,h4SortDir=1;
+let h5SortCol=-1,h5SortDir=1;
+
+function showTab(id){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== H1 TABLE =====
+function renderH1Table(){
+  const sub=document.getElementById('h1-sub').value;
+  const niv=document.getElementById('h1-nivel').value;
+  const mod=document.getElementById('h1-modal').value;
+  const srch=(document.getElementById('h1-search').value||'').toLowerCase();
+  let data=[...PERFILES];
+  if(sub) data=data.filter(d=>d.sub===sub);
+  if(niv) data=data.filter(d=>d.nivel==parseInt(niv));
+  if(mod) data=data.filter(d=>d.modal===mod);
+  if(srch) data=data.filter(d=>d.nom.toLowerCase().includes(srch)||d.ciuo.includes(srch)||d.cod.toLowerCase().includes(srch));
+  if(h1SortCol>=0) data.sort((a,b)=>{
+    const keys=[['sub'],['cod'],['nom'],['ciuo'],['area'],['nivel'],['modal'],['vig'],['ucl']];
+    const k=keys[h1SortCol][0];
+    return (a[k]>b[k]?1:-1)*h1SortDir;
+  });
+  const tb=document.getElementById('h1-tbody');
+  tb.innerHTML=data.map(d=>{
+    const alerta=d.alerta?'<span class="badge badge-alerta">Alerta 2026</span>':'';
+    const subBadge=`<span class="badge badge-${d.sub==='GASTRONOMÍA'?'gastro':d.sub==='HOTELERÍA'?'hotel':'turismo'}">${d.sub}</span>`;
+    return `<tr>
+      <td>${subBadge}</td>
+      <td class="code-mono">${d.cod}</td>
+      <td>${d.nom} ${alerta}</td>
+      <td class="code-mono">${d.ciuo}</td>
+      <td>${d.area}</td>
+      <td><span class="nivel-dot n${d.nivel}">${d.nivel}</span></td>
+      <td>${d.modal==='Parcial'?'<span class="badge badge-parcial">Parcial</span>':'<span class="badge badge-con">Completa</span>'}</td>
+      <td>${d.vig}</td>
+      <td style="text-align:center;font-weight:700;">${d.ucl}</td>
+    </tr>`;
+  }).join('');
+}
+function sortH1(col){h1SortCol=col;h1SortDir*=-1;renderH1Table();}
+
+// ===== H2 TABLE =====
+function renderH2Table(){
+  const sub=document.getElementById('h2-sub').value;
+  const srch=(document.getElementById('h2-search').value||'').toLowerCase();
+  let data=[...CERT];
+  if(sub) data=data.filter(d=>d.sub===sub);
+  if(srch) data=data.filter(d=>d.nom.toLowerCase().includes(srch)||d.cod.toLowerCase().includes(srch));
+  if(h2SortCol>=0) data.sort((a,b)=>{
+    const keys=['sub','cod','nom','total','total'];
+    const k=keys[h2SortCol]||'total';
+    return (a[k]>b[k]?1:-1)*h2SortDir;
+  });
+  else data.sort((a,b)=>b.total-a.total);
+  const total=CERT.reduce((s,c)=>s+c.total,0);
+  const tb=document.getElementById('h2-tbody');
+  const yr=CERT.reduce((acc,c)=>{
+    // Find first/last year from SERIES
+    return acc;
+  },{});
+  // Build year range lookup from series data
+  const firstYear={};const lastYear={};
+  // From Hoja1 data reconstruct
+  const hoja1=[
+    {a:2002,c:"P-5600-9412-002-V05"},{a:2002,c:"P-5600-5132-001-V03"},{a:2002,c:"P-5600-5120-001-V04"},{a:2002,c:"P-5600-5131-001-V03"},
+    {a:2004,c:"P-5510-5111-001-V03"},{a:2004,c:"P-5510-9112-001-V03"},
+    {a:2005,c:"P-7912-4224-001-V03"},{a:2005,c:"P-7912-8322-001-V03"},{a:2005,c:"P-7912-5113-001-V04"},
+    {a:2015,c:"P-5600-1439-001-V02"},{a:2025,c:"P-5600-1439-001-V02"},{a:2026,c:"P-5600-1439-001-V02"},
+    {a:2016,c:"P-5600-5246-001-V02"},
+    {a:2003,c:"P-5600-9412-001-V04"},{a:2007,c:"P-5600-9412-001-V04"},
+    {a:2003,c:"P-5600-5120-001-V04"},{a:2026,c:"P-5600-5120-001-V04"},
+    {a:2011,c:"P-5600-1412-001-V03"},
+    {a:2017,c:"P-5629-9412-001-V02"},{a:2025,c:"P-5629-9412-001-V02"},
+    {a:2025,c:"P-9200-7421-001-V01"},
+    {a:2025,c:"P-9200-4212-001-V01"},
+    {a:2007,c:"P-5600-1412-003-V02"},{a:2017,c:"P-5600-1412-003-V02"},
+    {a:2011,c:"P-4711-4321-001"},{a:2013,c:"P-4711-4321-001"},
+    {a:2011,c:"P-5510-4224-001-V03"},{a:2025,c:"P-5510-4224-001-V03"},
+    {a:2007,c:"P-5510-4224-002-V03"},{a:2020,c:"P-5510-4224-002-V03"},
+    {a:2017,c:"P-7912-4221-002-V03"},
+    {a:2012,c:"P-5600-7512-001-V03"},{a:2021,c:"P-5600-7512-001-V03"},
+    {a:2007,c:"P-5600-9411-001-V03"},
+    {a:2019,c:"P-5600-5246-002-V01"},
+    {a:2020,c:"P-7912-8322-001-V03"},
+    {a:2009,c:"P-5600-5111-001-V03"},{a:2022,c:"P-5600-5111-001-V03"},
+  ];
+  CERT.forEach(c=>{firstYear[c.cod]=9999;lastYear[c.cod]=0;});
+  hoja1.forEach(h=>{
+    if(firstYear[h.c]===undefined) firstYear[h.c]=h.a;
+    else firstYear[h.c]=Math.min(firstYear[h.c],h.a);
+    if(lastYear[h.c]===undefined) lastYear[h.c]=h.a;
+    else lastYear[h.c]=Math.max(lastYear[h.c],h.a);
+  });
+  // fill in from cert data series
+  Object.keys(SERIE_PERFILES_CLAVE).forEach(k=>{
+    const d=SERIE_PERFILES_CLAVE[k];
+    const years=Object.keys(d).map(Number);
+    if(years.length) {
+      // match to cert
+    }
+  });
+  tb.innerHTML=data.map(d=>{
+    const pct=((d.total/total)*100).toFixed(1);
+    const barW=Math.round(d.total/382*100);
+    const subBadge=`<span class="badge badge-${d.sub==='GASTRONOMÍA'?'gastro':d.sub==='HOTELERÍA'?'hotel':'turismo'}">${d.sub}</span>`;
+    const fy=firstYear[d.cod]&&firstYear[d.cod]!==9999?firstYear[d.cod]:'—';
+    const ly=lastYear[d.cod]&&lastYear[d.cod]>0?lastYear[d.cod]:'—';
+    return `<tr>
+      <td>${subBadge}</td>
+      <td class="code-mono">${d.cod}</td>
+      <td>${d.nom}</td>
+      <td style="font-weight:800;font-size:14px;">${d.total}</td>
+      <td>${pct}%</td>
+      <td><div style="background:#e2e8f0;border-radius:3px;height:10px;width:120px;"><div style="background:var(--coral);border-radius:3px;height:10px;width:${barW}%;"></div></div></td>
+      <td>${fy}</td>
+      <td>${ly}</td>
+    </tr>`;
+  }).join('');
+}
+function sortH2(col){h2SortCol=col;h2SortDir*=-1;renderH2Table();}
+
+// ===== H3 TABLE =====
+function renderH3Table(){
+  const sub=document.getElementById('h3-sub').value;
+  const art=document.getElementById('h3-art').value;
+  let data=[...ART];
+  if(sub) data=data.filter(d=>d.sub===sub);
+  if(art==='con') data=data.filter(d=>d.est!=='Sin articulación');
+  else if(art==='sin') data=data.filter(d=>d.est==='Sin articulación');
+  else if(art==='coq') data=data.filter(d=>d.coq);
+  if(h3SortCol>=0) data.sort((a,b)=>{
+    const keys=['sub','cod','nom','nivel','est','conv_pres','inst',null,'max_asign'];
+    const k=keys[h3SortCol];
+    if(!k) return 0;
+    return (a[k]>b[k]?1:-1)*h3SortDir;
+  });
+  const tb=document.getElementById('h3-tbody');
+  tb.innerHTML=data.map(d=>{
+    const subBadge=`<span class="badge badge-${d.sub==='GASTRONOMÍA'?'gastro':d.sub==='HOTELERÍA'?'hotel':'turismo'}">${d.sub}</span>`;
+    const estBadge=d.est==='Sin articulación'?'<span class="badge badge-sin">Sin articulación</span>':
+      d.est==='Presencial + Online'?'<span class="badge badge-con">Presencial+Online</span>':
+      '<span class="badge badge-parcial">Solo Presencial</span>';
+    const coqBadge=d.coq?'<span style="color:var(--mint);font-weight:700;">Sí</span>':'<span style="color:var(--muted);">No</span>';
+    return `<tr>
+      <td>${subBadge}</td>
+      <td class="code-mono">${d.cod}</td>
+      <td>${d.nom}</td>
+      <td><span class="nivel-dot n${d.nivel}">${d.nivel}</span></td>
+      <td>${estBadge}</td>
+      <td style="text-align:center;">${d.conv_pres||'—'}</td>
+      <td style="font-size:11.5px;">${d.inst||'—'}</td>
+      <td>${coqBadge}</td>
+      <td style="text-align:center;font-weight:700;">${d.max_asign||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+function sortH3(col){h3SortCol=col;h3SortDir*=-1;renderH3Table();}
+
+// ===== H4 TABLE =====
+function renderH4Table(){
+  const sub=document.getElementById('h4-sub').value;
+  const srch=(document.getElementById('h4-search').value||'').toLowerCase();
+  let data=[...UCL_DATA];
+  if(sub) data=data.filter(d=>d.sub===sub);
+  if(srch) data=data.filter(d=>d.cod_ucl.toLowerCase().includes(srch)||d.desc.toLowerCase().includes(srch)||d.nom_p.toLowerCase().includes(srch));
+  if(h4SortCol>=0) data.sort((a,b)=>{
+    const keys=['sub','cod_p','nom_p','cod_ucl'];
+    const k=keys[h4SortCol]||'sub';
+    return (a[k]>b[k]?1:-1)*h4SortDir;
+  });
+  const tb=document.getElementById('h4-tbody');
+  tb.innerHTML=data.map(d=>{
+    const shared=d.desc.includes('⭐ COMPARTIDA');
+    const subBadge=`<span class="badge badge-${d.sub==='GASTRONOMÍA'?'gastro':d.sub==='HOTELERÍA'?'hotel':'turismo'}">${d.sub}</span>`;
+    const tr_bg=shared?'background:#fffbeb;':'';
+    return `<tr style="${tr_bg}">
+      <td>${subBadge}</td>
+      <td class="code-mono">${d.cod_p}</td>
+      <td>${d.nom_p}</td>
+      <td class="code-mono">${d.cod_ucl}${shared?' ⭐':''}</td>
+      <td style="font-size:11.5px;max-width:400px;">${d.desc.replace(' ⭐ COMPARTIDA','')}</td>
+    </tr>`;
+  }).join('');
+}
+function sortH4(col){h4SortCol=col;h4SortDir*=-1;renderH4Table();}
+
+// ===== H5 TABLE =====
+const CERT_MAP={};
+CERT.forEach(c=>{CERT_MAP[c.cod]=c.total;});
+const ART_MAP={};
+ART.forEach(a=>{ART_MAP[a.cod]={est:a.est,coq:a.coq,conv:a.conv_pres};});
+
+function getH5Cat(p){
+  const cert=CERT_MAP[p.cod]||0;
+  const art=ART_MAP[p.cod]||{est:'Sin articulación',coq:false,conv:0};
+  const hasArt=art.est!=='Sin articulación';
+  const hasMass=cert>=20;
+  if(hasMass&&hasArt) return 'A';
+  if(hasMass&&!hasArt) return 'B';
+  if(!hasMass&&hasArt) return 'C';
+  return 'D';
+}
+
+function renderH5Table(){
+  const cat=document.getElementById('h5-cat').value;
+  let data=[...PERFILES];
+  if(cat==='ZOIT') data=data.filter(d=>ZOIT_MAP[d.cod]);
+  else if(cat) data=data.filter(d=>getH5Cat(d)===cat);
+  data.sort((a,b)=>{
+    const ca=getH5Cat(a),cb=getH5Cat(b);
+    if(ca!==cb) return ca<cb?-1:1;
+    return (CERT_MAP[b.cod]||0)-(CERT_MAP[a.cod]||0);
+  });
+  const tb=document.getElementById('h5-tbody');
+  tb.innerHTML=data.map(d=>{
+    const cert=CERT_MAP[d.cod]||0;
+    const art=ART_MAP[d.cod]||{est:'Sin articulación',coq:false,conv:0};
+    const catVal=getH5Cat(d);
+    const catColors={'A':'background:#d1fae5;color:#065f46','B':'background:#dbeafe;color:#1e40af','C':'background:#fef3c7;color:#92400e','D':'background:#f3f4f6;color:#6b7280'};
+    const zoit=ZOIT_MAP[d.cod]||[];
+    const zoitTags=zoit.map(z=>z==='elqui'?'<span class="zoit-tag zoit-elqui">Valle Elqui</span>':'<span class="zoit-tag zoit-pich">Pichidangui</span>').join('');
+    const subBadge=`<span class="badge badge-${d.sub==='GASTRONOMÍA'?'gastro':d.sub==='HOTELERÍA'?'hotel':'turismo'}">${d.sub}</span>`;
+    const alerta=d.alerta?'<span class="badge badge-alerta">Alerta 2026</span>':'';
+    return `<tr>
+      <td><span class="badge" style="${catColors[catVal]}">${catVal}</span></td>
+      <td class="code-mono">${d.cod}</td>
+      <td>${d.nom} ${alerta}</td>
+      <td>${subBadge}</td>
+      <td style="font-weight:800;">${cert}</td>
+      <td>${art.est!=='Sin articulación'?'<span style="color:var(--mint);font-weight:700;">'+art.conv+' conv.</span>':'<span style="color:var(--muted);">No</span>'}</td>
+      <td>${art.coq?'<span style="color:var(--mint);font-weight:700;">Sí</span>':'<span style="color:var(--muted);">No</span>'}</td>
+      <td><span class="nivel-dot n${d.nivel}">${d.nivel}</span></td>
+      <td>${zoitTags||'—'}</td>
+      <td>${d.alerta?'<span class="badge badge-alerta">Alerta vigencia</span>':cert===0?'<span class="badge badge-sin">Sin actividad</span>':cert>100?'<span class="badge badge-con">Alta masa</span>':'<span class="badge badge-parcial">Baja masa</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== CHARTS =====
+function initCharts(){
+  // H1: subsector pie
+  new Chart(document.getElementById('c-subsector'),{
+    type:'doughnut',
+    data:{
+      labels:['Gastronomía (21)','Hotelería (5)','Turismo (12)'],
+      datasets:[{data:[21,5,12],backgroundColor:['#C9993A','#2C4F8C','#3A9B8C'],borderWidth:2,borderColor:'#fff'}]
+    },
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:12}}}},maintainAspectRatio:false}
+  });
+
+  // H1: niveles bar
+  const nivelCounts=[0,0,0,0,0];
+  PERFILES.forEach(p=>{if(p.nivel>=1&&p.nivel<=5)nivelCounts[p.nivel-1]++;});
+  new Chart(document.getElementById('c-niveles'),{
+    type:'bar',
+    data:{
+      labels:['Nivel 1','Nivel 2','Nivel 3','Nivel 4','Nivel 5'],
+      datasets:[{label:'Perfiles',data:nivelCounts,backgroundColor:['#94a3b8','#3A9B8C','#2C4F8C','#C9993A','#E8634A']}]
+    },
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}},maintainAspectRatio:false}
+  });
+
+  // H2: temporal
+  const years=Object.keys(SERIES_ANUAL).map(Number).sort();
+  const vals=years.map(y=>SERIES_ANUAL[y].total);
+  new Chart(document.getElementById('c-temporal'),{
+    type:'bar',
+    data:{
+      labels:years,
+      datasets:[{
+        label:'Certificaciones',data:vals,
+        backgroundColor:years.map(y=>y===2015?'#E8634A':y===2017?'#C9993A':y>=2025?'#7B6FAD':'#2C4F8C'),
+        borderRadius:3
+      }]
+    },
+    options:{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw} certificaciones`}}},
+      scales:{y:{beginAtZero:true},x:{ticks:{font:{size:11}}}},
+      maintainAspectRatio:false
+    }
+  });
+
+  // H2: top 10
+  const top10=[...CERT].sort((a,b)=>b.total-a.total).slice(0,10);
+  new Chart(document.getElementById('c-top10'),{
+    type:'bar',
+    data:{
+      labels:top10.map(d=>d.nom.length>28?d.nom.substring(0,28)+'…':d.nom),
+      datasets:[{label:'Cert.',data:top10.map(d=>d.total),backgroundColor:'#2C4F8C',borderRadius:3}]
+    },
+    options:{
+      indexAxis:'y',plugins:{legend:{display:false}},
+      scales:{x:{beginAtZero:true},y:{ticks:{font:{size:11}}}},
+      maintainAspectRatio:false
+    }
+  });
+
+  // H2: subsector cert
+  const subCert={GASTRONOMÍA:0,HOTELERÍA:0,TURISMO:0};
+  CERT.forEach(c=>{if(subCert[c.sub]!==undefined)subCert[c.sub]+=c.total;});
+  new Chart(document.getElementById('c-subsector-cert'),{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(subCert).map(k=>`${k} (${subCert[k]})`),
+      datasets:[{data:Object.values(subCert),backgroundColor:['#C9993A','#2C4F8C','#3A9B8C'],borderWidth:2}]
+    },
+    options:{plugins:{legend:{position:'bottom'}},maintainAspectRatio:false}
+  });
+
+  // H2: perfiles linea
+  const ys2002_2026=Array.from({length:25},(_,i)=>2002+i);
+  const colorsLine=['#E8634A','#2C4F8C','#C9993A','#3A9B8C','#7B6FAD','#1A6B6B'];
+  const datasets=Object.entries(SERIE_PERFILES_CLAVE).map(([nom,data],i)=>({
+    label:nom,
+    data:ys2002_2026.map(y=>data[y]||0),
+    borderColor:colorsLine[i],backgroundColor:colorsLine[i]+'22',
+    tension:0.3,fill:false,pointRadius:3,borderWidth:2
+  }));
+  new Chart(document.getElementById('c-perfiles-linea'),{
+    type:'line',
+    data:{labels:ys2002_2026,datasets},
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true}},maintainAspectRatio:false}
+  });
+
+  // H3: art estado
+  const artCounts={'Sin articulación':0,'Solo Presencial':0,'Presencial + Online':0};
+  ART.forEach(a=>{artCounts[a.est]=(artCounts[a.est]||0)+1;});
+  new Chart(document.getElementById('c-art-estado'),{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(artCounts).map(k=>`${k} (${artCounts[k]})`),
+      datasets:[{data:Object.values(artCounts),backgroundColor:['#e2e8f0','#2C4F8C','#3A9B8C'],borderWidth:2}]
+    },
+    options:{plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},maintainAspectRatio:false}
+  });
+
+  // H3: art subsector
+  const artBySub={GASTRONOMÍA:{con:0,sin:0},HOTELERÍA:{con:0,sin:0},TURISMO:{con:0,sin:0}};
+  ART.forEach(a=>{
+    if(artBySub[a.sub]) {
+      if(a.est==='Sin articulación') artBySub[a.sub].sin++;
+      else artBySub[a.sub].con++;
+    }
+  });
+  new Chart(document.getElementById('c-art-sub'),{
+    type:'bar',
+    data:{
+      labels:['Gastronomía','Hotelería','Turismo'],
+      datasets:[
+        {label:'Con articulación',data:[artBySub.GASTRONOMÍA.con,artBySub.HOTELERÍA.con,artBySub.TURISMO.con],backgroundColor:'#3A9B8C'},
+        {label:'Sin articulación',data:[artBySub.GASTRONOMÍA.sin,artBySub.HOTELERÍA.sin,artBySub.TURISMO.sin],backgroundColor:'#e2e8f0'}
+      ]
+    },
+    options:{plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true}},maintainAspectRatio:false}
+  });
+
+  // H5: scatter
+  const colors5={GASTRONOMÍA:'#C9993A',HOTELERÍA:'#2C4F8C',TURISMO:'#3A9B8C'};
+  const scatter5=PERFILES.map(p=>({
+    x:CERT_MAP[p.cod]||0,
+    y:ART_MAP[p.cod]?ART_MAP[p.cod].conv:0,
+    label:p.nom.substring(0,20),
+    sub:p.sub
+  }));
+  new Chart(document.getElementById('c-matriz'),{
+    type:'scatter',
+    data:{
+      datasets:[
+        {label:'Gastronomía',data:scatter5.filter(d=>d.sub==='GASTRONOMÍA').map(d=>({x:d.x,y:d.y})),backgroundColor:'#C9993A88',pointRadius:7},
+        {label:'Hotelería',data:scatter5.filter(d=>d.sub==='HOTELERÍA').map(d=>({x:d.x,y:d.y})),backgroundColor:'#2C4F8C88',pointRadius:7},
+        {label:'Turismo',data:scatter5.filter(d=>d.sub==='TURISMO').map(d=>({x:d.x,y:d.y})),backgroundColor:'#3A9B8C88',pointRadius:7},
+      ]
+    },
+    options:{
+      plugins:{legend:{position:'bottom'}},
+      scales:{x:{title:{display:true,text:'Certificaciones Coquimbo'},beginAtZero:true},y:{title:{display:true,text:'Convenios articulación (presencial)'},beginAtZero:true}},
+      maintainAspectRatio:false
+    }
+  });
+
+  // H5: cuadrantes
+  const cats5={A:0,B:0,C:0,D:0};
+  PERFILES.forEach(p=>{cats5[getH5Cat(p)]++;});
+  new Chart(document.getElementById('c-cuadrantes'),{
+    type:'bar',
+    data:{
+      labels:['A: Masa+Art.','B: Masa sin Art.','C: Art. sin Masa','D: Sin masa ni Art.'],
+      datasets:[{
+        label:'Perfiles',
+        data:[cats5.A,cats5.B,cats5.C,cats5.D],
+        backgroundColor:['#3A9B8C','#2C4F8C','#C9993A','#94a3b8'],
+        borderRadius:5
+      }]
+    },
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}},maintainAspectRatio:false}
+  });
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  renderH1Table();
+  renderH2Table();
+  renderH3Table();
+  renderH4Table();
+  renderH5Table();
+  initCharts();
+  renderH6();
+});
+</script>
+</body>
+</html>

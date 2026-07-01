@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prototipo de Trayectorias Formativas en Gastronomía, Hotelería y Turismo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#151E33; --ink-soft:#4B5468;
+    --teal:#1F6F6B; --teal-deep:#154E4B; --teal-tint:#E3F1EF;
+    --clay:#BE5B29; --clay-deep:#8C4018; --clay-tint:#FBEBE0;
+    --amber:#C98A1E; --amber-deep:#8C5E0F; --amber-tint:#FBF0D8;
+    --stone:#8A8272; --stone-tint:#F0EBE1;
+    --parchment:#F5F0E6; --paper:#FFFDF9; --line:#E2D9C7;
+    --shadow: 0 1px 2px rgba(21,30,51,.04), 0 6px 18px -6px rgba(21,30,51,.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--parchment);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+  .app{max-width:1440px;margin:0 auto;padding:32px 26px 64px;}
+
+  header{margin-bottom:20px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.09em;color:var(--stone);text-transform:uppercase;margin-bottom:10px;display:flex;gap:8px;align-items:center;}
+  .eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--teal);}
+  h1{font-family:'Spectral',serif;font-weight:600;font-size:32px;line-height:1.12;margin:0 0 8px;letter-spacing:-.015em;}
+  h1 em{font-style:italic;font-weight:300;background:linear-gradient(90deg,var(--teal),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .subtitle{font-size:14.5px;color:var(--ink-soft);max-width:900px;line-height:1.55;margin:0;}
+
+  .insumos{margin-top:18px;}
+  .insumos-title{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);margin-bottom:10px;}
+  .insumos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+  .insumo-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow);}
+  .insumo-tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;color:var(--teal-deep);background:var(--teal-tint);padding:2px 8px;border-radius:10px;margin-bottom:7px;text-transform:uppercase;}
+  .insumo-name{font-family:'Spectral',serif;font-weight:700;font-size:14px;line-height:1.25;margin-bottom:5px;}
+  .insumo-desc{font-size:12px;color:var(--ink-soft);line-height:1.45;}
+
+  .toolbar{
+    position:sticky;top:14px;z-index:20;
+    display:flex;flex-wrap:wrap;gap:0;align-items:center;
+    margin:22px 0 6px;background:var(--paper);border:1px solid var(--line);
+    border-radius:14px;box-shadow:var(--shadow);overflow:hidden;
+  }
+  .ctrl-group{display:flex;align-items:center;gap:10px;padding:13px 20px;border-right:1px solid var(--line);}
+  .ctrl-group:last-child{border-right:none;margin-left:auto;}
+  .ctrl-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--stone);white-space:nowrap;}
+  button.toggle{
+    font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;
+    border:1px solid var(--line);background:var(--paper);color:var(--ink);
+    padding:7px 14px;border-radius:20px;cursor:pointer;transition:.18s;white-space:nowrap;
+  }
+  button.toggle.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  button.toggle:hover{border-color:var(--ink);}
+  .seg{display:flex;background:var(--stone-tint);border-radius:20px;padding:3px;gap:2px;}
+  .seg button{border:none;background:transparent;color:var(--ink-soft);font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:600;padding:6px 13px;cursor:pointer;border-radius:17px;transition:.18s;}
+  .seg button.active{background:var(--paper);color:var(--ink);box-shadow:var(--shadow);}
+  select#perfilTipo{
+    font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);
+    border:1px solid var(--line);border-radius:20px;padding:7px 14px;background:var(--paper);cursor:pointer;
+  }
+
+  .stage{position:relative;margin-top:16px;border:1px solid var(--line);border-radius:16px;background:var(--paper);box-shadow:var(--shadow);overflow:auto;}
+  svg{display:block;min-width:1100px;width:100%;height:auto;}
+
+  .card-shape{cursor:pointer;transition:transform .18s, filter .18s;}
+  .node:hover .card-shape{filter:brightness(0.97);}
+  .node:hover{transform:translateY(-1px);}
+  .node{transition:opacity .3s;}
+  .node text{pointer-events:none;font-family:'IBM Plex Sans',sans-serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .dim{opacity:.15 !important;}
+
+  .backbone-line{stroke:var(--ink);stroke-width:1.4;opacity:.28;fill:none;}
+  .rutaB{stroke:var(--teal);stroke-width:2;fill:none;stroke-dasharray:1 6;opacity:0;transition:opacity .3s;stroke-linecap:round;}
+  .rutaB.alim{stroke:var(--clay);}
+  .rutaB.tur{stroke:var(--amber);}
+  .show-rutas .rutaB{opacity:.9;}
+
+  .puente-real{opacity:0;transition:opacity .4s;}
+  .show-puentes .puente-real{opacity:1;}
+  .puente-ghost{opacity:0;transition:opacity .4s;}
+  .show-puentes .puente-ghost{opacity:1;}
+
+  .lasso{opacity:0;transition:opacity .4s;pointer-events:none;}
+  .lasso.active{opacity:1;}
+
+  .col-label{font-family:'Spectral',serif;font-weight:700;font-size:14px;letter-spacing:.03em;}
+  .level-label{font-size:12px;font-weight:700;fill:var(--stone);}
+  .empty-slot text{font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;fill:var(--stone);}
+
+  .legend{display:flex;flex-wrap:wrap;gap:18px 24px;padding:16px 22px;background:var(--paper);border:1px solid var(--line);border-top:none;border-radius:0 0 16px 16px;font-size:12px;color:var(--ink-soft);}
+  .legend .item{display:flex;align-items:center;gap:7px;}
+  .swatch{width:20px;height:13px;flex:none;border-radius:3px;}
+
+  .panel{
+    position:absolute;top:0;right:0;height:100%;width:400px;max-width:92%;
+    background:var(--paper);border-left:1px solid var(--line);
+    transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+    overflow-y:auto;box-shadow:-10px 0 30px rgba(21,30,51,.10);
+  }
+  .panel.open{transform:translateX(0);}
+  .panel-inner{padding:24px 24px 40px;}
+  .panel-close{position:absolute;top:16px;right:18px;width:30px;height:30px;border-radius:50%;background:var(--stone-tint);border:none;font-size:16px;cursor:pointer;color:var(--ink-soft);line-height:1;z-index:2;}
+  .panel-close:hover{background:var(--line);}
+  .p-topbar{height:6px;width:100%;}
+  .p-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--stone);text-transform:uppercase;letter-spacing:.06em;margin-top:18px;}
+  .panel h3{font-family:'Spectral',serif;font-weight:700;font-size:22px;margin:6px 0 4px;line-height:1.15;}
+  .panel .code{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--stone);word-break:break-all;}
+
+  .p-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);}
+  .p-section .h{display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;color:var(--stone);letter-spacing:.05em;margin-bottom:10px;}
+
+  .stat-big{font-family:'Spectral',serif;font-weight:700;font-size:30px;line-height:1;}
+  .stat-note{font-size:12.5px;color:var(--ink-soft);margin-top:4px;line-height:1.5;}
+  .bar-track{height:7px;background:var(--stone-tint);border-radius:6px;margin-top:10px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;}
+
+  .ucl-item{font-size:12.5px;padding:8px 0;border-bottom:1px dashed var(--line);}
+  .ucl-item:last-child{border-bottom:none;}
+  .ucl-item .code{display:block;margin-bottom:2px;}
+  .ucl-item.bridge{background:var(--amber-tint);margin:0 -10px;padding:8px 10px;border-radius:8px;border-bottom:none;}
+
+  .conv-card{background:var(--stone-tint);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .conv-card.coquimbo{background:var(--amber-tint);}
+  .conv-card .name{font-weight:700;font-size:13px;}
+  .conv-card .meta{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
+  .pill.ok{background:var(--amber-tint);color:var(--amber-deep);}
+  .pill.gap{background:var(--stone-tint);color:var(--ink-soft);}
+  .pill.bridge{background:var(--teal-tint);color:var(--teal-deep);}
+  .pill.tur{background:#fdece0;color:#8c4018;}
+
+  footer{margin-top:18px;font-size:11.5px;color:var(--stone);text-align:center;line-height:1.5;}
+  @media (max-width: 760px){
+    .toolbar{position:static;flex-direction:column;align-items:stretch;}
+    .ctrl-group{border-right:none;border-bottom:1px solid var(--line);justify-content:space-between;}
+    .ctrl-group:last-child{margin-left:0;}
+    .panel{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span>Formación y Gobernanza para el Turismo Sostenible · Componente 1</div>
+    <h1>Prototipo de trayectorias formativas en <em>Gastronomía, Hotelería y Turismo</em></h1>
+    <p class="subtitle">Ecosistema de perfiles Gastronomía, Hotelería y Turismo territorializado para las ZOIT Valle del Elqui y Pichidangui–Quilimarí. Datos cruzados de Perfiles y UCL ChileValora, certificaciones históricas 2002–2026 en la Región de Coquimbo, y articulación con Educación Superior (presencial y online, nacional y regional). Haz clic en cualquier perfil para ver el detalle completo.</p>
+  </header>
+
+  <div class="insumos">
+    <div class="insumos-title">Insumos utilizados para este prototipo</div>
+    <div class="insumos-grid">
+      <div class="insumo-card">
+        <div class="insumo-tag mono">ChileValora</div>
+        <div class="insumo-name">Perfiles y UCL Sector GHT</div>
+        <div class="insumo-desc">38 perfiles ocupacionales del sector con sus Unidades de Competencia Laboral completas. Base para la capa CIUO-08-CL → perfil ChileValora del modelo.</div>
+      </div>
+      <div class="insumo-card">
+        <div class="insumo-tag mono">ChileValora</div>
+        <div class="insumo-name">Certificaciones Turismo — Región de Coquimbo</div>
+        <div class="insumo-desc">Certificados acumulados por perfil, 2002–2026. Fuente de los volúmenes reales mostrados en cada tarjeta y del ranking del ecosistema.</div>
+      </div>
+      <div class="insumo-card">
+        <div class="insumo-tag mono">ChileValora</div>
+        <div class="insumo-name">Articulación con Educación Superior GHT</div>
+        <div class="insumo-desc">Convenios presenciales (16 regiones) y online por perfil certificado, con institución, carrera y asignaturas convalidables. Base de la Ruta C.</div>
+      </div>
+      <div class="insumo-card">
+        <div class="insumo-tag mono">Subsecretaría de Turismo, 2020</div>
+        <div class="insumo-name">Marco de Cualificaciones Técnico-Profesional de Turismo — Poblamiento Sectorial</div>
+        <div class="insumo-desc">Posicionamiento oficial de los perfiles GHT en 5 niveles de cualificación por subsector (Turismo, Hotelería, Gastronomía), construido en talleres con SENCE, MinEduc y ChileValora. Referencia metodológica del sector; el ordenamiento por niveles del diagrama usa el nivel declarado en la ficha de cada perfil ChileValora.</div>
+      </div>
+      <div class="insumo-card">
+        <div class="insumo-tag mono">UCN, en curso</div>
+        <div class="insumo-name">Diagnóstico de Brechas Formativas y Focus Group ZOIT</div>
+        <div class="insumo-desc">Grupos focales de empresarios en ZOIT Valle del Elqui (6 participantes) y Pichidangui–Quilimarí (10 participantes). Valida las ocupaciones críticas y orienta el énfasis territorial (VE/PQ) del modelo.</div>
+      </div>
+      <div class="insumo-card">
+        <div class="insumo-tag mono">Diseño propio</div>
+        <div class="insumo-name">Modelo de rutas A/B/C y perfiles tipo ZOIT</div>
+        <div class="insumo-desc">Unidad de diseño: el itinerario del trabajador ZOIT (no el perfil ChileValora aislado). Tres rutas coexistentes por ocupación y 4 perfiles tipo construidos a partir del trabajo de campo territorial.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Rutas B / especialización</span>
+      <button class="toggle" id="btnRutas">Ver rutas</button>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Puentes</span>
+      <button class="toggle" id="btnPuentes">Ver puentes</button>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Territorio</span>
+      <div class="seg" id="segTerritorio">
+        <button data-t="ambos" class="active">Ambos</button>
+        <button data-t="ve">Valle del Elqui</button>
+        <button data-t="pq">Pichidangui–Quilimarí</button>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Perfil tipo ZOIT</span>
+      <select id="perfilTipo">
+        <option value="">— ninguno —</option>
+        <option value="alojamiento_pequeno">Operativo de alojamiento pequeño</option>
+        <option value="garzon_polivalente">Garzón polivalente</option>
+        <option value="cocinero_pequeno">Cocinero de establecimiento pequeño</option>
+        <option value="operador_turistico">Operador turístico local</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 2080 920" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="panel" id="panel">
+      <button class="panel-close" id="panelClose">✕</button>
+      <div id="panelBody"></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:#E3F1EF;border:1.5px solid #1F6F6B;"></span> Alojamiento</div>
+    <div class="item"><span class="swatch" style="background:#FBEBE0;border:1.5px solid #BE5B29;"></span> Alimentación</div>
+    <div class="item"><span class="swatch" style="background:#FBF0D8;border:1.5px solid #C98A1E;"></span> Turismo</div>
+    <div class="item"><span class="pill gap" style="padding:3px 10px;">Sin Ruta C</span> callejón sin salida</div>
+    <div class="item"><span class="pill ok" style="padding:3px 10px;">Ruta C</span> con articulación ES en Coquimbo</div>
+    <div class="item">★ perfil foco del hallazgo territorial</div>
+    <div class="item"><svg width="30" height="10"><line x1="0" y1="5" x2="30" y2="5" stroke="#1F6F6B" stroke-dasharray="1 6" stroke-width="2"/></svg> Ruta B / especialización</div>
+    <div class="item"><svg width="30" height="14"><path d="M0 12 Q15 0 30 12" stroke="#C98A1E" stroke-width="2.5" fill="none"/></svg> Puente UCL real</div>
+    <div class="item"><svg width="30" height="14"><path d="M0 12 Q15 0 30 12" stroke="#8A8272" stroke-width="2" fill="none" stroke-dasharray="3 4"/></svg> Puente ausente</div>
+  </div>
+
+  <footer>Archivo autocontenido — guárdalo con Ctrl/Cmd+S para conservarlo. Datos cruzados desde Perfles_y_UCL_Sector_GHT-2.xls, DATA_CERTIFICACIONES_TURISMO_CHILEVALORA_COQUIMBO.xls y GHT_Perfiles_Articulacion_ES.xlsx — certificaciones acumuladas 2002–2026, Región de Coquimbo. Sin contenido inferido más allá de lo verificado en estas tres fuentes.</footer>
+</div>
+
+<script>
+/* ---------- DATOS (cruzados desde las 3 fuentes ChileValora) ---------- */
+const NIVEL_Y = {N5:150, N4:360, N3:570, N2:780};
+const NODE_W = 168, NODE_H = 80;
+const BRIDGE_UCL = 'U-5510-4224-009-V01';
+
+const perfiles = [
+// ---------------- ALOJAMIENTO ----------------
+{id:'mucama', nombre:'Mucama(o) / Camarera(o)', subsector:'aloj', nivel:'N2', ciuo:'9112', codigo:'P-5510-9112-001-V03', cert:382,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5510-9112-001-V03',n:'Efectuar orden y limpieza de las unidades de alojamiento turístico del recinto'},
+        {c:'U-5510-9112-003-V01',n:'Asistir al huésped en sus requerimientos y necesidades'}],
+  x:190, terrVE:true, terrPQ:true},
+{id:'botones', nombre:'Botones', subsector:'aloj', nivel:'N2', ciuo:'5111', codigo:'P-5510-5111-001-V03', cert:4,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5510-5111-002-V02',n:'Asistir al huésped en el traslado de equipaje y entrega de información'},
+        {c:'U-5510-5111-003-V01',n:'Apoyar en las labores del área de recepción y conserjería'}],
+  x:350},
+{id:'recepcionista', nombre:'Recepcionista', subsector:'aloj', nivel:'N3', ciuo:'4224', codigo:'P-5510-4224-001-V03', cert:194,
+  estado:'Solo Presencial',
+  convCoq:[{inst:'CFT Estatal Coquimbo', carrera:'Técnico Nivel Superior en Turismo', asig:1}], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5510-4224-004-V02',n:'Gestionar el ingreso y salida del huésped del establecimiento'},
+        {c:'U-5510-4224-005-V02',n:'Asistir al huésped en sus requerimientos y necesidades'}],
+  x:350, terrPQ:true},
+{id:'gobernanta', nombre:'Gobernanta(e)', subsector:'aloj', nivel:'N4', ciuo:'4224', codigo:'P-5510-4224-002-V03', cert:20,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5510-4224-008-V01',n:'Gestionar adquisición y control de materiales del área'},
+        {c:BRIDGE_UCL,n:'Gestionar al personal a cargo'},
+        {c:'U-5510-4224-002-V03',n:'Administrar las tareas asociadas a limpieza y orden del establecimiento'}],
+  x:190, puente:true},
+{id:'enc_recepcion', nombre:'Enc. de Recepción', subsector:'aloj', nivel:'N4', ciuo:'4224', codigo:'P-5510-4224-003-V01', cert:0,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:BRIDGE_UCL,n:'Gestionar al personal a cargo'},
+        {c:'U-5510-4224-005-V02',n:'Asistir al huésped en sus requerimientos y necesidades'},
+        {c:'U-5510-4224-010-V01',n:'Administrar las tareas del área a cargo'}],
+  x:350, puente:true},
+
+// ---------------- ALIMENTACIÓN ----------------
+{id:'anfitrion', nombre:'Anfitrión(a)', subsector:'alim', nivel:'N2', ciuo:'4224', codigo:'P-7912-4224-001-V03', cert:4,
+  estado:'Solo Presencial', convCoq:[],
+  convOtras:[{region:'Metropolitana', inst:'CULINARY', carreras:3}, {region:'Valparaíso', inst:'CULINARY', carreras:3}], convOnline:[],
+  ucls:[{c:'U-7912-4224-001-V03',n:'Atender al cliente durante su estadía en el establecimiento gastronómico'},
+        {c:'U-7912-4224-002-V02',n:'Gestionar reservas y requerimientos de los clientes'}],
+  x:770, terrPQ:true},
+{id:'garzon', nombre:'Garzón(a)', subsector:'alim', nivel:'N2', ciuo:'5131', codigo:'P-5600-5131-001-V03', cert:302,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-5131-001-V02',n:'Atender al comensal durante su estadía'},
+        {c:'U-5600-5131-003-V01',n:'Preparar el servicio (mise en place)'}],
+  x:990, terrVE:true, terrPQ:true},
+{id:'bartender', nombre:'Bartender', subsector:'alim', nivel:'N3', ciuo:'5132', codigo:'P-5600-5132-001-V03', cert:38,
+  estado:'Solo Presencial', convCoq:[],
+  convOtras:[{region:'Antofagasta', inst:'AIEP', carreras:2}, {region:'Metropolitana', inst:'AIEP', carreras:2}], convOnline:[],
+  ucls:[{c:'U-5600-5132-001-V02',n:'Organizar la plaza de trabajo y requerimientos de materias primas'},
+        {c:'U-5600-5132-002-V02',n:'Preparar bebestibles según fichas técnicas'}],
+  x:770, terrVE:true},
+{id:'ay_cocina', nombre:'Ayudante de Cocina', subsector:'alim', nivel:'N3', ciuo:'9412', codigo:'P-5600-9412-002-V05', cert:257,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-5120-014-V05',n:'Preparar insumos culinarios según técnicas básicas de cocina'},
+        {c:'U-5600-9412-001-V05',n:'Elaborar preparaciones culinarias básicas'}],
+  x:990, terrPQ:true},
+{id:'cocinero', nombre:'Cocinero(a) / Maestro(a) de Cocina', subsector:'alim', nivel:'N3', ciuo:'5120', codigo:'P-5600-5120-001-V04', cert:286,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-5120-007-V03',n:'Organizar la producción culinaria'},
+        {c:'U-5600-5120-015-V04',n:'Ejecutar preparaciones culinarias complejas'},
+        {c:'U-5600-5120-022-V01',n:'Supervisar la higiene y seguridad en la cocina'}],
+  x:1210, terrPQ:true},
+{id:'jefe_partida', nombre:'Jefe(a) de Partida', subsector:'alim', nivel:'N4', ciuo:'3434', codigo:'P-5600-3434-002-V02', cert:0,
+  estado:'Solo Presencial',
+  convCoq:[{inst:'INACAP', carrera:'Administración Gastronómica', asig:2}],
+  convOtras:[{region:'10 regiones más', inst:'INACAP / AIEP', carreras:1}], convOnline:[],
+  ucls:[{c:BRIDGE_UCL,n:'Gestionar al personal a cargo'},
+        {c:'U-5600-3434-003-V02',n:'Dirigir las tareas del área de cocina'},
+        {c:'U-5600-3434-017-V01',n:'Administrar inventario asociado a la producción gastronómica'}],
+  x:770, puente:true},
+{id:'maitre', nombre:'Maître', subsector:'alim', nivel:'N4', ciuo:'1412', codigo:'P-5600-1412-001-V03', cert:1,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-1412-001-V03',n:'Supervisar la preparación del área de comedor y entrega de servicios'},
+        {c:'U-5600-1412-005-V02',n:'Gestionar actividades del personal a cargo'}],
+  x:990},
+{id:'pastelero', nombre:'Pastelero(a)', subsector:'alim', nivel:'N4', ciuo:'7512', codigo:'P-5600-7512-001-V03', cert:15,
+  estado:'Solo Presencial',
+  convCoq:[{inst:'INACAP', carrera:'Administración Gastronómica', asig:2}, {inst:'INACAP', carrera:'Gastronomía', asig:2}],
+  convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-7512-002-V02',n:'Dirigir las tareas vinculadas a la producción pastelera'},
+        {c:'U-5600-7512-001-V03',n:'Realizar elaboración, decoración y montaje de productos de pastelería'}],
+  x:1210},
+{id:'chef_ejecutivo', nombre:'Chef Ejecutivo', subsector:'alim', nivel:'N5', ciuo:'3434', codigo:'P-5600-3434-001-V02', cert:0,
+  estado:'Solo Presencial',
+  convCoq:[{inst:'INACAP', carrera:'Administración Gastronómica', asig:2}],
+  convOtras:[{region:'10 regiones más', inst:'INACAP / AIEP / CULINARY', carreras:1}], convOnline:[],
+  ucls:[{c:BRIDGE_UCL,n:'Gestionar al personal a cargo'},
+        {c:'U-5600-3434-014-V01',n:'Supervisar la planificación gastronómica'},
+        {c:'U-5600-3434-015-V01',n:'Supervisar inventario de materias primas y equipamiento'},
+        {c:'U-5600-3434-016-V01',n:'Confeccionar menús y cartas de preparaciones'}],
+  x:770, puente:true},
+{id:'adm_gastronomico', nombre:'Adm. Establecim. Gastronómicos', subsector:'alim', nivel:'N5', ciuo:'1439', codigo:'P-5600-1439-001-V02', cert:27,
+  estado:'Presencial + Online',
+  convCoq:[{inst:'INACAP', carrera:'Administración Gastronómica', asig:2}],
+  convOtras:[{region:'9 regiones más', inst:'INACAP / AIEP / CULINARY', carreras:1}],
+  convOnline:[{inst:'IACC', carrera:'Ingeniería en Administración de Empresas', asig:6},
+              {inst:'IACC', carrera:'Téc. N. Superior en Logística', asig:2},
+              {inst:'Universidad Mayor', carrera:'Téc. Univ. en Administración de Empresas', asig:4}],
+  ucls:[{c:'U-5600-1439-003-V02',n:'Administrar el establecimiento gastronómico'},
+        {c:'U-5600-1439-006-V01',n:'Administrar el presupuesto del establecimiento'},
+        {c:'U-5600-1439-007-V01',n:'Asegurar satisfacción de clientes'},
+        {c:BRIDGE_UCL,n:'Gestionar al personal a cargo'}],
+  x:990, puente:true},
+{id:'banquetero', nombre:'Banquetero(a)', subsector:'alim', nivel:'N5', ciuo:'3434', codigo:'P-5600-3434-003-V01', cert:0,
+  estado:'Solo Presencial',
+  convCoq:[{inst:'INACAP', carrera:'Administración Gastronómica', asig:3}], convOtras:[], convOnline:[],
+  ucls:[{c:'U-5600-3434-008-V01',n:'Vender un servicio de banquetería'},
+        {c:'U-5600-3434-009-V01',n:'Planificar un evento de banquetería'},
+        {c:'U-5600-3434-010-V01',n:'Organizar la preparación de un evento de banquetería'},
+        {c:'U-5600-3434-011-V01',n:'Supervisar y controlar la atención del evento'}],
+  x:1210},
+
+// ---------------- TURISMO ----------------
+{id:'informador', nombre:'Informador(a) Turístico', subsector:'tur', nivel:'N2', ciuo:'4221', codigo:'P-7912-4221-002-V03', cert:39,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-7912-4221-003-V03',n:'Entregar asesoría e información turística a las personas usuarias'},
+        {c:'U-7912-4221-004-V03',n:'Ejecutar labores administrativas'}],
+  x:1460},
+{id:'conductor_transporte', nombre:'Conductor(a) Transporte Turístico', subsector:'tur', nivel:'N2', ciuo:'8322', codigo:'P-7912-8322-001-V03', cert:22,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-7912-8322-001-V03',n:'Realizar el servicio de transporte turístico'},
+        {c:'U-7912-8322-004-V01',n:'Preparar el servicio de transporte turístico'}],
+  x:1660},
+{id:'guia_turismo', nombre:'Guía de Turismo General', subsector:'tur', nivel:'N3', ciuo:'5113', codigo:'P-7912-5113-001-V04', cert:161,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-7912-5113-001-V03',n:'Ejecutar servicios de guiado turístico general'},
+        {c:'U-7912-5113-005-V02',n:'Planificar servicios de guiado turístico general'}],
+  x:1460},
+{id:'guia_naturalista', nombre:'Guía Naturalista', subsector:'tur', nivel:'N3', ciuo:'5113', codigo:'P-7990-5113-001-V01', cert:0,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-7990-5113-001-V01',n:'Planificar la experiencia turística naturalista'},
+        {c:'U-7990-5113-002-V01',n:'Conducir el recorrido turístico naturalista'},
+        {c:'U-7990-5113-003-V01',n:'Interpretar el patrimonio natural y cultural del territorio'}],
+  x:1660, terrVE:true, terrPQ:true},
+{id:'astroturismo', nombre:'Guía de Astroturismo', subsector:'tur', nivel:'N3', ciuo:'5113', codigo:'P-7990-5113-002-V01', cert:0,
+  estado:'Sin articulación', convCoq:[], convOtras:[], convOnline:[],
+  ucls:[{c:'U-7990-5113-004-V01',n:'Planificar la experiencia turística astronómica'},
+        {c:'U-7990-5113-005-V01',n:'Conducir la actividad en terreno nocturno'},
+        {c:'U-7990-5113-006-V01',n:'Interpretar el cielo y el patrimonio astronómico-cultural'}],
+  x:1870, terrVE:true, foco:true},
+];
+
+const maxCert = Math.max(...perfiles.map(p=>p.cert));
+const byId = Object.fromEntries(perfiles.map(p=>[p.id,p]));
+
+const uclPuente = {
+  ucl:BRIDGE_UCL, nombre:'Gestionar al personal a cargo',
+  desde:['gobernanta','enc_recepcion'], hacia:['jefe_partida','chef_ejecutivo','adm_gastronomico']
+};
+const puenteGhost = { desde:['mucama','botones','recepcionista'], hacia:['garzon','bartender','ay_cocina','cocinero'] };
+
+const rutasA = [
+  ['mucama','gobernanta'], ['botones','enc_recepcion'],
+  ['ay_cocina','jefe_partida'], ['cocinero','maitre'],
+  ['jefe_partida','chef_ejecutivo'], ['maitre','adm_gastronomico'],
+  ['informador','guia_turismo'],
+];
+const rutasB = [
+  ['mucama','recepcionista','aloj'], ['recepcionista','gobernanta','aloj'],
+  ['garzon','bartender','alim'], ['ay_cocina','cocinero','alim'], ['bartender','jefe_partida','alim'],
+  ['guia_turismo','guia_naturalista','tur'], ['guia_turismo','astroturismo','tur'],
+];
+
+const perfilesTipo = {
+  alojamiento_pequeno: {nombre:'Operativo de alojamiento pequeño', miembros:['mucama','recepcionista'], fuera:'Información turística (rol combinado, sin perfil ChileValora propio)', terr:'ambos'},
+  garzon_polivalente: {nombre:'Garzón polivalente', miembros:['garzon','bartender','anfitrion'], fuera:null, terr:'ve'},
+  cocinero_pequeno: {nombre:'Cocinero de establecimiento pequeño', miembros:['ay_cocina','cocinero'], fuera:'Jefe informal (sin diferencia de perfil en el mercado local)', terr:'ambos'},
+  operador_turistico: {nombre:'Operador turístico local', miembros:['informador','guia_turismo','astroturismo'], fuera:null, terr:'ve'},
+};
+
+/* ---------- HELPERS SVG ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function curve(x1,y1,x2,y2,bend){
+  const mx=(x1+x2)/2, my=(y1+y2)/2 - (bend||40);
+  return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
+}
+function centerOf(id){ const p = byId[id]; return {x:p.x, y:NIVEL_Y[p.nivel]}; }
+function certBarPct(cert){ return Math.round((cert/maxCert)*100); }
+
+/* ---------- RENDER ---------- */
+const svg = document.getElementById('svg');
+const defs = el('defs',{},svg);
+const shadowF = el('filter',{id:'cardShadow',x:'-30%',y:'-30%',width:'160%',height:'180%'},defs);
+el('feDropShadow',{dx:0,dy:2,stdDeviation:4,'flood-color':'#151E33','flood-opacity':.14},shadowF);
+const glowF = el('filter',{id:'focoGlow',x:'-60%',y:'-60%',width:'220%',height:'220%'},defs);
+el('feDropShadow',{dx:0,dy:0,stdDeviation:7,'flood-color':'#C98A1E','flood-opacity':.55},glowF);
+
+// fondos de columna
+const gBg = el('g',{},svg);
+el('rect',{x:70,y:70,width:560,height:770,rx:20,fill:'#EEF6F5'},gBg);
+el('rect',{x:680,y:70,width:640,height:770,rx:20,fill:'#FDF1E9'},gBg);
+el('rect',{x:1360,y:70,width:660,height:770,rx:20,fill:'#FCF3E1'},gBg);
+el('text',{x:350,y:100,'text-anchor':'middle',class:'col-label',fill:'#1F6F6B'},gBg).textContent='ALOJAMIENTO';
+el('text',{x:1000,y:100,'text-anchor':'middle',class:'col-label',fill:'#BE5B29'},gBg).textContent='ALIMENTACIÓN';
+el('text',{x:1690,y:100,'text-anchor':'middle',class:'col-label',fill:'#8C5E0F'},gBg).textContent='TURISMO';
+Object.entries(NIVEL_Y).forEach(([niv,y])=>{
+  el('text',{x:38,y:y+4,class:'level-label mono'},gBg).textContent=niv;
+  el('line',{x1:60,y1:y,x2:2000,y2:y,stroke:'#E2D9C7','stroke-dasharray':'1 6',opacity:.6},gBg);
+});
+
+// empty slot: Alojamiento no llega a N5
+const gEmpty1 = el('g',{class:'empty-slot'},svg);
+el('rect',{x:350-NODE_W/2,y:NIVEL_Y.N5-NODE_H/2,width:NODE_W,height:NODE_H,rx:14,fill:'none',stroke:'#C9BFAA','stroke-dasharray':'4 5'},gEmpty1);
+el('text',{x:350,y:NIVEL_Y.N5-4,'text-anchor':'middle'},gEmpty1).textContent='Sin perfil N5';
+el('text',{x:350,y:NIVEL_Y.N5+12,'text-anchor':'middle'},gEmpty1).textContent='en Alojamiento';
+
+// empty slot: Turismo no llega a N4/N5, sin articulación ES en ningún registro
+const gEmpty2 = el('g',{class:'empty-slot'},svg);
+el('rect',{x:1380,y:110,width:620,height:300,rx:16,fill:'none',stroke:'#D9C79A','stroke-dasharray':'4 5'},gEmpty2);
+el('text',{x:1690,y:250,'text-anchor':'middle',style:'font-size:13px;font-weight:600;'},gEmpty2).textContent='Turismo no tiene perfiles N4 / N5';
+el('text',{x:1690,y:270,'text-anchor':'middle'},gEmpty2).textContent='ni articulación ES en ningún registro nacional';
+
+// ruta A backbone
+const gBackbone = el('g',{},svg);
+rutasA.forEach(([a,b])=>{
+  const c1=centerOf(a), c2=centerOf(b);
+  el('line',{x1:c1.x,y1:c1.y-NODE_H/2,x2:c2.x,y2:c2.y+NODE_H/2,class:'backbone-line'},gBackbone);
+});
+
+// ruta B
+const gRutaB = el('g',{},svg);
+rutasB.forEach(([a,b,sub])=>{
+  const c1=centerOf(a), c2=centerOf(b);
+  el('path',{d:curve(c1.x,c1.y,c2.x,c2.y,55),class:'rutaB '+sub},gRutaB);
+});
+
+// puentes
+const gPuentes = el('g',{},svg);
+uclPuente.desde.forEach(a=> uclPuente.hacia.forEach(b=>{
+  const c1=centerOf(a), c2=centerOf(b);
+  el('path',{d:curve(c1.x,c1.y,c2.x,c2.y,95),stroke:'#C98A1E','stroke-width':2.4,fill:'none',class:'puente-real'},gPuentes);
+}));
+el('text',{x:560,y:335,'text-anchor':'middle',class:'puente-real mono',fill:'#8C5E0F','font-size':10.5},gPuentes).textContent='UCL puente: '+uclPuente.ucl+' · "'+uclPuente.nombre+'"';
+puenteGhost.desde.forEach(a=> puenteGhost.hacia.forEach(b=>{
+  const c1=centerOf(a), c2=centerOf(b);
+  el('path',{d:curve(c1.x,c1.y,c2.x,c2.y,70),stroke:'#8A8272','stroke-width':1.8,fill:'none','stroke-dasharray':'3 5',class:'puente-ghost'},gPuentes);
+}));
+el('text',{x:600,y:672,'text-anchor':'middle',class:'puente-ghost mono',fill:'#8A8272','font-size':10.5},gPuentes).textContent='Sin puente UCL formal verificado en N2–N3';
+
+// lassos
+const gLassos = el('g',{},svg);
+const lassoEls = {};
+Object.entries(perfilesTipo).forEach(([key,pt])=>{
+  const g = el('g',{class:'lasso'},gLassos);
+  const pts = pt.miembros.map(centerOf);
+  const minX=Math.min(...pts.map(p=>p.x))-NODE_W/2-18, maxX=Math.max(...pts.map(p=>p.x))+NODE_W/2+18;
+  const minY=Math.min(...pts.map(p=>p.y))-NODE_H/2-18, maxY=Math.max(...pts.map(p=>p.y))+NODE_H/2+18;
+  el('rect',{x:minX,y:minY,width:maxX-minX,height:maxY-minY,rx:24,fill:'none',stroke:'#151E33','stroke-width':2},g);
+  el('text',{x:minX+16,y:minY+22,fill:'#151E33','font-weight':700,style:'font-family:IBM Plex Mono,monospace;font-size:11px;'},g).textContent=pt.nombre;
+  if(pt.fuera) el('text',{x:minX+16,y:maxY-12,fill:'#8A8272',style:'font-family:IBM Plex Mono,monospace;font-size:10.5px;'},g).textContent='+ '+pt.fuera;
+  lassoEls[key]=g;
+});
+
+/* ---------- Tarjeta de perfil ---------- */
+function drawCard(g, x, y, colorMain, colorTint, p){
+  const filt = p.foco ? 'url(#focoGlow)' : 'url(#cardShadow)';
+  const sw = p.foco ? 2.4 : 1.5;
+  el('rect',{x:x-NODE_W/2,y:y-NODE_H/2,width:NODE_W,height:NODE_H,rx:14,fill:colorTint,stroke:colorMain,'stroke-width':sw,class:'card-shape',filter:filt},g);
+  el('rect',{x:x-NODE_W/2,y:y-NODE_H/2,width:NODE_W,height:4,rx:2,fill:colorMain,opacity:.85},g);
+  el('text',{x:x,y:y-NODE_H/2+22,'text-anchor':'middle',style:'font-size:12.5px;font-weight:700;font-family:Spectral,serif;',fill:'#151E33'},g).textContent=(p.foco?'★ ':'')+p.nombre;
+  el('text',{x:x,y:y-NODE_H/2+37,'text-anchor':'middle',class:'mono',style:'font-size:9.5px;',fill:'#6b6455'},g).textContent='CIUO '+p.ciuo;
+
+  const bx = x-NODE_W/2+14, by = y+8, bw = NODE_W-28;
+  el('rect',{x:bx,y:by,width:bw,height:5,rx:3,fill:'#00000010'},g);
+  el('rect',{x:bx,y:by,width:Math.max(3,bw*certBarPct(p.cert)/100),height:5,rx:3,fill:colorMain},g);
+  el('text',{x:bx,y:by+17,style:'font-size:'+(p.foco?'11px;font-weight:700;':'10px;'),fill:p.foco?'#8C5E0F':'#4a4436'},g).textContent=p.cert+' cert.'+(p.cert===0?' (real)':'');
+
+  const chipY = y+NODE_H/2-15;
+  const hasES = p.convCoq.length>0;
+  el('rect',{x:x+8,y:chipY-10,width:NODE_W/2-18,height:19,rx:9.5,fill:hasES?'#C98A1E':'#00000012'},g);
+  el('text',{x:x+8+(NODE_W/2-18)/2,y:chipY+3,'text-anchor':'middle',style:'font-size:8.5px;font-weight:700;',fill:hasES?'#fff':'#8A8272'},g).textContent=hasES?'RUTA C':'SIN RUTA C';
+  if(p.puente){
+    el('circle',{cx:x-NODE_W/2+16,cy:y+NODE_H/2-15,r:6,fill:'#C98A1E'},g);
+    el('text',{x:x-NODE_W/2+16,y:y+NODE_H/2-12,'text-anchor':'middle',style:'font-size:8px;font-weight:700;',fill:'#fff'},g).textContent='P';
+  }
+}
+
+const gNodes = el('g',{},svg);
+const colorMap = {aloj:['#1F6F6B','#E3F1EF'], alim:['#BE5B29','#FBEBE0'], tur:['#C98A1E','#FBF0D8']};
+perfiles.forEach(p=>{
+  const y = NIVEL_Y[p.nivel];
+  const g = el('g',{class:'node','data-id':p.id},gNodes);
+  const [main,tint] = colorMap[p.subsector];
+  drawCard(g, p.x, y, main, tint, p);
+  g.addEventListener('click', ()=>openPanel(p));
+});
+
+/* ---------- INTERACCIÓN ---------- */
+let state = {rutas:false, puentes:false, territorio:'ambos', perfilTipo:''};
+
+document.getElementById('btnRutas').addEventListener('click', function(){
+  state.rutas = !state.rutas; this.classList.toggle('active', state.rutas);
+  svg.classList.toggle('show-rutas', state.rutas);
+});
+document.getElementById('btnPuentes').addEventListener('click', function(){
+  state.puentes = !state.puentes; this.classList.toggle('active', state.puentes);
+  svg.classList.toggle('show-puentes', state.puentes);
+});
+document.querySelectorAll('#segTerritorio button').forEach(btn=>{
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('#segTerritorio button').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active'); state.territorio = this.dataset.t; applyTerritorio();
+  });
+});
+document.getElementById('perfilTipo').addEventListener('change', function(){
+  state.perfilTipo = this.value;
+  Object.keys(lassoEls).forEach(k=> lassoEls[k].classList.toggle('active', k===state.perfilTipo));
+  if(state.perfilTipo && perfilesTipo[state.perfilTipo].terr !== 'ambos'){
+    const terr = perfilesTipo[state.perfilTipo].terr;
+    state.territorio = terr;
+    document.querySelectorAll('#segTerritorio button').forEach(b=>b.classList.toggle('active', b.dataset.t===terr));
+    applyTerritorio();
+  }
+});
+function applyTerritorio(){
+  document.querySelectorAll('.node').forEach(n=>{
+    if(state.territorio==='ambos'){ n.classList.remove('dim'); return; }
+    const p = byId[n.dataset.id];
+    const relevant = (state.territorio==='ve' && p.terrVE) || (state.territorio==='pq' && p.terrPQ);
+    n.classList.toggle('dim', !relevant);
+  });
+}
+
+/* ---------- PANEL DE DETALLE ---------- */
+const panel = document.getElementById('panel');
+document.getElementById('panelClose').addEventListener('click', ()=>panel.classList.remove('open'));
+
+function rankNote(p){
+  const ordenados = [...perfiles].sort((a,b)=>b.cert-a.cert);
+  const pos = ordenados.findIndex(x=>x.id===p.id)+1;
+  return pos+'° lugar de '+perfiles.length+' perfiles del ecosistema · máximo: '+maxCert+' (Mucama).';
+}
+function uclBlock(p){
+  return p.ucls.map(u=>{
+    const isBridge = u.c===BRIDGE_UCL;
+    return `<div class="ucl-item${isBridge?' bridge':''}"><span class="code mono" style="color:${isBridge?'#8C5E0F':'#8A8272'};">${u.c}${isBridge?' · PUENTE':''}</span>${u.n}</div>`;
+  }).join('');
+}
+function convenioBlock(p){
+  let html = '';
+  if(p.convCoq.length){
+    html += p.convCoq.map(c=>`<div class="conv-card coquimbo"><div class="name">${c.inst}</div><div class="meta">${c.carrera} · ${c.asig} asignatura${c.asig!==1?'s':''} convalidable${c.asig!==1?'s':''} · Región de Coquimbo</div></div>`).join('');
+  } else {
+    html += `<span class="pill gap">Sin convenio ES en Coquimbo</span>`;
+  }
+  if(p.convOtras.length){
+    html += `<div class="stat-note" style="margin-top:8px;">Existe articulación fuera de Coquimbo: ${p.convOtras.map(o=>o.region+' ('+o.inst+')').join(', ')}. Brecha regional, no nacional.</div>`;
+  } else if(!p.convCoq.length){
+    html += `<div class="stat-note">Sin articulación registrada en ninguna región del país.</div>`;
+  }
+  if(p.convOnline.length){
+    html += `<div class="stat-note" style="margin-top:8px;font-weight:600;color:var(--ink);">+ oferta a distancia (accesible desde Coquimbo):</div>`;
+    html += p.convOnline.map(c=>`<div class="conv-card"><div class="name">${c.inst}</div><div class="meta">${c.carrera} · ${c.asig} asig.</div></div>`).join('');
+  }
+  return html;
+}
+const subsectorNombre = {aloj:'Alojamiento', alim:'Alimentación', tur:'Turismo'};
+
+function openPanel(p){
+  const [main] = colorMap[p.subsector];
+  document.getElementById('panelBody').innerHTML = `
+    <div class="p-topbar" style="background:${main}"></div>
+    <div class="panel-inner">
+      <div class="p-eyebrow">${subsectorNombre[p.subsector]} · Nivel ${p.nivel}${p.foco?' · Foco del hallazgo territorial':''}</div>
+      <h3>${p.foco?'★ ':''}${p.nombre}</h3>
+      <div class="code">CIUO-08-CL ${p.ciuo} · ${p.codigo}</div>
+
+      <div class="p-section">
+        <div class="h">Certificaciones acumuladas 2002–2026 · Coquimbo</div>
+        <div class="stat-big">${p.cert}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${certBarPct(p.cert)}%;background:${main}"></div></div>
+        <div class="stat-note">${rankNote(p)}</div>
+      </div>
+
+      <div class="p-section">
+        <div class="h">UCL — Unidades de Competencia Laboral (${p.ucls.length})</div>
+        ${uclBlock(p)}
+      </div>
+
+      <div class="p-section">
+        <div class="h">Convenios con Educación Superior</div>
+        ${convenioBlock(p)}
+      </div>
+
+      ${p.puente? `<div class="p-section"><div class="h">Puente intersectorial</div><span class="pill bridge">Nodo activo del puente Alojamiento ↔ Alimentación</span></div>`:''}
+      ${p.subsector==='tur'? `<div class="p-section"><div class="h">Sector</div><span class="pill tur">Turismo — sin techo N4/N5 en el sistema</span></div>`:''}
+
+      <div class="p-section">
+        <div class="h">Territorio de mayor relevancia</div>
+        <div class="stat-note" style="font-size:13.5px;color:var(--ink);">${p.terrVE && p.terrPQ ? 'Valle del Elqui y Pichidangui–Quilimarí' : p.terrVE ? 'Valle del Elqui' : p.terrPQ ? 'Pichidangui–Quilimarí' : 'Sin énfasis territorial diferenciado'}</div>
+      </div>
+    </div>
+  `;
+  panel.classList.add('open');
+}
+</script>
+</body>
+</html>

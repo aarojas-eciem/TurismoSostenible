@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocupaciones Muy Prioritarias · Sector GHT Coquimbo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1F3864;
+    --navy-soft:#2E4A78;
+    --coral:#E8634A;
+    --mint:#3A9B8C;
+    --gold:#C9993A;
+    --paper:#F7F5F1;
+    --paper-2:#FFFFFF;
+    --ink:#1C2230;
+    --ink-soft:#5B6373;
+    --line:#E3DFD6;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'DM Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 64px;}
+
+  header.page{margin-bottom:28px;}
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--mint);
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(26px,3.4vw,38px);
+    color:var(--navy);
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  .subhead{
+    color:var(--ink-soft);
+    font-size:15px;
+    max-width:760px;
+    line-height:1.5;
+  }
+  .legend-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:18px;
+  }
+  .legend-chip{
+    font-size:12px;
+    font-weight:600;
+    padding:5px 11px;
+    border-radius:20px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+
+  /* TABLE */
+  .table-card{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(28,34,48,.04);
+  }
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    text-align:left;
+    font-size:11.5px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--paper-2);
+    background:var(--navy);
+    padding:13px 16px;
+    font-weight:700;
+  }
+  thead th:first-child{border-radius:0;}
+  .subsector-row td{
+    background:#EDEAE2;
+    color:var(--navy);
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:8px 16px;
+    border-top:1px solid var(--line);
+  }
+  tbody tr.occ-row{
+    cursor:pointer;
+    border-top:1px solid var(--line);
+    transition:background .15s ease;
+  }
+  tbody tr.occ-row:hover{background:#FBF8F2;}
+  tbody tr.occ-row.active{background:#FBF1EC;}
+  tbody tr.occ-row td{
+    padding:14px 16px;
+    font-size:14px;
+    vertical-align:top;
+  }
+  .occ-name{font-weight:700;color:var(--navy);font-family:'Fraunces',serif;font-size:16px;}
+  .ciuo-pill{
+    display:inline-block;
+    font-family:'DM Sans',monospace;
+    font-size:12px;
+    font-weight:700;
+    background:var(--navy);
+    color:#fff;
+    padding:3px 8px;
+    border-radius:6px;
+    letter-spacing:.02em;
+  }
+  .perfil-name{font-weight:600;color:var(--ink);}
+  .nivel-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:24px;height:24px;
+    border-radius:50%;
+    background:var(--gold);
+    color:#fff;
+    font-weight:700;
+    font-size:12px;
+  }
+  .objetivo-cell{color:var(--ink-soft);font-size:13px;line-height:1.45;max-width:280px;}
+  .chevron-cell{text-align:right;}
+  .chevron{
+    display:inline-block;
+    width:28px;height:28px;
+    border-radius:50%;
+    border:1.5px solid var(--line);
+    color:var(--navy);
+    text-align:center;
+    line-height:26px;
+    font-size:14px;
+    transition:transform .25s ease, background .2s ease, border-color .2s ease;
+  }
+  tr.occ-row.active .chevron{
+    transform:rotate(180deg);
+    background:var(--coral);
+    border-color:var(--coral);
+    color:#fff;
+  }
+
+  /* DETAIL PANEL */
+  tr.detail-row{display:none;}
+  tr.detail-row.open{display:table-row;}
+  tr.detail-row td{
+    padding:0;
+    border-top:none;
+    background:#FBF8F2;
+  }
+  .panel{
+    padding:22px 20px 26px;
+    border-top:3px solid var(--coral);
+    animation:slideDown .25s ease;
+  }
+  @keyframes slideDown{
+    from{opacity:0; transform:translateY(-6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .panel-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+    margin-bottom:18px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .panel-meta b{color:var(--navy);}
+  .panel-grid{
+    display:grid;
+    grid-template-columns:1.1fr 1fr 1.1fr;
+    gap:18px;
+  }
+  @media (max-width:900px){
+    .panel-grid{grid-template-columns:1fr;}
+    .objetivo-cell{display:none;}
+  }
+  .panel-block{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 16px 18px;
+  }
+  .block-title{
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-weight:700;
+    margin:0 0 12px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .block-title.t-comp{color:var(--mint);}
+  .block-title.t-cert{color:var(--coral);}
+  .block-title.t-conv{color:var(--gold);}
+  .block-icon{
+    width:18px;height:18px;
+    border-radius:5px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    color:#fff;
+  }
+  .t-comp .block-icon{background:var(--mint);}
+  .t-cert .block-icon{background:var(--coral);}
+  .t-conv .block-icon{background:var(--gold);}
+
+  .ucl-item{
+    border-left:3px solid var(--mint);
+    padding:7px 0 7px 10px;
+    margin-bottom:8px;
+    font-size:12.5px;
+    line-height:1.4;
+  }
+  .ucl-code{
+    display:block;
+    font-weight:700;
+    color:var(--navy);
+    font-size:11px;
+    margin-bottom:2px;
+    letter-spacing:.01em;
+  }
+  .ucl-name{color:var(--ink-soft);text-transform:none;}
+  .empty-state{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+    padding:6px 0;
+  }
+
+  .cert-total{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .cert-total .num{
+    font-family:'Fraunces',serif;
+    font-size:30px;
+    font-weight:700;
+    color:var(--coral);
+    line-height:1;
+  }
+  .cert-total .lbl{font-size:11.5px;color:var(--ink-soft);}
+  .chart-area{margin-top:4px;}
+  .chart-svg{width:100%;height:90px;display:block;overflow:visible;}
+  .chart-caption{
+    display:flex;
+    justify-content:space-between;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  .bar{fill:var(--coral); opacity:0.85; cursor:pointer; transition:opacity .12s ease;}
+  .bar:hover, .bar.bar-active{opacity:1;}
+  .chart-area{position:relative;}
+  .chart-tooltip{
+    position:absolute;
+    pointer-events:none;
+    background:var(--navy);
+    color:#fff;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 8px;
+    border-radius:6px;
+    transform:translate(-50%,-100%);
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .1s ease;
+    z-index:5;
+  }
+  .chart-tooltip.show{opacity:1;}
+  .chart-tooltip:after{
+    content:'';
+    position:absolute;
+    top:100%; left:50%;
+    transform:translateX(-50%);
+    border:4px solid transparent;
+    border-top-color:var(--navy);
+  }
+
+  .estado-chip{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:20px;
+    margin-bottom:10px;
+  }
+  .estado-si{background:#E4F2EF;color:var(--mint);}
+  .estado-parcial{background:#FDF0E2;color:var(--gold);}
+  .estado-no{background:#F1EFEA;color:var(--ink-soft);}
+
+  .conv-item{
+    border-bottom:1px solid var(--line);
+    padding:9px 0;
+    font-size:12.5px;
+  }
+  .conv-item:last-child{border-bottom:none;}
+  .conv-inst{font-weight:700;color:var(--navy);}
+  .conv-region{
+    font-size:10.5px;
+    color:#fff;
+    background:var(--navy-soft);
+    padding:2px 7px;
+    border-radius:10px;
+    margin-left:6px;
+    font-weight:600;
+  }
+  .conv-region.is-coquimbo{background:var(--mint);}
+  .conv-carrera{color:var(--ink-soft);margin-top:2px;}
+  .conv-asig{
+    font-size:10.5px;
+    color:var(--gold);
+    font-weight:700;
+    margin-top:2px;
+  }
+  .conv-list{max-height:230px;overflow-y:auto;padding-right:4px;}
+  .conv-list::-webkit-scrollbar{width:5px;}
+  .conv-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+
+  .conv-group-label{
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--gold);
+    font-weight:700;
+    margin:10px 0 4px;
+  }
+
+  footer.note{
+    margin-top:22px;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    line-height:1.6;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <h1>Ocupaciones Muy Prioritarias</h1>
+    <p class="subhead">Ocupaciones críticas del sector Gastronomía, Hotelería y Turismo en la Región de Coquimbo. Haz clic en cualquier fila para ver sus competencias ChileValora, la evolución histórica de certificaciones y los convenios vigentes con instituciones de educación superior.</p>
+    <div class="legend-row">
+      <span class="legend-chip"><span class="dot" style="background:var(--mint)"></span>Competencias (UCLs)</span>
+      <span class="legend-chip"><span class="dot" style="background:var(--coral)"></span>Evolución de certificaciones en la Región de Coquimbo</span>
+      <span class="legend-chip"><span class="dot" style="background:var(--gold)"></span>Convenios Educación Superior</span>
+    </div>
+  </header>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:14%">Ocupación crítica</th>
+          <th style="width:8%">CIUO-08</th>
+          <th style="width:18%">Perfil ChileValora</th>
+          <th style="width:6%">Nivel</th>
+          <th style="width:32%">Objetivo del perfil</th>
+          <th style="width:6%"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+const DATA = [{"subsector": "Alimentación", "ocupacion": "Garzón(a)", "ciuo": "5131", "nombre_ciuo": "Garzones de mesa", "perfil_cv": "Garzón(a)", "nivel": 2, "objetivo": "Gestionar el servicio a los comensales en establecimientos gastronómicos, de acuerdo con procedimientos internos, protocolos de atención, estándares de calidad, principio de hospitalidad y atención inclusiva, directrices de satisfacción del cliente, normativa sanitaria y legislación vigente aplicable.", "competencias_resumen": "3UCLs: *Autogestionar servicio al cliente; *Atender al comensal durante su estadía; *Organizar plaza de trabajo.", "base_code": "P-5600-5131-001", "ucls": [{"codigo": "U-5600-5131-001-V02", "nombre": "ATENDER AL COMENSAL DURANTE SU ESTADÍA, DE ACUERDO CON PROTOCOLOS DE ATENCIÓN, NECESIDADES ESPECIALES DE LOS COMENSALES, ESTÁNDARES DE CALIDAD, PRINCIPIO DE HOSPITALIDAD Y ATENCIÓN INCLUSIVA, NORMATIVA TRIBUTARIA, NORMATIVA SANITARIA Y LEGISLACIÓN VIGENTE APLICABLE"}, {"codigo": "U-5600-5131-003-V01", "nombre": "PREPARAR EL SERVICIO, DE ACUERDO CON PROTOCOLOS DEL ESTABLECIMIENTO, MISE EN PLACE, REUNIONES DE EQUIPO, PROTOCOLOS DE COMUNICACIÓN, NORMATIVA SANITARIA Y LEGISLACIÓN VIGENTE APLICABLE"}], "codigo_perfil_full": "P-5600-5131-001-V03", "vigencia": "31/12/2030", "modalidad": "Completa", "nivel_note": "Nivel de cualificación actualizado: la tabla original indicaba Nivel 3 y el perfil vigente en ChileValora es Nivel 2.", "version_update": "Perfil actualizado en ChileValora: la tabla original referenciaba la versión V02 y la versión vigente es V03.", "cert_series": [{"anio": 2002, "valor": 2}, {"anio": 2003, "valor": 3}, {"anio": 2006, "valor": 15}, {"anio": 2007, "valor": 1}, {"anio": 2008, "valor": 1}, {"anio": 2009, "valor": 10}, {"anio": 2010, "valor": 28}, {"anio": 2011, "valor": 41}, {"anio": 2012, "valor": 1}, {"anio": 2013, "valor": 8}, {"anio": 2014, "valor": 25}, {"anio": 2015, "valor": 70}, {"anio": 2016, "valor": 41}, {"anio": 2017, "valor": 16}, {"anio": 2018, "valor": 8}, {"anio": 2022, "valor": 23}, {"anio": 2025, "valor": 9}], "cert_total": 302, "estado_articulacion": "Sin articulación", "n_ucls": 2, "convenios_presencial": [], "convenios_online": []}, {"subsector": "Alimentación", "ocupacion": "Barman", "ciuo": "5132", "nombre_ciuo": "Bármanes", "perfil_cv": "Bartender", "nivel": 3, "objetivo": "Elaborar bebestibles, de acuerdo a planificación del establecimiento gastronómico y normativas aplicables vigentes.", "competencias_resumen": "2UCLs: *Organizar la plaza de trabajo y los requerimientos de materias primas para la elaboración de bebestibles; *Preparar bebestibles, de acuerdo a fichas técnicas.", "base_code": "P-5600-5132-001", "ucls": [{"codigo": "U-5600-5132-001-V02", "nombre": "ORGANIZAR LA PLAZA DE TRABAJO Y LOS REQUERIMIENTOS DE MATERIAS PRIMAS PARA LA ELABORACIÓN DE BEBESTIBLES, DE ACUERDO A NORMATIVAS APLICABLES VIGENTES Y PROCEDIMIENTOS ESTABLECIDOS"}, {"codigo": "U-5600-5132-002-V02", "nombre": "PREPARAR BEBESTIBLES, DE ACUERDO A FICHAS TÉCNICAS Y NORMATIVAS APLICABLES VIGENTES"}], "codigo_perfil_full": "P-5600-5132-001-V03", "vigencia": "31/12/2029", "modalidad": "Completa", "nivel_note": null, "version_update": null, "cert_series": [{"anio": 2002, "valor": 1}, {"anio": 2006, "valor": 2}, {"anio": 2009, "valor": 2}, {"anio": 2010, "valor": 1}, {"anio": 2011, "valor": 7}, {"anio": 2015, "valor": 6}, {"anio": 2017, "valor": 12}, {"anio": 2022, "valor": 6}, {"anio": 2025, "valor": 1}], "cert_total": 38, "estado_articulacion": "Solo Presencial", "n_ucls": 2, "convenios_presencial": [{"region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACIÓN EN EMPRESAS GASTRONÓMICAS", "asig": 1}, {"region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "GASTRONOMÍA INTERNACIONAL", "asig": 1}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACIÓN EN EMPRESAS GASTRONÓMICAS", "asig": 1}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "GASTRONOMÍA INTERNACIONAL", "asig": 1}], "convenios_online": []}, {"subsector": "Alimentación", "ocupacion": "Chef ejecutivo", "ciuo": "3434", "nombre_ciuo": "Chefs", "perfil_cv": "Chef ejecutivo", "nivel": 5, "objetivo": "Gestionar operaciones gastronómicas, incluyendo la administración y planificación de la o las cocinas, de personas, stock de insumos y proveedores, de acuerdo a estrategia comercial y normativas vigentes del sector.", "competencias_resumen": "4UCLs: *Gestionar al personal a cargo; *Supervisar la planificación gastronómica; *Supervisar inventarios;  *Confeccionar menus y cartas.", "base_code": "P-5600-3434-001", "ucls": [{"codigo": "U-5510-4224-009-V01", "nombre": "GESTIONAR AL PERSONAL A CARGO, DE ACUERDO A NORMATIVA APLICABLE VIGENTE Y PROCEDIMIENTOS ESTABLECIDOS"}, {"codigo": "U-5600-3434-014-V01", "nombre": "SUPERVISAR LA PLANIFICACIÓN GASTRONÓMICA, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"}, {"codigo": "U-5600-3434-015-V01", "nombre": "SUPERVISAR INVENTARIO DE MATERIAS PRIMAS Y EQUIPAMIENTO DE COCINA, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS DEL SECTOR"}, {"codigo": "U-5600-3434-016-V01", "nombre": "CONFECCIONAR MENÚS Y CARTAS DE PREPARACIONES CULINARIAS, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS DEL SECTOR"}], "codigo_perfil_full": "P-5600-3434-001-V02", "vigencia": "31/12/2029", "modalidad": "Completa", "nivel_note": null, "version_update": null, "cert_series": [], "cert_total": 0, "estado_articulacion": "Solo Presencial", "n_ucls": 4, "convenios_presencial": [{"region": "ANTOFAGASTA", "institucion": "AIEP", "carrera": "ADMINISTRACIÓN EN EMPRESAS GASTRONÓMICAS", "asig": 3}, {"region": "ARAUCANÍA", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "BÍO-BÍO", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "COQUIMBO", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "LOS RÍOS", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "MAULE", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "AIEP", "carrera": "ADMINISTRACIÓN EN EMPRESAS GASTRONÓMICAS", "asig": 3}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administración de Artes Culinarias y Servicios", "asig": 4}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Técnico en Artes Culinarias", "asig": 4}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "O'HIGGINS", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "TARAPACÁ", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}, {"region": "VALPARAÍSO", "institucion": "CULINARY", "carrera": "Administración de Artes Culinarias y Servicios", "asig": 4}, {"region": "VALPARAÍSO", "institucion": "CULINARY", "carrera": "Técnico en Artes Culinarias", "asig": 4}, {"region": "VALPARAÍSO", "institucion": "INACAP", "carrera": "Administración Gastronómica", "asig": 2}], "convenios_online": []}, {"subsector": "Alimentación", "ocupacion": "Anfitrión", "ciuo": "4224", "nombre_ciuo": "Recepcionistas de hoteles", "perfil_cv": "Anfitrión(a)", "nivel": 2, "objetivo": "Asistir la atención del cliente durante su recepción, ubicación y despedida de un establecimiento gastronómico, de acuerdo a protocolos de atención al cliente.", "competencias_resumen": "3UCLs: *Autogestionar servicio al cliente; *Atender al comensal durante su estadía; *Organizar plaza de trabajo.", "base_code": "P-7912-4224-001", "ucls": [{"codigo": "U-7912-4224-001-V03", "nombre": "ATENDER AL CLIENTE DURANTE SU ESTADÍA EN EL ESTABLECIMIENTO GASTRONÓMICO, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"}, {"codigo": "U-7912-4224-002-V02", "nombre": "GESTIONAR RESERVAS Y REQUERIMIENTOS DE LOS CLIENTES, DE ACUERDO A PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS"}], "codigo_perfil_full": "P-7912-4224-001-V03", "vigencia": "31/12/2028", "modalidad": "Completa", "nivel_note": "Nivel de cualificación actualizado: la tabla original indicaba Nivel 3 y el perfil vigente en ChileValora es Nivel 2.", "version_update": "Perfil actualizado en ChileValora: la tabla original referenciaba la versión V02 y la versión vigente es V03.", "cert_series": [{"anio": 2005, "valor": 2}, {"anio": 2006, "valor": 2}], "cert_total": 4, "estado_articulacion": "Solo Presencial", "n_ucls": 2, "convenios_presencial": [{"region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Administración de Artes Culinarias y Servicios", "asig": 2}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Técnico en Artes Culinarias", "asig": 2}, {"region": "METROPOLITANA DE SANTIAGO", "institucion": "CULINARY", "carrera": "Técnico en Producción de eventos", "asig": 2}, {"region": "VALPARAÍSO", "institucion": "CULINARY", "carrera": "Administración de Artes Culinarias y Servicios", "asig": 2}, {"region": "VALPARAÍSO", "institucion": "CULINARY", "carrera": "Técnico en Artes Culinarias", "asig": 2}, {"region": "VALPARAÍSO", "institucion": "CULINARY", "carrera": "Técnico en Producción de eventos", "asig": 2}], "convenios_online": []}, {"subsector": "Alimentación", "ocupacion": "Cocineros(as)", "ciuo": "5120", "nombre_ciuo": "Cocineros", "perfil_cv": "Cocinero(a)", "nivel": 3, "objetivo": "Dirigir la producción culinaria asignada, de acuerdo con técnicas gastronómicas, recetas estandarizadas, protocolos de higiene y seguridad alimentaria, buenas prácticas de manufactura, estándares internos de calidad del establecimiento, estructura organizacional de la cocina y dotación de personal existente, normativa sanitaria y legislación vigente aplicable.", "competencias_resumen": "3UCLs: *Organizar la producción culinaria; *Ejecutar preparaciones culinarias complejas; *Supervisar la higiene y la seguridad en la cocina.", "base_code": "P-5600-5120-001", "ucls": [{"codigo": "U-5600-5120-007-V03", "nombre": "ORGANIZAR LA PRODUCCIÓN CULINARIA, DE ACUERDO A PLANES Y REQUERIMIENTOS DEL SERVICIO, RECETAS ESTANDARIZADAS, PROTOCOLOS DE HIGIENE Y SEGURIDAD ALIMENTARIA, BUENAS PRÁCTICAS DE MANUFACTURA, ESTÁNDARES INTERNOS DE CALIDAD DEL ESTABLECIMIENTO, ESTRUCTURA ORGANIZACIONAL DE LA COCINA Y DOTACIÓN DE PERSONAL EXISTENTE, NORMATIVA SANITARIA Y LEGISLACIÓN VIGENTE APLICABLE"}, {"codigo": "U-5600-5120-015-V04", "nombre": "EJECUTAR PREPARACIONES CULINARIAS COMPLEJAS, DE ACUERDO CON TÉCNICAS GASTRONÓMICAS AVANZADAS, PLANES Y REQUERIMIENTOS DEL SERVICIO, RECETAS ESTANDARIZADAS, PROTOCOLOS DE HIGIENE Y SEGURIDAD ALIMENTARIA, BUENAS PRÁCTICAS DE MANUFACTURA, ESTÁNDARES INTERNOS DE CALIDAD DEL ESTABLECIMIENTO, NORMATIVA SANITARIA Y LEGISLACIÓN VIGENTE APLICABLE"}, {"codigo": "U-5600-5120-022-V01", "nombre": "SUPERVISAR LA HIGIENE Y LA SEGURIDAD EN LA COCINA, DE ACUERDO CON PROTOCOLOS DE HIGIENE Y SEGURIDAD ALIMENTARIA, BUENAS PRÁCTICAS DE MANUFACTURA, ESTÁNDARES INTERNOS DE CALIDAD DEL ESTABLECIMIENTO, NORMATIVA SANITARIA Y LEGISLACIÓN VIGENTE APLICABLE"}], "codigo_perfil_full": "P-5600-5120-001-V04", "vigencia": "31/12/2030", "modalidad": "Completa", "nivel_note": null, "version_update": "La tabla original no especificaba código de perfil; se utilizó la versión vigente en ChileValora (V04).", "cert_series": [{"anio": 2002, "valor": 7}, {"anio": 2003, "valor": 3}, {"anio": 2006, "valor": 11}, {"anio": 2007, "valor": 10}, {"anio": 2008, "valor": 1}, {"anio": 2009, "valor": 11}, {"anio": 2010, "valor": 20}, {"anio": 2012, "valor": 11}, {"anio": 2013, "valor": 11}, {"anio": 2014, "valor": 4}, {"anio": 2015, "valor": 54}, {"anio": 2016, "valor": 15}, {"anio": 2017, "valor": 84}, {"anio": 2018, "valor": 4}, {"anio": 2021, "valor": 10}, {"anio": 2022, "valor": 19}, {"anio": 2023, "valor": 8}, {"anio": 2025, "valor": 2}, {"anio": 2026, "valor": 1}], "cert_total": 286, "estado_articulacion": "Sin articulación", "n_ucls": 3, "convenios_presencial": [], "convenios_online": []}, {"subsector": "Alojamiento", "ocupacion": "Camarera(o)", "ciuo": "9112", "nombre_ciuo": "Auxiliares de aseo de oficinas, hoteles y otros establecimientos", "perfil_cv": "Mucama(o)", "nivel": 2, "objetivo": "Realizar labores de orden y limpieza de las unidades de alojamiento turístico para la estadía de los huéspedes, según normativas sanitarias aplicables a empresas de alojamiento y normas de alojamiento turístico.", "competencias_resumen": "2UCLs: * Efectuar orden y limpieza en alojamiento;\n*Asistir a huésped en sus requerimientos.", "base_code": "P-5510-9112-001", "ucls": [{"codigo": "U-5510-9112-001-V03", "nombre": "EFECTUAR ORDEN Y LIMPIEZA DE LAS UNIDADES DE ALOJAMIENTO TURÍSTICO DEL RECINTO, SEGÚN PROTOCOLOS Y PROCEDIMIENTOS ESTABLECIDOS Y NORMATIVA LEGAL VIGENTE"}, {"codigo": "U-5510-9112-003-V01", "nombre": "ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLO DE SERVICIO Y PROCEDIMIENTOS ESTABLECIDOS"}], "codigo_perfil_full": "P-5510-9112-001-V03", "vigencia": "31/12/2029", "modalidad": "Completa", "nivel_note": null, "version_update": null, "cert_series": [{"anio": 2004, "valor": 23}, {"anio": 2006, "valor": 7}, {"anio": 2007, "valor": 11}, {"anio": 2009, "valor": 5}, {"anio": 2010, "valor": 20}, {"anio": 2011, "valor": 21}, {"anio": 2012, "valor": 1}, {"anio": 2013, "valor": 19}, {"anio": 2014, "valor": 21}, {"anio": 2015, "valor": 65}, {"anio": 2016, "valor": 33}, {"anio": 2017, "valor": 67}, {"anio": 2020, "valor": 21}, {"anio": 2023, "valor": 65}, {"anio": 2025, "valor": 3}], "cert_total": 382, "estado_articulacion": "Sin articulación", "n_ucls": 2, "convenios_presencial": [], "convenios_online": []}, {"subsector": "Alojamiento", "ocupacion": "Recepcionista", "ciuo": "4224", "nombre_ciuo": "Recepcionistas de hoteles", "perfil_cv": "Recepcionista", "nivel": 3, "objetivo": "Gestionar el ciclo de estadía del huésped en el establecimiento de alojamiento turístico respecto a la entrada, salida y la entrega de información durante su estadía, según normas de alojamiento turístico vigentes y estándares de calidad establecidos.", "competencias_resumen": "2UCLs: *Gestionar ingreso y salida de huésped; *Asistir a huésped en sus requerimientos.", "base_code": "P-5510-4224-001", "ucls": [{"codigo": "U-5510-4224-004-V02", "nombre": "GESTIONAR EL INGRESO Y SALIDA DEL HUÉSPED DEL ESTABLECIMIENTO DE ALOJAMIENTO TURÍSTICO, SEGÚN NORMATIVA APLICABLE Y PROCEDIMIENTOS ESTABLECIDOS"}, {"codigo": "U-5510-4224-005-V02", "nombre": "ASISTIR AL HUÉSPED EN SUS REQUERIMIENTOS Y NECESIDADES, SEGÚN PROTOCOLOS DE ATENCIÓN Y PROCEDIMIENTOS ESTABLECIDOS"}], "codigo_perfil_full": "P-5510-4224-001-V03", "vigencia": "31/12/2029", "modalidad": "Completa", "nivel_note": null, "version_update": null, "cert_series": [{"anio": 2011, "valor": 1}, {"anio": 2014, "valor": 13}, {"anio": 2015, "valor": 55}, {"anio": 2016, "valor": 39}, {"anio": 2017, "valor": 12}, {"anio": 2020, "valor": 10}, {"anio": 2023, "valor": 54}, {"anio": 2025, "valor": 10}], "cert_total": 194, "estado_articulacion": "Solo Presencial", "n_ucls": 2, "convenios_presencial": [{"region": "COQUIMBO", "institucion": "CFT ESTATAL COQUIMBO", "carrera": "Técnico Nivel Superior en Turismo", "asig": 1}], "convenios_online": []}]
+;
+
+function estadoClass(estado){
+  if(estado.includes('Presencial') && estado.includes('Online')) return 'estado-si';
+  if(estado.includes('Presencial') || estado.includes('Online')) return 'estado-parcial';
+  return 'estado-no';
+}
+
+function buildChart(series, chartId){
+  if(!series.length){
+    return '<p class="empty-state">Sin registros de certificación en Coquimbo para este perfil.</p>';
+  }
+  const w = 100, h = 70, padBottom = 4;
+  const max = Math.max(...series.map(d=>d.valor));
+  const n = series.length;
+  const barW = Math.max(w/n - 1.2, 1.5);
+  let bars = '';
+  series.forEach((d,i)=>{
+    const bh = max > 0 ? (d.valor/max)*(h-padBottom-2) : 0;
+    const x = (i*(w/n)) + 0.6;
+    const y = (h-padBottom) - bh;
+    bars += `<rect class="bar" data-anio="${d.anio}" data-valor="${d.valor}" x="${x}" y="${y}" width="${barW}" height="${Math.max(bh,1)}" rx="0.6"></rect>`;
+  });
+  const firstYear = series[0].anio, lastYear = series[series.length-1].anio;
+  return `
+    <div class="chart-area" id="${chartId}">
+      <svg class="chart-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${bars}</svg>
+      <div class="chart-tooltip"></div>
+      <div class="chart-caption"><span>${firstYear}</span><span>${lastYear}</span></div>
+    </div>`;
+}
+
+function attachChartTooltip(container){
+  const area = container.querySelector('.chart-area');
+  if(!area) return;
+  const tooltip = area.querySelector('.chart-tooltip');
+  const svg = area.querySelector('.chart-svg');
+  const bars = area.querySelectorAll('.bar');
+
+  function showTip(bar){
+    bars.forEach(b=>b.classList.remove('bar-active'));
+    bar.classList.add('bar-active');
+    const areaRect = area.getBoundingClientRect();
+    const barRect = bar.getBoundingClientRect();
+    const x = barRect.left - areaRect.left + barRect.width/2;
+    const y = barRect.top - areaRect.top;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top = y + 'px';
+    tooltip.textContent = `${bar.dataset.anio} · ${bar.dataset.valor}`;
+    tooltip.classList.add('show');
+  }
+  function hideTip(){
+    tooltip.classList.remove('show');
+    bars.forEach(b=>b.classList.remove('bar-active'));
+  }
+
+  bars.forEach(bar=>{
+    bar.addEventListener('mouseenter', ()=>showTip(bar));
+    bar.addEventListener('mouseleave', hideTip);
+    bar.addEventListener('touchstart', (e)=>{ e.preventDefault(); showTip(bar); }, {passive:false});
+  });
+  svg.addEventListener('touchend', ()=>setTimeout(hideTip, 1500));
+}
+
+function toSentenceCase(str){
+  if(!str) return str;
+  const lower = str.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
+function buildUCLs(rec){
+  if(!rec.ucls.length){
+    return '<p class="empty-state">Sin UCLs registradas en el detalle de perfil.</p>';
+  }
+  return rec.ucls.map(u=>`
+    <div class="ucl-item">
+      <span class="ucl-code">${u.codigo}</span>
+      <span class="ucl-name">${toSentenceCase(u.nombre)}</span>
+    </div>`).join('');
+}
+
+function buildConvenios(rec){
+  const pres = [...rec.convenios_presencial].sort((a,b)=>{
+    const aC = a.region === 'COQUIMBO' ? 0 : 1;
+    const bC = b.region === 'COQUIMBO' ? 0 : 1;
+    return aC - bC;
+  });
+  const onl = rec.convenios_online;
+  if(!pres.length && !onl.length){
+    return `<span class="estado-chip estado-no">Sin articulación</span>
+      <p class="empty-state">Este perfil aún no cuenta con convenios de convalidación con instituciones de educación superior.</p>`;
+  }
+  let html = `<span class="estado-chip ${estadoClass(rec.estado_articulacion)}">${rec.estado_articulacion}</span><div class="conv-list">`;
+  if(pres.length){
+    html += `<div class="conv-group-label">Presencial · ${pres.length} convenio(s)</div>`;
+    pres.forEach(c=>{
+      const isCoq = c.region === 'COQUIMBO';
+      html += `<div class="conv-item">
+        <span class="conv-inst">${c.institucion}</span><span class="conv-region${isCoq ? ' is-coquimbo' : ''}">${c.region}</span>
+        <div class="conv-carrera">${c.carrera}</div>
+        <div class="conv-asig">${c.asig ?? '—'} asignatura(s) convalidada(s)</div>
+      </div>`;
+    });
+  }
+  if(onl.length){
+    html += `<div class="conv-group-label">Online · ${onl.length} convenio(s)</div>`;
+    onl.forEach(c=>{
+      html += `<div class="conv-item">
+        <span class="conv-inst">${c.institucion}</span>
+        <div class="conv-carrera">${c.carrera}</div>
+        <div class="conv-asig">${c.asig ?? '—'} asignatura(s) convalidada(s)</div>
+      </div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+function buildPanel(rec, idx){
+  return `
+    <div class="panel">
+      <div class="panel-meta">
+        <span><b>Código perfil vigente:</b> ${rec.codigo_perfil_full || rec.base_code}</span>
+        <span><b>Vigencia:</b> ${rec.vigencia || '—'}</span>
+        <span><b>Modalidad:</b> ${rec.modalidad || '—'}</span>
+        <span><b>Total certificados (histórico Coquimbo):</b> ${rec.cert_total}</span>
+      </div>
+      <div class="panel-grid">
+        <div class="panel-block">
+          <p class="block-title t-comp"><span class="block-icon">✓</span>Competencias (UCLs)</p>
+          ${buildUCLs(rec)}
+        </div>
+        <div class="panel-block">
+          <p class="block-title t-cert"><span class="block-icon">↗</span>Evolución de certificaciones en la Región de Coquimbo</p>
+          <div class="cert-total"><span class="num">${rec.cert_total}</span><span class="lbl">certificados<br>2002–2026</span></div>
+          ${buildChart(rec.cert_series, `chart-${idx}`)}
+        </div>
+        <div class="panel-block">
+          <p class="block-title t-conv"><span class="block-icon">⇄</span>Convenios con Educación Superior</p>
+          ${buildConvenios(rec)}
+        </div>
+      </div>
+    </div>`;
+}
+
+function render(){
+  const tbody = document.getElementById('tbody');
+  let html = '';
+  let lastSubsector = null;
+  DATA.forEach((rec, idx)=>{
+    if(rec.subsector !== lastSubsector){
+      html += `<tr class="subsector-row"><td colspan="6">${rec.subsector}</td></tr>`;
+      lastSubsector = rec.subsector;
+    }
+    html += `
+      <tr class="occ-row" data-idx="${idx}">
+        <td class="occ-name">${rec.ocupacion}</td>
+        <td><span class="ciuo-pill">${rec.ciuo}</span></td>
+        <td class="perfil-name">${rec.perfil_cv}</td>
+        <td><span class="nivel-badge">${rec.nivel}</span></td>
+        <td class="objetivo-cell">${rec.objetivo}</td>
+        <td class="chevron-cell"><span class="chevron">▾</span></td>
+      </tr>
+      <tr class="detail-row" data-idx="${idx}"><td colspan="6"></td></tr>`;
+  });
+  tbody.innerHTML = html;
+
+  tbody.querySelectorAll('.occ-row').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const idx = row.dataset.idx;
+      const detailRow = tbody.querySelector(`.detail-row[data-idx="${idx}"]`);
+      const isOpen = detailRow.classList.contains('open');
+
+      tbody.querySelectorAll('.detail-row.open').forEach(d=>{
+        d.classList.remove('open');
+        d.querySelector('td').innerHTML = '';
+      });
+      tbody.querySelectorAll('.occ-row.active').forEach(r=>r.classList.remove('active'));
+
+      if(!isOpen){
+        detailRow.querySelector('td').innerHTML = buildPanel(DATA[idx], idx);
+        detailRow.classList.add('open');
+        row.classList.add('active');
+        attachChartTooltip(detailRow);
+      }
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
